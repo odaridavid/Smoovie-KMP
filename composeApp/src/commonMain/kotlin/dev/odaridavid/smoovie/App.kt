@@ -1,9 +1,9 @@
 package dev.odaridavid.smoovie
 
 import androidx.compose.runtime.Composable
-import dev.odaridavid.smoovie.ui.movies.MoviesScreen
-import dev.odaridavid.smoovie.ui.movies.MoviesViewModel
-import dev.odaridavid.smoovie.ui.theme.SmoovieTheme
+import dev.odaridavid.smoovie.movies.MoviesScreen
+import dev.odaridavid.smoovie.movies.MoviesViewModel
+import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

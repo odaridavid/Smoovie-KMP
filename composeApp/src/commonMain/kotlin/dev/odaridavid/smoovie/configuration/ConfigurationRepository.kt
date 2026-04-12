@@ -1,6 +1,4 @@
-package dev.odaridavid.smoovie.domain
-
-import dev.odaridavid.smoovie.data.model.ImagesConfiguration
+package dev.odaridavid.smoovie.configuration
 
 interface ConfigurationRepository {
     suspend fun getImagesConfiguration(): ImagesConfiguration

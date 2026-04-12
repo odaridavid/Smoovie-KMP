@@ -1,8 +1,9 @@
-package dev.odaridavid.smoovie
+package dev.odaridavid.smoovie.movies
 
-import dev.odaridavid.smoovie.data.model.Movie
-import dev.odaridavid.smoovie.ui.movies.MoviesUiState
-import dev.odaridavid.smoovie.ui.movies.MoviesViewModel
+import dev.odaridavid.smoovie.FakeConfigurationRepository
+import dev.odaridavid.smoovie.FakeMoviesRepository
+import dev.odaridavid.smoovie.configuration.ConfigurationRepository
+import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -35,10 +36,16 @@ class MoviesViewModelTest {
         Dispatchers.resetMain()
     }
 
+    private fun buildViewModel(
+        repo: FakeMoviesRepository,
+        configRepo: ConfigurationRepository = FakeConfigurationRepository(),
+        configStore: ConfigurationStore = ConfigurationStore(),
+    ) = MoviesViewModel(repo, configRepo, configStore)
+
     @Test
     fun `given api returns movies, when loadMovies is called, then emits success`() =
         runTest {
-            val viewModel = MoviesViewModel(FakeMoviesRepository(movies = testMovies))
+            val viewModel = buildViewModel(FakeMoviesRepository(movies = testMovies))
 
             val state = viewModel.uiState.value
 
@@ -49,7 +56,8 @@ class MoviesViewModelTest {
     @Test
     fun `given api throws, when loadMovies is called, then emits error`() =
         runTest {
-            val viewModel = MoviesViewModel(FakeMoviesRepository(error = Exception("Network error")))
+            val viewModel =
+                buildViewModel(FakeMoviesRepository(error = Exception("Network error")))
 
             val state = viewModel.uiState.value
 
@@ -60,7 +68,7 @@ class MoviesViewModelTest {
     @Test
     fun `given exception has no message, when loadMovies is called, then emits fallback message`() =
         runTest {
-            val viewModel = MoviesViewModel(FakeMoviesRepository(error = Exception()))
+            val viewModel = buildViewModel(FakeMoviesRepository(error = Exception()))
 
             val state = viewModel.uiState.value
 
@@ -72,7 +80,7 @@ class MoviesViewModelTest {
     fun `given error state, when retry is called, then emits success`() =
         runTest {
             val repo = FakeMoviesRepository(error = Exception("Network error"))
-            val viewModel = MoviesViewModel(repo)
+            val viewModel = buildViewModel(repo)
             assertIs<MoviesUiState.Error>(viewModel.uiState.value)
 
             repo.error = null
@@ -82,5 +90,20 @@ class MoviesViewModelTest {
             val state = viewModel.uiState.value
             assertIs<MoviesUiState.Success>(state)
             assertEquals(testMovies, state.movies)
+        }
+
+    @Test
+    fun `given configuration api throws, when viewmodel is created, then emits error`() =
+        runTest {
+            val viewModel =
+                buildViewModel(
+                    repo = FakeMoviesRepository(),
+                    configRepo = FakeConfigurationRepository(error = Exception("Config error")),
+                )
+
+            val state = viewModel.uiState.value
+
+            assertIs<MoviesUiState.Error>(state)
+            assertEquals("Config error", state.message)
         }
 }

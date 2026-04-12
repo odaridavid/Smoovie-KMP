@@ -1,6 +1,4 @@
-package dev.odaridavid.smoovie.domain
-
-import dev.odaridavid.smoovie.data.model.MoviesResponse
+package dev.odaridavid.smoovie.movies
 
 interface MoviesRepository {
     suspend fun getPopularMovies(page: Int = 1): MoviesResponse

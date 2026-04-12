@@ -1,4 +1,4 @@
-package dev.odaridavid.smoovie.ui.movies
+package dev.odaridavid.smoovie.movies
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,9 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dev.odaridavid.smoovie.data.model.Movie
-import dev.odaridavid.smoovie.ui.theme.ErrorContent
-import dev.odaridavid.smoovie.ui.theme.SmoovieTheme
+import dev.odaridavid.smoovie.theme.ErrorContent
+import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
 import previewMovies
 import smoovie.composeapp.generated.resources.Res

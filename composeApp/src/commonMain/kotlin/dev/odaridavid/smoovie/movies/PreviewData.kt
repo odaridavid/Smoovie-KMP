@@ -1,4 +1,4 @@
-import dev.odaridavid.smoovie.data.model.Movie
+import dev.odaridavid.smoovie.movies.Movie
 
 internal val previewMovies =
     listOf(

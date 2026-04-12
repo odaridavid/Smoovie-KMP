@@ -1,4 +1,4 @@
-package dev.odaridavid.smoovie.ui.theme
+package dev.odaridavid.smoovie.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

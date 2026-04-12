@@ -1,12 +1,12 @@
-package dev.odaridavid.smoovie.data
+package dev.odaridavid.smoovie.configuration
 
-import dev.odaridavid.smoovie.data.model.Configuration
-import dev.odaridavid.smoovie.data.model.ImagesConfiguration
-import dev.odaridavid.smoovie.domain.ConfigurationRepository
+import dev.odaridavid.smoovie.TMDB_BASE_URL
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import org.koin.core.annotation.Single
 
+@Single(binds = [ConfigurationRepository::class])
 class ConfigurationRepositoryImpl(
     private val client: HttpClient,
 ) : ConfigurationRepository {

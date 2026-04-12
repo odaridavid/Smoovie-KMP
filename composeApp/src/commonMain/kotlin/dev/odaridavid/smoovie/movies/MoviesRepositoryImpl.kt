@@ -1,12 +1,13 @@
-package dev.odaridavid.smoovie.data
+package dev.odaridavid.smoovie.movies
 
-import dev.odaridavid.smoovie.data.model.MoviesResponse
-import dev.odaridavid.smoovie.domain.MoviesRepository
+import dev.odaridavid.smoovie.TMDB_BASE_URL
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import org.koin.core.annotation.Single
 
+@Single(binds = [MoviesRepository::class])
 class MoviesRepositoryImpl(
     private val client: HttpClient,
 ) : MoviesRepository {

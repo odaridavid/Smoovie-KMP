@@ -1,4 +1,4 @@
-package dev.odaridavid.smoovie.data.model
+package dev.odaridavid.smoovie.configuration
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

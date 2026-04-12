@@ -1,6 +1,4 @@
-package dev.odaridavid.smoovie.ui.movies
-
-import dev.odaridavid.smoovie.data.model.Movie
+package dev.odaridavid.smoovie.movies
 
 sealed interface MoviesUiState {
     data object Loading : MoviesUiState

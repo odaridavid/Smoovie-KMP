@@ -70,6 +70,7 @@ TMDB_ACCESS_TOKEN=YOUR_API_READ_ACCESS_TOKEN
 | [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines) | Async / StateFlow |
 | [Compose Multiplatform](https://www.jetbrains.com/compose-multiplatform/) | Shared UI |
 | [AndroidX Lifecycle](https://developer.android.com/jetpack/androidx/releases/lifecycle) | ViewModel + viewModelScope (KMP) |
+| [Koin](https://insert-koin.io) | Multiplatform dependency injection |
 
 ## Build and Run
 

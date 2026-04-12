@@ -12,21 +12,24 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 
-val appModule = module {
-    single {
-        HttpClient {
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                    coerceInputValues = true
-                })
-            }
-            install(Logging) {
-                level = LogLevel.HEADERS
-            }
-            install(DefaultRequest) {
-                header(HttpHeaders.Authorization, "Bearer $tmdbApiKey")
+val appModule =
+    module {
+        single {
+            HttpClient {
+                install(ContentNegotiation) {
+                    json(
+                        Json {
+                            ignoreUnknownKeys = true
+                            coerceInputValues = true
+                        },
+                    )
+                }
+                install(Logging) {
+                    level = LogLevel.HEADERS
+                }
+                install(DefaultRequest) {
+                    header(HttpHeaders.Authorization, "Bearer $tmdbApiKey")
+                }
             }
         }
     }
-}

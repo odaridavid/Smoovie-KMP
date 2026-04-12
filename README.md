@@ -45,13 +45,19 @@ Gradle reads this at build time and injects it into `BuildConfig.TMDB_ACCESS_TOK
 
 ### 3. Configure iOS
 
-Add your token to `iosApp/Configuration/Config.xcconfig` (also gitignored):
+Copy the example config and fill in your token:
+
+```shell
+cp iosApp/Configuration/Config.xcconfig.example iosApp/Configuration/Config.xcconfig
+```
+
+Then edit `Config.xcconfig`:
 
 ```
 TMDB_ACCESS_TOKEN=YOUR_API_READ_ACCESS_TOKEN
 ```
 
-Xcode expands this into `Info.plist` at build time, where Kotlin reads it via `NSBundle`.
+`Config.xcconfig` is gitignored — never commit it. Xcode expands the value into `Info.plist` at build time, where Kotlin reads it via `NSBundle`.
 
 > **Note:** Add `Config.xcconfig` to `.gitignore` to keep the token out of version control.
 

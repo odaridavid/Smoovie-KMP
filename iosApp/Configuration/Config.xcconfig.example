@@ -1,0 +1,8 @@
+TEAM_ID=
+TMDB_ACCESS_TOKEN=your_tmdb_api_read_access_token_here
+
+PRODUCT_NAME=Smoovie
+PRODUCT_BUNDLE_IDENTIFIER=dev.odaridavid.smoovie.Smoovie$(TEAM_ID)
+
+CURRENT_PROJECT_VERSION=1
+MARKETING_VERSION=1.0

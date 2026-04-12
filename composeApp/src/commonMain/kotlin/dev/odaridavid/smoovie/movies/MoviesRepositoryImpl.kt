@@ -7,7 +7,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import org.koin.core.annotation.Single
 
-@Single(binds = [MoviesRepository::class])
+@Single
 class MoviesRepositoryImpl(
     private val client: HttpClient,
 ) : MoviesRepository {

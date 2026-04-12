@@ -6,7 +6,7 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import org.koin.core.annotation.Single
 
-@Single(binds = [ConfigurationRepository::class])
+@Single
 class ConfigurationRepositoryImpl(
     private val client: HttpClient,
 ) : ConfigurationRepository {

@@ -7,12 +7,9 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
 @Composable
-fun SmoovieTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit,
-) {
+fun SmoovieTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = if (darkTheme) darkColorScheme() else lightColorScheme(),
+        colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme(),
         content = content,
     )
 }

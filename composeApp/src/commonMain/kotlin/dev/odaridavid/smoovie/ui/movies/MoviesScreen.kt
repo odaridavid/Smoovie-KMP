@@ -2,21 +2,13 @@ package dev.odaridavid.smoovie.ui.movies
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -25,16 +17,31 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.odaridavid.smoovie.data.model.Movie
+import dev.odaridavid.smoovie.ui.theme.ErrorContent
+import dev.odaridavid.smoovie.ui.theme.SmoovieTheme
+import org.jetbrains.compose.resources.stringResource
+import previewMovies
+import smoovie.composeapp.generated.resources.Res
+import smoovie.composeapp.generated.resources.app_name
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoviesScreen(viewModel: MoviesViewModel) {
     val uiState by viewModel.uiState.collectAsState()
+    MoviesContent(uiState = uiState, onRetry = viewModel::loadMovies)
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MoviesContent(
+    uiState: MoviesUiState,
+    onRetry: () -> Unit,
+) {
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Smoovie") }) },
+        topBar = { TopAppBar(title = { Text(stringResource(Res.string.app_name)) }) },
     ) { padding ->
         Box(
             modifier =
@@ -54,7 +61,7 @@ fun MoviesScreen(viewModel: MoviesViewModel) {
                 is MoviesUiState.Error -> {
                     ErrorContent(
                         message = state.message,
-                        onRetry = viewModel::loadMovies,
+                        onRetry = onRetry,
                         modifier = Modifier.align(Alignment.Center),
                     )
                 }
@@ -75,45 +82,24 @@ private fun MoviesList(movies: List<Movie>) {
     }
 }
 
+// region Previews
+
+@Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
-private fun MovieCard(movie: Movie) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = movie.title, style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = movie.overview,
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 3,
-            )
-            Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text(
-                    text = "★ ${movie.voteAverage}",
-                    style = MaterialTheme.typography.labelMedium,
-                )
-                Text(
-                    text = movie.releaseDate,
-                    style = MaterialTheme.typography.labelMedium,
-                )
-            }
-        }
+private fun MoviesLoadingPreview() {
+    SmoovieTheme {
+        MoviesContent(uiState = MoviesUiState.Loading, onRetry = {})
     }
 }
 
+@Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
-private fun ErrorContent(
-    message: String,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Text(text = "Failed to load movies", style = MaterialTheme.typography.titleMedium)
-        Text(text = message, style = MaterialTheme.typography.bodySmall)
-        Button(onClick = onRetry) { Text("Retry") }
+private fun MoviesSuccessPreview() {
+    SmoovieTheme {
+        MoviesContent(uiState = MoviesUiState.Success(previewMovies), onRetry = {})
     }
 }
+
+// endregion

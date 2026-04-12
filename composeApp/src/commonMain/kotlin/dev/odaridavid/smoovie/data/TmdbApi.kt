@@ -14,7 +14,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-// Use the API Read Access Token from https://www.themoviedb.org/settings/api
 private const val TMDB_BASE_URL = "https://api.themoviedb.org/3"
 
 class TmdbApi(

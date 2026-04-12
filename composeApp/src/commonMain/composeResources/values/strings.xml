@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name" translatable="false">Smoovie</string>
+    <string name="error_movies_failed">Failed to load movies</string>
+    <string name="action_retry">Retry</string>
+</resources>

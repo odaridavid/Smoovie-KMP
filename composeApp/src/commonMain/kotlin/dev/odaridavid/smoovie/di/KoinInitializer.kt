@@ -7,6 +7,7 @@ fun initKoin() {
     startKoin {
         modules(
             appModule,
+            configurationModule,
             movieModule,
         )
     }

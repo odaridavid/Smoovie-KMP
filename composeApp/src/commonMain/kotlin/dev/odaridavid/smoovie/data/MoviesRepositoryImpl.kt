@@ -6,15 +6,13 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 
-private const val TMDB_BASE_URL = "https://api.themoviedb.org/3"
-
 class MoviesRepositoryImpl(
     private val client: HttpClient,
 ) : MoviesRepository {
     override suspend fun getPopularMovies(page: Int): MoviesResponse =
         client
-            .get("$TMDB_BASE_URL/movie/popular") {
-                parameter("page", page)
+            .get(Path.POPULAR_MOVIES) {
+                parameter(Parameter.PAGE, page)
             }.body()
 
     override suspend fun searchMovies(
@@ -22,8 +20,18 @@ class MoviesRepositoryImpl(
         page: Int,
     ): MoviesResponse =
         client
-            .get("$TMDB_BASE_URL/search/movie") {
-                parameter("query", query)
-                parameter("page", page)
+            .get(Path.SEARCH_MOVIES) {
+                parameter(Parameter.QUERY, query)
+                parameter(Parameter.PAGE, page)
             }.body()
+
+    private object Path {
+        const val POPULAR_MOVIES = "$TMDB_BASE_URL/movie/popular"
+        const val SEARCH_MOVIES = "$TMDB_BASE_URL/search/movie"
+    }
+
+    private object Parameter {
+        const val PAGE = "page"
+        const val QUERY = "query"
+    }
 }

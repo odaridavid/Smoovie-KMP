@@ -2,14 +2,14 @@ package dev.odaridavid.smoovie.ui.movies
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.odaridavid.smoovie.data.TmdbApi
+import dev.odaridavid.smoovie.data.MoviesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class MoviesViewModel(
-    private val api: TmdbApi,
+    private val api: MoviesRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<MoviesUiState>(MoviesUiState.Loading)
     val uiState: StateFlow<MoviesUiState> = _uiState.asStateFlow()

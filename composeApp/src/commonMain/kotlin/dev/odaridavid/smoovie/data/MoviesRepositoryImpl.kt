@@ -16,9 +16,9 @@ import kotlinx.serialization.json.Json
 
 private const val TMDB_BASE_URL = "https://api.themoviedb.org/3"
 
-class TmdbApi(
+class MoviesRepositoryImpl(
     private val apiKey: String,
-) {
+) : MoviesRepository {
     private val client =
         HttpClient {
             install(ContentNegotiation) {
@@ -37,15 +37,15 @@ class TmdbApi(
             }
         }
 
-    suspend fun getPopularMovies(page: Int = 1): MoviesResponse =
+    override suspend fun getPopularMovies(page: Int): MoviesResponse =
         client
             .get("$TMDB_BASE_URL/movie/popular") {
                 parameter("page", page)
             }.body()
 
-    suspend fun searchMovies(
+    override suspend fun searchMovies(
         query: String,
-        page: Int = 1,
+        page: Int,
     ): MoviesResponse =
         client
             .get("$TMDB_BASE_URL/search/movie") {

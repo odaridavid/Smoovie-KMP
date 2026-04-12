@@ -1,5 +1,5 @@
 import dev.odaridavid.smoovie.movies.Movie
-import dev.odaridavid.smoovie.movies.MovieUiModel
+import dev.odaridavid.smoovie.movies.toUiModel
 
 internal val previewMovies =
     listOf(
@@ -32,14 +32,4 @@ internal val previewMovies =
         ),
     )
 
-internal val previewMovieUiModels =
-    previewMovies.map { movie ->
-        MovieUiModel(
-            id = movie.id,
-            title = movie.title,
-            overview = movie.overview,
-            releaseDate = movie.releaseDate,
-            voteAverage = movie.voteAverage,
-            backdropUrl = null,
-        )
-    }
+internal val previewMovieUiModels = previewMovies.map { it.toUiModel(backdropUrl = null) }

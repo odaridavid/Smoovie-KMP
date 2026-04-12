@@ -9,6 +9,9 @@ class MovieUiMapper(
 ) {
     fun toUiModels(movies: List<Movie>): List<MovieUiModel> =
         movies.map { movie ->
-            movie.toUiModel(configurationStore.backdropUrl(movie.backdropPath))
+            movie.toUiModel(
+                backdropUrl = configurationStore.backdropUrl(movie.backdropPath),
+                posterUrl = configurationStore.posterUrl(movie.posterPath),
+            )
         }
 }

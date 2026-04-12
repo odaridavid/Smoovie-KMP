@@ -5,16 +5,42 @@ data class MovieUiModel(
     val title: String,
     val overview: String,
     val releaseDate: String,
-    val voteAverage: Double,
+    val voteAverage: String,
     val backdropUrl: String?,
+    val posterUrl: String? = null,
 )
 
-internal fun Movie.toUiModel(backdropUrl: String?) =
+internal fun Movie.toUiModel(backdropUrl: String?, posterUrl: String? = null) =
     MovieUiModel(
         id = id,
         title = title,
         overview = overview,
-        releaseDate = releaseDate,
-        voteAverage = voteAverage,
+        releaseDate = releaseDate.toReadableDate(),
+        voteAverage = kotlin.math.round(voteAverage * 10).toLong().let { "${it / 10}.${it % 10}" },
         backdropUrl = backdropUrl,
+        posterUrl = posterUrl,
     )
+
+// TODO Month lib or sth
+private fun String.toReadableDate(): String {
+    val parts = split("-")
+    if (parts.size != 3) return this
+    val year = parts[0]
+    val monthName = when (parts[1].toIntOrNull()) {
+        1 -> "Jan"
+        2 -> "Feb"
+        3 -> "Mar"
+        4 -> "Apr"
+        5 -> "May"
+        6 -> "Jun"
+        7 -> "Jul"
+        8 -> "Aug"
+        9 -> "Sep"
+        10 -> "Oct"
+        11 -> "Nov"
+        12 -> "Dec"
+        else -> return this
+    }
+    val day = parts[2].trimStart('0').ifEmpty { "0" }
+    return "$day $monthName $year"
+}

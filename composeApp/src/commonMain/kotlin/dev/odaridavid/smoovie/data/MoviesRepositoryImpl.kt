@@ -3,40 +3,14 @@ package dev.odaridavid.smoovie.data
 import dev.odaridavid.smoovie.data.model.MoviesResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.plugins.DefaultRequest
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.get
-import io.ktor.client.request.header
 import io.ktor.client.request.parameter
-import io.ktor.http.HttpHeaders
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
 
 private const val TMDB_BASE_URL = "https://api.themoviedb.org/3"
 
 class MoviesRepositoryImpl(
-    private val apiKey: String,
+    private val client: HttpClient,
 ) : MoviesRepository {
-    private val client =
-        HttpClient {
-            install(ContentNegotiation) {
-                json(
-                    Json {
-                        ignoreUnknownKeys = true // ignore fields TMDB sends that we don't model yet
-                        coerceInputValues = true
-                    },
-                )
-            }
-            install(Logging) {
-                level = LogLevel.HEADERS // switch to LogLevel.BODY to debug response payloads
-            }
-            install(DefaultRequest) {
-                header(HttpHeaders.Authorization, "Bearer $apiKey")
-            }
-        }
-
     override suspend fun getPopularMovies(page: Int): MoviesResponse =
         client
             .get("$TMDB_BASE_URL/movie/popular") {

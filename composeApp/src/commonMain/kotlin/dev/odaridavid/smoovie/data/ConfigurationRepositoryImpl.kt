@@ -1,7 +1,8 @@
 package dev.odaridavid.smoovie.data
 
-import dev.odaridavid.smoovie.data.model.ImagesConfiguration
 import dev.odaridavid.smoovie.data.model.Configuration
+import dev.odaridavid.smoovie.data.model.ImagesConfiguration
+import dev.odaridavid.smoovie.domain.ConfigurationRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get

@@ -1,4 +1,4 @@
-package dev.odaridavid.smoovie.data
+package dev.odaridavid.smoovie.domain
 
 import dev.odaridavid.smoovie.data.model.ImagesConfiguration
 

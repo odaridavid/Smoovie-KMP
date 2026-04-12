@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import dev.odaridavid.smoovie.theme.ErrorContent
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
-import previewMovies
+import previewMovieUiModels
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.app_name
 
@@ -70,7 +70,7 @@ private fun MoviesContent(
 }
 
 @Composable
-private fun MoviesList(movies: List<Movie>) {
+private fun MoviesList(movies: List<MovieUiModel>) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -97,7 +97,7 @@ private fun MoviesLoadingPreview() {
 @Composable
 private fun MoviesSuccessPreview() {
     SmoovieTheme {
-        MoviesContent(uiState = MoviesUiState.Success(previewMovies), onRetry = {})
+        MoviesContent(uiState = MoviesUiState.Success(previewMovieUiModels), onRetry = {})
     }
 }
 

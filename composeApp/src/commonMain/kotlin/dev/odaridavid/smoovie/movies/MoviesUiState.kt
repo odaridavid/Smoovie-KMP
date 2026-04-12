@@ -4,7 +4,7 @@ sealed interface MoviesUiState {
     data object Loading : MoviesUiState
 
     data class Success(
-        val movies: List<Movie>,
+        val movies: List<MovieUiModel>,
     ) : MoviesUiState
 
     data class Error(

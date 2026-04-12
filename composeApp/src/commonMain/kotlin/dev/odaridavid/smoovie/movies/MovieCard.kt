@@ -2,43 +2,59 @@ package dev.odaridavid.smoovie.movies
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import dev.odaridavid.smoovie.theme.SmoovieTheme
-import previewMovies
+import previewMovieUiModels
 
 @Composable
-internal fun MovieCard(movie: Movie) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = movie.title, style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = movie.overview,
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 3,
+internal fun MovieCard(movie: MovieUiModel) {
+    Card(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+        Row {
+            AsyncImage(
+                model = movie.backdropUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier =
+                    Modifier
+                        .width(120.dp)
+                        .fillMaxHeight(),
             )
-            Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(modifier = Modifier.padding(12.dp).weight(1f)) {
+                Text(text = movie.title, style = MaterialTheme.typography.titleMedium)
+                Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "★ ${movie.voteAverage}",
-                    style = MaterialTheme.typography.labelMedium,
+                    text = movie.overview,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 3,
                 )
-                Text(
-                    text = movie.releaseDate,
-                    style = MaterialTheme.typography.labelMedium,
-                )
+                Spacer(Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Text(
+                        text = "★ ${movie.voteAverage}",
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                    Text(
+                        text = movie.releaseDate,
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
             }
         }
     }
@@ -49,6 +65,6 @@ internal fun MovieCard(movie: Movie) {
 @Composable
 private fun MovieCardPreview() {
     SmoovieTheme {
-        MovieCard(movie = previewMovies.first())
+        MovieCard(movie = previewMovieUiModels.first())
     }
 }

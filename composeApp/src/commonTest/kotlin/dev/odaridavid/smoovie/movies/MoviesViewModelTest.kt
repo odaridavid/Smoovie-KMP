@@ -26,6 +26,8 @@ class MoviesViewModelTest {
             Movie(id = 2, title = "Inception", overview = "Dream heist.", voteAverage = 8.8),
         )
 
+    private val expectedUiModels = testMovies.map { it.toUiModel(backdropUrl = null) }
+
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
@@ -40,7 +42,7 @@ class MoviesViewModelTest {
         repo: FakeMoviesRepository,
         configRepo: ConfigurationRepository = FakeConfigurationRepository(),
         configStore: ConfigurationStore = ConfigurationStore(),
-    ) = MoviesViewModel(repo, configRepo, configStore)
+    ) = MoviesViewModel(repo, configRepo, configStore, MovieUiMapper(configStore))
 
     @Test
     fun `given api returns movies, when loadMovies is called, then emits success`() =
@@ -50,7 +52,7 @@ class MoviesViewModelTest {
             val state = viewModel.uiState.value
 
             assertIs<MoviesUiState.Success>(state)
-            assertEquals(testMovies, state.movies)
+            assertEquals(expectedUiModels, state.movies)
         }
 
     @Test
@@ -89,7 +91,7 @@ class MoviesViewModelTest {
 
             val state = viewModel.uiState.value
             assertIs<MoviesUiState.Success>(state)
-            assertEquals(testMovies, state.movies)
+            assertEquals(expectedUiModels, state.movies)
         }
 
     @Test

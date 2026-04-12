@@ -15,6 +15,7 @@ class MoviesViewModel(
     private val moviesRepository: MoviesRepository,
     private val configurationRepository: ConfigurationRepository,
     private val configurationStore: ConfigurationStore,
+    private val mapper: MovieUiMapper,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<MoviesUiState>(MoviesUiState.Loading)
     val uiState: StateFlow<MoviesUiState> = _uiState.asStateFlow()
@@ -28,7 +29,7 @@ class MoviesViewModel(
             _uiState.value = MoviesUiState.Loading
             try {
                 val response = moviesRepository.getPopularMovies()
-                _uiState.value = MoviesUiState.Success(response.results)
+                _uiState.value = MoviesUiState.Success(mapper.toUiModels(response.results))
             } catch (e: Exception) {
                 _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
             }
@@ -42,7 +43,7 @@ class MoviesViewModel(
                 val config = configurationRepository.getImagesConfiguration()
                 configurationStore.save(config)
                 val response = moviesRepository.getPopularMovies()
-                _uiState.value = MoviesUiState.Success(response.results)
+                _uiState.value = MoviesUiState.Success(mapper.toUiModels(response.results))
             } catch (e: Exception) {
                 _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
             }

@@ -18,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import dev.odaridavid.smoovie.theme.SmoovieTheme
@@ -31,15 +32,17 @@ internal fun MovieCard(movie: MovieUiModel) {
                 model = movie.posterUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .width(96.dp)
-                    .fillMaxHeight(),
+                modifier =
+                    Modifier
+                        .width(96.dp)
+                        .fillMaxHeight(),
             )
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(horizontal = 12.dp, vertical = 10.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -71,8 +74,7 @@ internal fun MovieCard(movie: MovieUiModel) {
     }
 }
 
-@Preview
-@Preview(uiMode = UI_MODE_NIGHT_YES)
+@PreviewLightDark
 @Composable
 private fun MovieCardPreview() {
     SmoovieTheme {

@@ -54,6 +54,7 @@ kotlin {
             implementation(libs.ktor.client.logging)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.koin.core)
+            implementation(libs.koin.core.viewmodel)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.annotations)
             implementation(libs.coil.compose)

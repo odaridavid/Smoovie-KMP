@@ -17,8 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import dev.odaridavid.smoovie.theme.ErrorContent
 import dev.odaridavid.smoovie.theme.SmoovieTheme
@@ -83,8 +82,7 @@ private fun MoviesList(movies: List<MovieUiModel>) {
 
 // region Previews
 
-@Preview
-@Preview(uiMode = UI_MODE_NIGHT_YES)
+@PreviewLightDark
 @Composable
 private fun MoviesLoadingPreview() {
     SmoovieTheme {
@@ -92,8 +90,7 @@ private fun MoviesLoadingPreview() {
     }
 }
 
-@Preview
-@Preview(uiMode = UI_MODE_NIGHT_YES)
+@PreviewLightDark
 @Composable
 private fun MoviesSuccessPreview() {
     SmoovieTheme {

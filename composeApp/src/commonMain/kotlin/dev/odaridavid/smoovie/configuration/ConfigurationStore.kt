@@ -1,8 +1,5 @@
 package dev.odaridavid.smoovie.configuration
 
-import org.koin.core.annotation.Single
-
-@Single
 class ConfigurationStore {
     private var imagesConfiguration: ImagesConfiguration? = null
 

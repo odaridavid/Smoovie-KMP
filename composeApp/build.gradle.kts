@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
 
 plugins {
@@ -8,7 +7,6 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -35,9 +33,6 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.koin.android)
         }
-        commonMain {
-            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
-        }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
@@ -56,7 +51,6 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.core.viewmodel)
             implementation(libs.koin.compose.viewmodel)
-            implementation(libs.koin.annotations)
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
         }
@@ -119,11 +113,4 @@ android {
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
-    add("kspCommonMainMetadata", libs.koin.ksp.compiler)
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    if (name != "kspCommonMainKotlinMetadata") {
-        dependsOn("kspCommonMainKotlinMetadata")
-    }
 }

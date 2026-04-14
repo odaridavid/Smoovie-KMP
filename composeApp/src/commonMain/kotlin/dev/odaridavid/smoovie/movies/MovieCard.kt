@@ -21,12 +21,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import dev.odaridavid.smoovie.theme.SmoovieTheme
+import org.jetbrains.compose.resources.stringResource
 import previewMovieUiModels
+import smoovie.composeapp.generated.resources.Res
+import smoovie.composeapp.generated.resources.no_description_available
+import smoovie.composeapp.generated.resources.release_date_tba
+import smoovie.composeapp.generated.resources.unrated
 
 private val IMAGE_HEIGHT = 140.dp
 
@@ -40,52 +48,87 @@ internal fun MovieCard(movie: MovieUiModel) {
                 contentScale = ContentScale.Crop,
                 loading = { ImagePlaceholder() },
                 error = { ImagePlaceholder() },
-                modifier = Modifier
-                    .width(96.dp)
-                    .fillMaxHeight(),
+                modifier =
+                    Modifier
+                        .width(96.dp)
+                        .fillMaxHeight(),
             )
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(horizontal = 12.dp, vertical = 10.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(
-                        text = movie.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Text(
-                        text = movie.overview,
-                        style = MaterialTheme.typography.bodySmall,
-                        maxLines = 4,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                    MovieTitle(movie.title)
+                    MovieOverview(movie.overview)
                 }
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text(
-                        text = "★ ${movie.voteAverage}",
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                    Text(
-                        text = movie.releaseDate,
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                }
+                Footer(movie)
             }
         }
     }
 }
 
 @Composable
+private fun Footer(movie: MovieUiModel) {
+    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        Text(
+            text =
+                if (movie.voteAverage.isNotBlank()) {
+                    "★ ${movie.voteAverage}"
+                } else {
+                    "★ ${stringResource(Res.string.unrated)}"
+                },
+            style = MaterialTheme.typography.labelLarge,
+        )
+        Text(
+            text =
+                movie.releaseDate.ifBlank {
+                    stringResource(Res.string.release_date_tba)
+                },
+            style = MaterialTheme.typography.labelLarge,
+        )
+    }
+}
+
+@Composable
+private fun MovieOverview(overview: String) {
+    if (overview.isNotBlank()) {
+        Text(
+            text = overview,
+            style = MaterialTheme.typography.bodySmall,
+            maxLines = 4,
+            overflow = TextOverflow.Ellipsis,
+        )
+    } else {
+        Text(
+            text = stringResource(Res.string.no_description_available),
+            style = MaterialTheme.typography.bodySmall,
+            fontStyle = FontStyle.Italic,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun MovieTitle(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium,
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis,
+    )
+}
+
+@Composable
 private fun ImagePlaceholder() {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.tertiaryContainer),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.tertiaryContainer),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
@@ -96,10 +139,14 @@ private fun ImagePlaceholder() {
     }
 }
 
+private class MovieParameterProvider : PreviewParameterProvider<MovieUiModel> {
+    override val values = sequenceOf(previewMovieUiModels[0], previewMovieUiModels[3])
+}
+
 @PreviewLightDark
 @Composable
-private fun MovieCardPreview() {
-    SmoovieTheme {
-        MovieCard(movie = previewMovieUiModels.first())
-    }
+private fun MovieCardPreview(
+    @PreviewParameter(MovieParameterProvider::class) movie: MovieUiModel,
+) {
+    SmoovieTheme { MovieCard(movie = movie) }
 }

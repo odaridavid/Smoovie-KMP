@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name" translatable="false">Smoovie</string>
     <string name="search_movies_hint">Search movies</string>
+    <string name="no_description_available">No description available</string>
+    <string name="unrated" translatable="false">—</string>
+    <string name="release_date_tba" translatable="false">TBA</string>
     <string name="error_movies_failed">Failed to load movies</string>
     <string name="action_retry">Retry</string>
 </resources>

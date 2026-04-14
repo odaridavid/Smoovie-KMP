@@ -44,7 +44,7 @@ class MoviesViewModel(
                 } else {
                     moviesRepository.searchMovies(query)
                 }
-                _uiState.value = MoviesUiState.Success(mapper.toUiModels(response.results))
+                _uiState.value = response.results.toUiState()
             } catch (e: Exception) {
                 _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
             }
@@ -65,7 +65,7 @@ class MoviesViewModel(
                         } else {
                             moviesRepository.searchMovies(query)
                         }
-                        _uiState.value = MoviesUiState.Success(mapper.toUiModels(response.results))
+                        _uiState.value = response.results.toUiState()
                     } catch (e: Exception) {
                         _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
                     }
@@ -80,10 +80,15 @@ class MoviesViewModel(
                 val config = configurationRepository.getImagesConfiguration()
                 configurationStore.save(config)
                 val response = moviesRepository.getPopularMovies()
-                _uiState.value = MoviesUiState.Success(mapper.toUiModels(response.results))
+                _uiState.value = response.results.toUiState()
             } catch (e: Exception) {
                 _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
             }
         }
+    }
+
+    private fun List<Movie>.toUiState(): MoviesUiState {
+        val uiModels = mapper.toUiModels(this)
+        return if (uiModels.isEmpty()) MoviesUiState.Empty else MoviesUiState.Success(uiModels)
     }
 }

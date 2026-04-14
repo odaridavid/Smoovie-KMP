@@ -6,10 +6,14 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
@@ -17,12 +21,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.MovieFilter
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -47,6 +53,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.odaridavid.smoovie.theme.EmptyContent
 import dev.odaridavid.smoovie.theme.ErrorContent
 import dev.odaridavid.smoovie.theme.LobsterFontFamily
 import dev.odaridavid.smoovie.theme.SmoovieTheme
@@ -54,6 +61,7 @@ import org.jetbrains.compose.resources.stringResource
 import previewMovieUiModels
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.app_name
+import smoovie.composeapp.generated.resources.empty_no_movies_found
 import smoovie.composeapp.generated.resources.search_movies_hint
 
 @Composable
@@ -130,6 +138,10 @@ private fun MoviesContent(
                         MoviesList(movies = state.movies)
                     }
 
+                    is MoviesUiState.Empty -> {
+                        EmptyContent(modifier = Modifier.align(Alignment.Center))
+                    }
+
                     is MoviesUiState.Error -> {
                         ErrorContent(
                             message = state.message,
@@ -201,6 +213,7 @@ private fun SearchTopBar(
         },
     )
 }
+
 
 @Composable
 private fun MoviesList(movies: List<MovieUiModel>) {

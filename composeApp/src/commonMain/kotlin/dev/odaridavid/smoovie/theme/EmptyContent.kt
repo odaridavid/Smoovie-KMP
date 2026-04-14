@@ -1,6 +1,5 @@
 package dev.odaridavid.smoovie.theme
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,8 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.MovieFilter
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -22,49 +20,39 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
-import smoovie.composeapp.generated.resources.action_retry
-import smoovie.composeapp.generated.resources.error_movies_failed
+import smoovie.composeapp.generated.resources.empty_no_movies_found
 
 @Composable
-internal fun ErrorContent(
-    message: String,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+fun EmptyContent(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Icon(
-            imageVector = Icons.Default.Warning,
+            imageVector = Icons.Default.MovieFilter,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.error,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = stringResource(Res.string.error_movies_failed),
-            style = MaterialTheme.typography.titleMedium,
+            text = stringResource(Res.string.empty_no_movies_found),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Text(text = message, style = MaterialTheme.typography.bodySmall)
-        Button(onClick = onRetry) { Text(stringResource(Res.string.action_retry)) }
     }
 }
 
 @Preview(showBackground = true)
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
-private fun ErrorContentPreview() {
+private fun EmptyContentPreview() {
     SmoovieTheme {
         Scaffold {
             Box(modifier = Modifier.fillMaxSize()) {
-                ErrorContent(
-                    message = "No internet connection",
-                    onRetry = {},
-                    modifier = Modifier.align(Alignment.Center),
-                )
+                EmptyContent(Modifier.align(Alignment.Center))
             }
         }
     }
 }
+

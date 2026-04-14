@@ -7,6 +7,8 @@ sealed interface MoviesUiState {
         val movies: List<MovieUiModel>,
     ) : MoviesUiState
 
+    data object Empty : MoviesUiState
+
     data class Error(
         val message: String,
     ) : MoviesUiState

@@ -1,5 +1,9 @@
 package dev.odaridavid.smoovie.movies
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -108,26 +112,31 @@ private fun MoviesContent(
             }
         },
     ) { padding ->
-        Box(
+        AnimatedContent(
+            targetState = uiState,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            contentKey = { it::class },
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize(),
-        ) {
-            when (val state = uiState) {
-                is MoviesUiState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
+        ) { state ->
+            Box(modifier = Modifier.fillMaxSize()) {
+                when (state) {
+                    is MoviesUiState.Loading -> {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
 
-                is MoviesUiState.Success -> {
-                    MoviesList(movies = state.movies)
-                }
+                    is MoviesUiState.Success -> {
+                        MoviesList(movies = state.movies)
+                    }
 
-                is MoviesUiState.Error -> {
-                    ErrorContent(
-                        message = state.message,
-                        onRetry = onRetry,
-                        modifier = Modifier.align(Alignment.Center),
-                    )
+                    is MoviesUiState.Error -> {
+                        ErrorContent(
+                            message = state.message,
+                            onRetry = onRetry,
+                            modifier = Modifier.align(Alignment.Center),
+                        )
+                    }
                 }
             }
         }

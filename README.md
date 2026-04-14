@@ -92,8 +92,8 @@ Open `/iosApp` in Xcode and run, or use the run configuration in Android Studio 
 
 ---
 
-|                       iOS                       |                        Android                         |
-|:-----------------------------------------------:|:------------------------------------------------------:|
-| <img alt="ios screenshot" src="/docs/ios.png"/> | <img alt="android screenshot" src="/docs/android.png"> |
+|                     Dark                      |             Light             |
+|:---------------------------------------------:|:-----------------------------:|
+|         <video src="/docs/dark.mp4"/>         | <video src="/docs/light.mp4"> |
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)

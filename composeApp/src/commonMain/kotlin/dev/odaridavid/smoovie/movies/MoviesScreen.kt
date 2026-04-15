@@ -31,6 +31,8 @@ import dev.odaridavid.smoovie.theme.ErrorContent
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import previewMovieUiModels
 
+private const val SLOW_ANIM_DURATION = 500
+
 @Composable
 fun MoviesScreen(viewModel: MoviesViewModel) {
     val uiState by viewModel.uiState.collectAsState()
@@ -62,8 +64,8 @@ private fun MoviesContent(
                 )
                 AnimatedVisibility(
                     visible = isSearchActive,
-                    enter = fadeIn(tween(500)),
-                    exit = fadeOut(tween(500)),
+                    enter = fadeIn(tween(SLOW_ANIM_DURATION)),
+                    exit = fadeOut(tween(SLOW_ANIM_DURATION)),
                 ) {
                     SearchToolbar(
                         query = searchQuery,

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -91,7 +90,7 @@ private fun MoviesContent(
             Box(modifier = Modifier.fillMaxSize()) {
                 when (state) {
                     is MoviesUiState.Loading -> {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        ShimmerMovieList(modifier = Modifier.fillMaxSize())
                     }
 
                     is MoviesUiState.Success -> {

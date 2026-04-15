@@ -7,4 +7,6 @@ interface MoviesRepository {
         query: String,
         page: Int = 1,
     ): MoviesResponse
+
+    suspend fun getMovieDetail(movieId: Int): MovieDetail
 }

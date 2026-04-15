@@ -39,8 +39,11 @@ import smoovie.composeapp.generated.resources.unrated
 private val IMAGE_HEIGHT = 140.dp
 
 @Composable
-internal fun MovieCard(movie: MovieUiModel) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+internal fun MovieCard(
+    movie: MovieUiModel,
+    onClick: () -> Unit,
+) {
+    Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
         Row(modifier = Modifier.height(IMAGE_HEIGHT)) {
             SubcomposeAsyncImage(
                 model = movie.posterUrl,
@@ -148,5 +151,5 @@ private class MovieParameterProvider : PreviewParameterProvider<MovieUiModel> {
 private fun MovieCardPreview(
     @PreviewParameter(MovieParameterProvider::class) movie: MovieUiModel,
 ) {
-    SmoovieTheme { MovieCard(movie = movie) }
+    SmoovieTheme { MovieCard(movie = movie, onClick = {}) }
 }

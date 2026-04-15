@@ -25,9 +25,15 @@ class MoviesRepositoryImpl(
                 parameter(Parameter.PAGE, page)
             }.body()
 
+    override suspend fun getMovieDetail(movieId: Int): MovieDetail =
+        client
+            .get("${Path.MOVIE_DETAIL}/$movieId")
+            .body()
+
     private object Path {
         const val POPULAR_MOVIES = "$TMDB_BASE_URL/movie/popular"
         const val SEARCH_MOVIES = "$TMDB_BASE_URL/search/movie"
+        const val MOVIE_DETAIL = "$TMDB_BASE_URL/movie"
     }
 
     private object Parameter {

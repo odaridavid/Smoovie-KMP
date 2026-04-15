@@ -23,13 +23,13 @@ internal fun Movie.toUiModel(
     posterUrl = posterUrl,
 )
 
-private fun Double.toDisplayRating(): String {
+internal fun Double.toDisplayRating(): String {
     if (this == 0.0) return ""
     val rounded = kotlin.math.round(this * 10).toLong()
     return "${rounded / 10}.${rounded % 10}"
 }
 
-private fun String.toReadableDate(): String {
+internal fun String.toReadableDate(): String {
     val parts = split("-")
     if (parts.size != 3) return this
     val year = parts[0]

@@ -2,6 +2,7 @@ package dev.odaridavid.smoovie
 
 import dev.odaridavid.smoovie.configuration.ConfigurationRepositoryImpl
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
+import dev.odaridavid.smoovie.movies.MovieDetailViewModel
 import dev.odaridavid.smoovie.movies.MovieUiMapper
 import dev.odaridavid.smoovie.movies.MoviesRepositoryImpl
 import dev.odaridavid.smoovie.movies.MoviesViewModel
@@ -51,4 +52,5 @@ private val appModule =
         single<dev.odaridavid.smoovie.movies.MoviesRepository> { MoviesRepositoryImpl(get()) }
         single { MovieUiMapper(get()) }
         viewModel { MoviesViewModel(get(), get(), get(), get()) }
+        viewModel { (movieId: Int) -> MovieDetailViewModel(movieId, get(), get()) }
     }

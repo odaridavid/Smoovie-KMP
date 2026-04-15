@@ -1,4 +1,5 @@
 import dev.odaridavid.smoovie.movies.Movie
+import dev.odaridavid.smoovie.movies.MovieDetailUiModel
 import dev.odaridavid.smoovie.movies.toUiModel
 
 internal val previewMovies =
@@ -40,3 +41,20 @@ internal val previewMovies =
     )
 
 internal val previewMovieUiModels = previewMovies.map { it.toUiModel(backdropUrl = null) }
+
+internal val previewMovieDetailUiModel =
+    MovieDetailUiModel(
+        id = 1,
+        title = "Interstellar",
+        overview =
+            "A team of explorers travel through a wormhole in space " +
+                "in an attempt to ensure humanity's survival.",
+        releaseDate = "5 Nov 2014",
+        voteAverage = "8.6",
+        voteCount = "34521",
+        backdropUrl = null,
+        posterUrl = null,
+        runtime = "2h 49m",
+        tagline = "Mankind was born on Earth. It was never meant to die here.",
+        genres = "Adventure, Drama, Science Fiction",
+    )

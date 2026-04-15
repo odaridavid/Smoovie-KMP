@@ -6,5 +6,7 @@
     <string name="unrated" translatable="false">—</string>
     <string name="release_date_tba" translatable="false">TBA</string>
     <string name="error_movies_failed">Failed to load movies</string>
+    <string name="error_movie_detail_failed">Failed to load movie details</string>
     <string name="action_retry">Retry</string>
+    <string name="navigate_back">Navigate back</string>
 </resources>

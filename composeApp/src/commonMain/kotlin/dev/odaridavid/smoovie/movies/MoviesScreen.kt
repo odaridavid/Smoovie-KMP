@@ -33,7 +33,10 @@ import previewMovieUiModels
 private const val SLOW_ANIM_DURATION = 500
 
 @Composable
-fun MoviesScreen(viewModel: MoviesViewModel) {
+fun MoviesScreen(
+    viewModel: MoviesViewModel,
+    onMovieClick: (MovieUiModel) -> Unit,
+) {
     val uiState by viewModel.uiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
     MoviesContent(
@@ -41,6 +44,7 @@ fun MoviesScreen(viewModel: MoviesViewModel) {
         searchQuery = searchQuery,
         onSearchQueryChanged = viewModel::onSearchQueryChanged,
         onRetry = viewModel::loadMovies,
+        onMovieClick = onMovieClick,
     )
 }
 
@@ -51,6 +55,7 @@ private fun MoviesContent(
     searchQuery: String,
     onSearchQueryChanged: (String) -> Unit,
     onRetry: () -> Unit,
+    onMovieClick: (MovieUiModel) -> Unit,
 ) {
     var isSearchActive by rememberSaveable { mutableStateOf(false) }
 
@@ -96,7 +101,10 @@ private fun MoviesContent(
                     }
 
                     is MoviesUiState.Success -> {
-                        MoviesList(movies = state.movies)
+                        MoviesList(
+                            movies = state.movies,
+                            onMovieClick = onMovieClick,
+                        )
                     }
 
                     is MoviesUiState.Empty -> {
@@ -117,13 +125,16 @@ private fun MoviesContent(
 }
 
 @Composable
-private fun MoviesList(movies: List<MovieUiModel>) {
+private fun MoviesList(
+    movies: List<MovieUiModel>,
+    onMovieClick: (MovieUiModel) -> Unit,
+) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         items(movies, key = { it.id }) { movie ->
-            MovieCard(movie = movie)
+            MovieCard(movie = movie, onClick = { onMovieClick(movie) })
         }
     }
 }
@@ -139,6 +150,7 @@ private fun MoviesLoadingPreview() {
             searchQuery = "",
             onSearchQueryChanged = {},
             onRetry = {},
+            onMovieClick = {},
         )
     }
 }
@@ -152,6 +164,7 @@ private fun MoviesSuccessPreview() {
             searchQuery = "",
             onSearchQueryChanged = {},
             onRetry = {},
+            onMovieClick = {},
         )
     }
 }

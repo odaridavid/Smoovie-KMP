@@ -1,7 +1,15 @@
 # Smoovie
 
-A Kotlin Multiplatform app for browsing movies, powered by the [TMDB API](https://www.themoviedb.org/).
+A Kotlin Multiplatform app for browsing and exploring movies, powered by the [TMDB API](https://www.themoviedb.org/).
 Targets Android and iOS with a shared Compose Multiplatform UI.
+
+## Features
+
+- Browse popular movies with shimmer loading placeholders
+- Search movies with debounced input
+- Movie detail screen with edge-to-edge backdrop image, gradient scrims, and enriched data (genres, runtime, tagline)
+- Smooth slide transitions between list and detail screens
+- Light and dark theme support
 
 ## Project Structure
 
@@ -9,19 +17,12 @@ Targets Android and iOS with a shared Compose Multiplatform UI.
 composeApp/src/
 ├── commonMain/       # Shared code (UI, ViewModels, API client)
 │   └── dev/odaridavid/smoovie/
-│       ├── App.kt                        # Root composable
-│       ├── AppConfig.kt                  # expect val tmdbApiKey (platform bridge)
-│       ├── data/
-│       │   ├── TmdbApi.kt                # Ktor HTTP client + TMDB endpoints
-│       │   └── model/Movie.kt            # Serializable data models
-│       └── ui/
-│           ├── theme/Theme.kt            # SmoovieTheme (Material3, dark/light)
-│           └── movies/
-│               ├── MoviesScreen.kt       # Movie list UI
-│               ├── MoviesViewModel.kt    # StateFlow + viewModelScope
-│               └── MoviesUiState.kt      # Loading / Success / Error
+│       ├── configuration/   # TMDB image config + URL builder
+│       ├── movies/          # Movie list, detail, search, models, repositories
+│       └── theme/           # SmoovieTheme (Material3, dark/light)
 ├── androidMain/      # Android-specific (BuildConfig, OkHttp engine)
-└── iosMain/          # iOS-specific (NSBundle, Darwin engine)
+├── iosMain/          # iOS-specific (NSBundle, Darwin engine)
+└── commonTest/       # Unit tests
 
 iosApp/               # Xcode project / Swift entry point
 ```

@@ -1,8 +1,8 @@
 package dev.odaridavid.smoovie
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
@@ -21,61 +21,66 @@ import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-sealed interface Screen {
-    data object MovieList : Screen
-
-    data class MovieDetail(
-        val movieId: Int,
-        val movie: MovieUiModel,
-    ) : Screen
-}
-
 @Composable
 fun App() {
     SmoovieTheme {
         Surface {
             var currentScreen by remember { mutableStateOf<Screen>(Screen.MovieList) }
-            val moviesViewModel: MoviesViewModel = koinViewModel()
 
             AnimatedContent(
                 targetState = currentScreen,
                 transitionSpec = {
+                    val easing = CubicBezierEasing(0.4f, 0.0f, 0.2f, 1.0f)
                     if (targetState is Screen.MovieDetail) {
-                        (slideInHorizontally { it } + fadeIn()) togetherWith
-                            (slideOutHorizontally { -it / 3 } + fadeOut())
+                        slideInHorizontally(tween(500, easing = easing)) { it } togetherWith
+                            slideOutHorizontally(tween(500, easing = easing)) { -it / 3 }
                     } else {
-                        (slideInHorizontally { -it / 3 } + fadeIn()) togetherWith
-                            (slideOutHorizontally { it } + fadeOut())
+                        slideInHorizontally(tween(500, easing = easing)) { -it / 3 } togetherWith
+                            slideOutHorizontally(tween(500, easing = easing)) { it }
                     }
                 },
                 label = "screen_transition",
             ) { screen ->
-                when (screen) {
-                    is Screen.MovieList -> {
-                        MoviesScreen(
-                            viewModel = moviesViewModel,
-                            onMovieClick = { movie ->
-                                currentScreen = Screen.MovieDetail(
-                                    movieId = movie.id,
-                                    movie = movie,
-                                )
-                            },
+                SetupNavigation(
+                    currentScreen = screen,
+                    onMovieClick = { movie ->
+                        currentScreen = Screen.MovieDetail(
+                            movieId = movie.id,
+                            movie = movie,
                         )
-                    }
-
-                    is Screen.MovieDetail -> {
-                        val detailViewModel: MovieDetailViewModel = koinViewModel(
-                            key = screen.movieId.toString(),
-                            parameters = { parametersOf(screen.movieId) },
-                        )
-                        MovieDetailScreen(
-                            viewModel = detailViewModel,
-                            movie = screen.movie,
-                            onBack = { currentScreen = Screen.MovieList },
-                        )
-                    }
-                }
+                    },
+                    onBack = { currentScreen = Screen.MovieList }
+                )
             }
+        }
+    }
+}
+
+@Composable
+private fun SetupNavigation(
+    currentScreen: Screen,
+    onMovieClick: (MovieUiModel) -> Unit,
+    onBack: () -> Unit,
+) {
+    when (currentScreen) {
+        is Screen.MovieList -> {
+            val moviesViewModel: MoviesViewModel = koinViewModel()
+            MoviesScreen(
+                viewModel = moviesViewModel,
+                onMovieClick = { movie -> onMovieClick(movie) },
+            )
+        }
+
+        is Screen.MovieDetail -> {
+            val detailViewModel: MovieDetailViewModel = koinViewModel(
+                key = currentScreen.movieId.toString(),
+                parameters = { parametersOf(currentScreen.movieId) },
+            )
+            MovieDetailScreen(
+                viewModel = detailViewModel,
+                movie = currentScreen.movie,
+                onBack = onBack,
+            )
         }
     }
 }

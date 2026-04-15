@@ -45,7 +45,7 @@ class MoviesViewModelTest {
     ) = MoviesViewModel(repo, configRepo, configStore, MovieUiMapper(configStore))
 
     @Test
-    fun `given api returns movies, when loadMovies is called, then emits success`() =
+    fun `given api returns movies - when loadMovies is called - then emits success`() =
         runTest {
             val viewModel = buildViewModel(FakeMoviesRepository(movies = testMovies))
 
@@ -56,7 +56,7 @@ class MoviesViewModelTest {
         }
 
     @Test
-    fun `given api throws, when loadMovies is called, then emits error`() =
+    fun `given api throws - when loadMovies is called - then emits error`() =
         runTest {
             val viewModel =
                 buildViewModel(FakeMoviesRepository(error = Exception("Network error")))
@@ -68,7 +68,7 @@ class MoviesViewModelTest {
         }
 
     @Test
-    fun `given exception has no message, when loadMovies is called, then emits fallback message`() =
+    fun `given exception has no message - when loadMovies is called - then emits fallback message`() =
         runTest {
             val viewModel = buildViewModel(FakeMoviesRepository(error = Exception()))
 
@@ -79,7 +79,7 @@ class MoviesViewModelTest {
         }
 
     @Test
-    fun `given error state, when retry is called, then emits success`() =
+    fun `given error state - when retry is called - then emits success`() =
         runTest {
             val repo = FakeMoviesRepository(error = Exception("Network error"))
             val viewModel = buildViewModel(repo)
@@ -95,7 +95,17 @@ class MoviesViewModelTest {
         }
 
     @Test
-    fun `given configuration api throws, when viewmodel is created, then emits error`() =
+    fun `given api returns empty list - when viewmodel is created - then emits empty state`() =
+        runTest {
+            val viewModel = buildViewModel(FakeMoviesRepository(movies = emptyList()))
+
+            val state = viewModel.uiState.value
+
+            assertIs<MoviesUiState.Empty>(state)
+        }
+
+    @Test
+    fun `given configuration api throws - when viewmodel is created - then emits error`() =
         runTest {
             val viewModel =
                 buildViewModel(

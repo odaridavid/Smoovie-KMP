@@ -12,8 +12,7 @@ data class Configuration(
 data class ImagesConfiguration(
     @SerialName("base_url") val baseUrl: String,
     @SerialName("secure_base_url") val secureBaseUrl: String,
-) {
-}
+)
 
 enum class BackdropSize(
     val apiValue: String,

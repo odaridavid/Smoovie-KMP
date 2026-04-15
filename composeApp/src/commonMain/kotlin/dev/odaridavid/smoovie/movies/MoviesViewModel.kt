@@ -39,11 +39,12 @@ class MoviesViewModel(
             _uiState.value = MoviesUiState.Loading
             try {
                 val query = _searchQuery.value
-                val response = if (query.isBlank()) {
-                    moviesRepository.getPopularMovies()
-                } else {
-                    moviesRepository.searchMovies(query)
-                }
+                val response =
+                    if (query.isBlank()) {
+                        moviesRepository.getPopularMovies()
+                    } else {
+                        moviesRepository.searchMovies(query)
+                    }
                 _uiState.value = response.results.toUiState()
             } catch (e: Exception) {
                 _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
@@ -60,11 +61,12 @@ class MoviesViewModel(
                 .collectLatest { query ->
                     _uiState.value = MoviesUiState.Loading
                     try {
-                        val response = if (query.isBlank()) {
-                            moviesRepository.getPopularMovies()
-                        } else {
-                            moviesRepository.searchMovies(query)
-                        }
+                        val response =
+                            if (query.isBlank()) {
+                                moviesRepository.getPopularMovies()
+                            } else {
+                                moviesRepository.searchMovies(query)
+                            }
                         _uiState.value = response.results.toUiState()
                     } catch (e: Exception) {
                         _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")

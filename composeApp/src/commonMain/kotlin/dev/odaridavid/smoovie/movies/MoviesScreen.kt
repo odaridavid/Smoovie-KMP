@@ -80,7 +80,9 @@ private fun MoviesContent(
     ) { padding ->
         AnimatedContent(
             targetState = uiState,
-            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            transitionSpec = {
+                fadeIn(tween(SLOW_ANIM_DURATION)) togetherWith fadeOut(tween(SLOW_ANIM_DURATION))
+            },
             contentKey = { it::class },
             modifier =
                 Modifier

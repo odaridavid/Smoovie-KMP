@@ -93,8 +93,8 @@ Open `/iosApp` in Xcode and run, or use the run configuration in Android Studio 
 
 ---
 
-|                Dark                 |                Light                |
-|:-----------------------------------:|:-----------------------------------:|
-| <img src="/docs/smoovie-dark.gif"/> | <img src="/docs/smoovie-light.gif"> |
+|                                |
+|:------------------------------:|
+| <img src="/docs/smoovie.gif"/> | 
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)

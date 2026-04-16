@@ -18,6 +18,7 @@ data class MovieDetail(
     val genres: List<Genre> = emptyList(),
     val credits: Credits? = null,
     val reviews: ReviewsResponse? = null,
+    val videos: VideosResponse? = null,
 )
 
 @Serializable
@@ -66,4 +67,19 @@ data class Review(
 data class AuthorDetails(
     val username: String = "",
     val rating: Double? = null,
+)
+
+@Serializable
+data class VideosResponse(
+    val results: List<Video> = emptyList(),
+)
+
+@Serializable
+data class Video(
+    val id: String,
+    val key: String,
+    val name: String = "",
+    val site: String = "",
+    val type: String = "",
+    val official: Boolean = false,
 )

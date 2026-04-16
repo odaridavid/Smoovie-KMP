@@ -29,7 +29,7 @@ class MoviesRepositoryImpl(
     override suspend fun getMovieDetail(movieId: Int): MovieDetail =
         client
             .get("${Path.MOVIE_DETAIL}/$movieId") {
-                parameter(Parameter.APPEND_TO_RESPONSE, "credits,reviews")
+                parameter(Parameter.APPEND_TO_RESPONSE, "credits,reviews,videos")
             }.body()
 
     private object Path {

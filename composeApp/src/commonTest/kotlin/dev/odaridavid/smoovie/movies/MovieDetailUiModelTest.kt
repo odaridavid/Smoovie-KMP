@@ -5,6 +5,8 @@ import dev.odaridavid.smoovie.movies.data.Genre
 import dev.odaridavid.smoovie.movies.data.MovieDetail
 import dev.odaridavid.smoovie.movies.data.Review
 import dev.odaridavid.smoovie.movies.data.ReviewsResponse
+import dev.odaridavid.smoovie.movies.data.Video
+import dev.odaridavid.smoovie.movies.data.VideosResponse
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -152,6 +154,99 @@ class MovieDetailUiModelTest {
     }
 
     @Test
+    fun `given no videos - when mapped - then trailers is empty`() {
+        val detail = movieDetail(videos = null)
+
+        val uiModel = detail.toDetailUiModel(backdropUrl = null, posterUrl = null)
+
+        assertEquals(emptyList(), uiModel.trailers)
+    }
+
+    @Test
+    fun `given non-youtube videos - when mapped - then they are filtered out`() {
+        val detail =
+            movieDetail(
+                videos =
+                    VideosResponse(
+                        results =
+                            listOf(
+                                Video(id = "v1", key = "abc", site = "Vimeo", type = "Trailer"),
+                                Video(id = "v2", key = "xyz", site = "YouTube", type = "Trailer"),
+                            ),
+                    ),
+            )
+
+        val uiModel = detail.toDetailUiModel(backdropUrl = null, posterUrl = null)
+
+        assertEquals(listOf("v2"), uiModel.trailers.map { it.id })
+    }
+
+    @Test
+    fun `given more trailers than display limit - when mapped - then capped at 5`() {
+        val detail =
+            movieDetail(
+                videos =
+                    VideosResponse(
+                        results =
+                            (1..8).map {
+                                Video(
+                                    id = "v$it",
+                                    key = "k$it",
+                                    name = "Trailer $it",
+                                    site = "YouTube",
+                                    type = "Trailer",
+                                    official = true,
+                                )
+                            },
+                    ),
+            )
+
+        val uiModel = detail.toDetailUiModel(backdropUrl = null, posterUrl = null)
+
+        assertEquals(5, uiModel.trailers.size)
+    }
+
+    @Test
+    fun `given mixed video types - when mapped - then trailers are ordered before teasers and official first`() {
+        val detail =
+            movieDetail(
+                videos =
+                    VideosResponse(
+                        results =
+                            listOf(
+                                Video(id = "v1", key = "k1", site = "YouTube", type = "Teaser", official = true),
+                                Video(id = "v2", key = "k2", site = "YouTube", type = "Trailer", official = false),
+                                Video(id = "v3", key = "k3", site = "YouTube", type = "Trailer", official = true),
+                            ),
+                    ),
+            )
+
+        val uiModel = detail.toDetailUiModel(backdropUrl = null, posterUrl = null)
+
+        assertEquals(listOf("v3", "v2", "v1"), uiModel.trailers.map { it.id })
+    }
+
+    @Test
+    fun `given youtube video - when mapped - then thumbnail and watch urls are built from key`() {
+        val detail =
+            movieDetail(
+                videos =
+                    VideosResponse(
+                        results =
+                            listOf(
+                                Video(id = "v1", key = "abc123", site = "YouTube", type = "Trailer"),
+                            ),
+                    ),
+            )
+
+        val uiModel = detail.toDetailUiModel(backdropUrl = null, posterUrl = null)
+        val trailer = uiModel.trailers.first()
+
+        assertEquals("https://img.youtube.com/vi/abc123/mqdefault.jpg", trailer.thumbnailUrl)
+        assertEquals("https://www.youtube.com/watch?v=abc123", trailer.watchUrl)
+    }
+
+    @Test
     fun `given backdrop and poster urls - when mapped - then urls are set`() {
         val detail = movieDetail()
 
@@ -170,6 +265,7 @@ class MovieDetailUiModelTest {
         tagline: String = "",
         voteCount: Int = 0,
         reviews: ReviewsResponse? = null,
+        videos: VideosResponse? = null,
     ) = MovieDetail(
         id = 1,
         title = "Test Movie",
@@ -181,5 +277,6 @@ class MovieDetailUiModelTest {
         tagline = tagline,
         genres = genres,
         reviews = reviews,
+        videos = videos,
     )
 }

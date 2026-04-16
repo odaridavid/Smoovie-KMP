@@ -1,6 +1,7 @@
 package dev.odaridavid.smoovie.movies
 
 import dev.odaridavid.smoovie.movies.data.MovieDetail
+import dev.odaridavid.smoovie.movies.data.Video
 
 data class MovieDetailUiModel(
     val id: Int,
@@ -17,6 +18,7 @@ data class MovieDetailUiModel(
     val director: String = "",
     val cast: List<CastMemberUiModel> = emptyList(),
     val reviews: List<ReviewUiModel> = emptyList(),
+    val trailers: List<TrailerUiModel> = emptyList(),
 )
 
 data class CastMemberUiModel(
@@ -32,6 +34,13 @@ data class ReviewUiModel(
     val date: String,
     val rating: String,
     val content: String,
+)
+
+data class TrailerUiModel(
+    val id: String,
+    val name: String,
+    val thumbnailUrl: String,
+    val watchUrl: String,
 )
 
 internal fun MovieDetail.toDetailUiModel(
@@ -77,6 +86,21 @@ internal fun MovieDetail.toDetailUiModel(
         }
         ?.filter { it.content.isNotBlank() }
         ?: emptyList(),
+    trailers = videos?.results
+        ?.filter { it.site.equals(YOUTUBE_SITE, ignoreCase = true) && it.key.isNotBlank() }
+        ?.sortedWith(
+            compareByDescending<Video> { it.type.equals(TRAILER_TYPE, ignoreCase = true) }
+                .thenByDescending { it.official },
+        )
+        ?.take(MAX_TRAILERS_DISPLAY)
+        ?.map { video ->
+            TrailerUiModel(
+                id = video.id,
+                name = video.name,
+                thumbnailUrl = "https://img.youtube.com/vi/${video.key}/mqdefault.jpg",
+                watchUrl = "https://www.youtube.com/watch?v=${video.key}",
+            )
+        } ?: emptyList(),
 )
 
 private fun Int.toFormattedCount(): String =
@@ -84,4 +108,7 @@ private fun Int.toFormattedCount(): String =
 
 private const val MAX_CAST_DISPLAY = 20
 private const val MAX_REVIEWS_DISPLAY = 3
+private const val MAX_TRAILERS_DISPLAY = 5
 private const val DIRECTOR_JOB = "Director"
+private const val YOUTUBE_SITE = "YouTube"
+private const val TRAILER_TYPE = "Trailer"

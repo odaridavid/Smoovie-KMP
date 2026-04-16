@@ -29,6 +29,7 @@ import dev.odaridavid.smoovie.movies.components.CastSection
 import dev.odaridavid.smoovie.movies.components.HeroSection
 import dev.odaridavid.smoovie.movies.components.ReviewsSection
 import dev.odaridavid.smoovie.movies.components.ShimmerMovieDetail
+import dev.odaridavid.smoovie.movies.components.TrailersSection
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
 import previewMovieDetailUiModel
@@ -81,6 +82,12 @@ internal fun MovieDetailContent(
                     CastSection(
                         cast = detail.cast,
                         modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+                }
+                if (detail.trailers.isNotEmpty()) {
+                    TrailersSection(
+                        trailers = detail.trailers,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                     )
                 }
                 if (detail.reviews.isNotEmpty()) {

@@ -2,6 +2,7 @@ import dev.odaridavid.smoovie.movies.CastMemberUiModel
 import dev.odaridavid.smoovie.movies.data.Movie
 import dev.odaridavid.smoovie.movies.MovieDetailUiModel
 import dev.odaridavid.smoovie.movies.ReviewUiModel
+import dev.odaridavid.smoovie.movies.TrailerUiModel
 import dev.odaridavid.smoovie.movies.toUiModel
 
 internal val previewMovies =
@@ -86,6 +87,28 @@ internal val previewReviews =
         ),
     )
 
+internal val previewTrailers =
+    listOf(
+        TrailerUiModel(
+            id = "t1",
+            name = "Official Trailer",
+            thumbnailUrl = "",
+            watchUrl = "https://www.youtube.com/watch?v=zSWdZVtXT7E",
+        ),
+        TrailerUiModel(
+            id = "t2",
+            name = "Teaser",
+            thumbnailUrl = "",
+            watchUrl = "https://www.youtube.com/watch?v=0vxOhd4qlnA",
+        ),
+        TrailerUiModel(
+            id = "t3",
+            name = "Behind the Scenes",
+            thumbnailUrl = "",
+            watchUrl = "https://www.youtube.com/watch?v=2LqzF5WauAw",
+        ),
+    )
+
 internal val previewMovieDetailUiModel =
     MovieDetailUiModel(
         id = 1,
@@ -104,4 +127,5 @@ internal val previewMovieDetailUiModel =
         director = "Christopher Nolan",
         cast = previewCast,
         reviews = previewReviews,
+        trailers = previewTrailers,
     )

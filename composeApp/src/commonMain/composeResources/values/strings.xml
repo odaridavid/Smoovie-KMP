@@ -14,4 +14,6 @@
     <string name="reviews_read_more">Read more</string>
     <string name="reviews_show_less">Show less</string>
     <string name="reviews_anonymous">Anonymous</string>
+    <string name="trailers_section_title">Trailers</string>
+    <string name="trailers_play_content_description">Play trailer</string>
 </resources>

@@ -25,6 +25,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import dev.odaridavid.smoovie.movies.components.CastSection
+import dev.odaridavid.smoovie.movies.components.HeroSection
+import dev.odaridavid.smoovie.movies.components.ReviewsSection
+import dev.odaridavid.smoovie.movies.components.ShimmerMovieDetail
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
 import previewMovieDetailUiModel
@@ -182,8 +186,7 @@ private fun ErrorBanner(onRetry: () -> Unit) {
                 .background(
                     MaterialTheme.colorScheme.errorContainer,
                     MaterialTheme.shapes.small,
-                )
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                ).padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         Text(
             text = stringResource(Res.string.error_movie_detail_failed),

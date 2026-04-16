@@ -1,4 +1,4 @@
-package dev.odaridavid.smoovie.movies
+package dev.odaridavid.smoovie.movies.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
+import dev.odaridavid.smoovie.movies.MovieUiModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
 import previewMovieUiModels

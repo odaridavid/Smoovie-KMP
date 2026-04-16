@@ -25,6 +25,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import dev.odaridavid.smoovie.movies.components.CollapsedToolbar
+import dev.odaridavid.smoovie.movies.components.MovieCard
+import dev.odaridavid.smoovie.movies.components.SearchToolbar
+import dev.odaridavid.smoovie.movies.components.ShimmerMovieList
 import dev.odaridavid.smoovie.theme.EmptyContent
 import dev.odaridavid.smoovie.theme.ErrorContent
 import dev.odaridavid.smoovie.theme.SmoovieTheme

@@ -1,9 +1,9 @@
 package dev.odaridavid.smoovie
 
-import dev.odaridavid.smoovie.movies.Movie
-import dev.odaridavid.smoovie.movies.MovieDetail
-import dev.odaridavid.smoovie.movies.MoviesRepository
-import dev.odaridavid.smoovie.movies.MoviesResponse
+import dev.odaridavid.smoovie.movies.data.Movie
+import dev.odaridavid.smoovie.movies.data.MovieDetail
+import dev.odaridavid.smoovie.movies.domain.MoviesRepository
+import dev.odaridavid.smoovie.movies.data.MoviesResponse
 
 class FakeMoviesRepository(
     var movies: List<Movie> = emptyList(),

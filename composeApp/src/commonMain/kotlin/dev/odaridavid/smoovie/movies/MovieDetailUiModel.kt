@@ -1,5 +1,7 @@
 package dev.odaridavid.smoovie.movies
 
+import dev.odaridavid.smoovie.movies.data.MovieDetail
+
 data class MovieDetailUiModel(
     val id: Int,
     val title: String,

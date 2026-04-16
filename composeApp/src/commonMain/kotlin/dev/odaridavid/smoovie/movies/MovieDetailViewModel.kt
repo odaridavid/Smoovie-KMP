@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.odaridavid.smoovie.configuration.BackdropSize
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
+import dev.odaridavid.smoovie.movies.domain.MoviesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

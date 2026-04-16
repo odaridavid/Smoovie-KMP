@@ -4,8 +4,9 @@ import dev.odaridavid.smoovie.configuration.ConfigurationRepositoryImpl
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import dev.odaridavid.smoovie.movies.MovieDetailViewModel
 import dev.odaridavid.smoovie.movies.MovieUiMapper
-import dev.odaridavid.smoovie.movies.MoviesRepositoryImpl
+import dev.odaridavid.smoovie.movies.data.MoviesRepositoryImpl
 import dev.odaridavid.smoovie.movies.MoviesViewModel
+import dev.odaridavid.smoovie.movies.domain.MoviesRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -49,7 +50,7 @@ private val appModule =
         single<dev.odaridavid.smoovie.configuration.ConfigurationRepository> {
             ConfigurationRepositoryImpl(get())
         }
-        single<dev.odaridavid.smoovie.movies.MoviesRepository> { MoviesRepositoryImpl(get()) }
+        single<MoviesRepository> { MoviesRepositoryImpl(get()) }
         single { MovieUiMapper(get()) }
         viewModel { MoviesViewModel(get(), get(), get(), get()) }
         viewModel { (movieId: Int) -> MovieDetailViewModel(movieId, get(), get()) }

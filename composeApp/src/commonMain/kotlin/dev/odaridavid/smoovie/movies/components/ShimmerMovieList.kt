@@ -1,4 +1,4 @@
-package dev.odaridavid.smoovie.movies
+package dev.odaridavid.smoovie.movies.components
 
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat

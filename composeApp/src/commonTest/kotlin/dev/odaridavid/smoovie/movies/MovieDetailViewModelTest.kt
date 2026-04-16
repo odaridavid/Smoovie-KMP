@@ -2,6 +2,8 @@ package dev.odaridavid.smoovie.movies
 
 import dev.odaridavid.smoovie.FakeMoviesRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
+import dev.odaridavid.smoovie.movies.data.Genre
+import dev.odaridavid.smoovie.movies.data.MovieDetail
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher

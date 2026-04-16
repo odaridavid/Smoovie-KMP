@@ -1,4 +1,4 @@
-package dev.odaridavid.smoovie.movies
+package dev.odaridavid.smoovie.movies.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions

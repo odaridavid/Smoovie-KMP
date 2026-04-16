@@ -1,5 +1,10 @@
 package dev.odaridavid.smoovie.movies
 
+import dev.odaridavid.smoovie.movies.data.AuthorDetails
+import dev.odaridavid.smoovie.movies.data.Genre
+import dev.odaridavid.smoovie.movies.data.MovieDetail
+import dev.odaridavid.smoovie.movies.data.Review
+import dev.odaridavid.smoovie.movies.data.ReviewsResponse
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -112,7 +117,10 @@ class MovieDetailUiModelTest {
                                     id = "r1",
                                     author = "",
                                     content = "Content",
-                                    authorDetails = AuthorDetails(username = "fallback_user", rating = 8.0),
+                                    authorDetails = AuthorDetails(
+                                        username = "fallback_user",
+                                        rating = 8.0
+                                    ),
                                 ),
                             ),
                     ),

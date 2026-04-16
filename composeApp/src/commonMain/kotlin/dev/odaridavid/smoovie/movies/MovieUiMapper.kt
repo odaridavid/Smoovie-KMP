@@ -1,6 +1,7 @@
 package dev.odaridavid.smoovie.movies
 
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
+import dev.odaridavid.smoovie.movies.data.Movie
 
 class MovieUiMapper(
     private val configurationStore: ConfigurationStore,

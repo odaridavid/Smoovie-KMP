@@ -4,6 +4,7 @@ import dev.odaridavid.smoovie.FakeConfigurationRepository
 import dev.odaridavid.smoovie.FakeMoviesRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
+import dev.odaridavid.smoovie.movies.data.Movie
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher

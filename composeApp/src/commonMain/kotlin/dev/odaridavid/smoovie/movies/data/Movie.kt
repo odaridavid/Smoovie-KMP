@@ -1,4 +1,4 @@
-package dev.odaridavid.smoovie.movies
+package dev.odaridavid.smoovie.movies.data
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

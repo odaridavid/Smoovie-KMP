@@ -1,6 +1,7 @@
-package dev.odaridavid.smoovie.movies
+package dev.odaridavid.smoovie.movies.data
 
 import dev.odaridavid.smoovie.TMDB_BASE_URL
+import dev.odaridavid.smoovie.movies.domain.MoviesRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -32,9 +33,9 @@ class MoviesRepositoryImpl(
             }.body()
 
     private object Path {
-        const val POPULAR_MOVIES = "$TMDB_BASE_URL/movie/popular"
-        const val SEARCH_MOVIES = "$TMDB_BASE_URL/search/movie"
-        const val MOVIE_DETAIL = "$TMDB_BASE_URL/movie"
+        const val POPULAR_MOVIES = "${TMDB_BASE_URL}/movie/popular"
+        const val SEARCH_MOVIES = "${TMDB_BASE_URL}/search/movie"
+        const val MOVIE_DETAIL = "${TMDB_BASE_URL}/movie"
     }
 
     private object Parameter {

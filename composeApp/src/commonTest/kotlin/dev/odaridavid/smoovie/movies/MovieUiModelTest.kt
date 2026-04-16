@@ -1,5 +1,6 @@
 package dev.odaridavid.smoovie.movies
 
+import dev.odaridavid.smoovie.movies.data.Movie
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

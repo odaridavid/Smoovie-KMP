@@ -68,8 +68,7 @@ internal fun MovieDetailContent(
 
         when (detailState) {
             is MovieDetailUiState.Loading -> {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                DetailBody(movie = movie)
+                ShimmerMovieDetail(modifier = Modifier.fillMaxWidth())
             }
 
             is MovieDetailUiState.Success -> {

@@ -46,7 +46,7 @@ internal fun ShimmerMovieList(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun rememberShimmerBrush(): Brush {
+internal fun rememberShimmerBrush(): Brush {
     val transition = rememberInfiniteTransition(label = "shimmer")
     val translateAnim by transition.animateFloat(
         initialValue = 0f,

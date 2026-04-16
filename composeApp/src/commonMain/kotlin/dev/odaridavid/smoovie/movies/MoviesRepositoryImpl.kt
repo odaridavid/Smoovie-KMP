@@ -27,8 +27,9 @@ class MoviesRepositoryImpl(
 
     override suspend fun getMovieDetail(movieId: Int): MovieDetail =
         client
-            .get("${Path.MOVIE_DETAIL}/$movieId")
-            .body()
+            .get("${Path.MOVIE_DETAIL}/$movieId") {
+                parameter(Parameter.APPEND_TO_RESPONSE, "credits")
+            }.body()
 
     private object Path {
         const val POPULAR_MOVIES = "$TMDB_BASE_URL/movie/popular"
@@ -39,5 +40,6 @@ class MoviesRepositoryImpl(
     private object Parameter {
         const val PAGE = "page"
         const val QUERY = "query"
+        const val APPEND_TO_RESPONSE = "append_to_response"
     }
 }

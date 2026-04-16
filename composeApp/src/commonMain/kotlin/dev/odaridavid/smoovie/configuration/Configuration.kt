@@ -34,3 +34,12 @@ enum class PosterSize(
     XLARGE("w780"),
     ORIGINAL("original"),
 }
+
+enum class ProfileSize(
+    val apiValue: String,
+) {
+    SMALL("w45"),
+    MEDIUM("w185"),
+    LARGE("h632"),
+    ORIGINAL("original"),
+}

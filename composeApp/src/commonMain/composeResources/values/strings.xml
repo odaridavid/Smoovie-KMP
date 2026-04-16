@@ -9,4 +9,5 @@
     <string name="error_movie_detail_failed">Failed to load movie details</string>
     <string name="action_retry">Retry</string>
     <string name="navigate_back">Navigate back</string>
+    <string name="cast_section_title">Cast</string>
 </resources>

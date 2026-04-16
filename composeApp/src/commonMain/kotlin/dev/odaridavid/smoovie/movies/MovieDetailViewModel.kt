@@ -35,6 +35,7 @@ class MovieDetailViewModel(
                                     BackdropSize.LARGE,
                                 ),
                             posterUrl = configurationStore.posterUrl(detail.posterPath),
+                            profileUrlResolver = { configurationStore.profileUrl(it) },
                         ),
                     )
             } catch (e: Exception) {

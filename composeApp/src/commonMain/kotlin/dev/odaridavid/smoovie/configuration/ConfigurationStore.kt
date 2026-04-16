@@ -16,4 +16,9 @@ class ConfigurationStore {
         path: String?,
         size: PosterSize = PosterSize.MEDIUM,
     ): String? = path?.let { "${imagesConfiguration?.secureBaseUrl}${size.apiValue}$it" }
+
+    fun profileUrl(
+        path: String?,
+        size: ProfileSize = ProfileSize.MEDIUM,
+    ): String? = path?.let { "${imagesConfiguration?.secureBaseUrl}${size.apiValue}$it" }
 }

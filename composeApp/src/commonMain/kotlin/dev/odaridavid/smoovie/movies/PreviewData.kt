@@ -1,3 +1,4 @@
+import dev.odaridavid.smoovie.movies.CastMemberUiModel
 import dev.odaridavid.smoovie.movies.Movie
 import dev.odaridavid.smoovie.movies.MovieDetailUiModel
 import dev.odaridavid.smoovie.movies.toUiModel
@@ -42,6 +43,15 @@ internal val previewMovies =
 
 internal val previewMovieUiModels = previewMovies.map { it.toUiModel(backdropUrl = null) }
 
+internal val previewCast =
+    listOf(
+        CastMemberUiModel(id = 1, name = "Matthew McConaughey", character = "Cooper", profileUrl = null),
+        CastMemberUiModel(id = 2, name = "Anne Hathaway", character = "Brand", profileUrl = null),
+        CastMemberUiModel(id = 3, name = "Jessica Chastain", character = "Murph", profileUrl = null),
+        CastMemberUiModel(id = 4, name = "Michael Caine", character = "Professor Brand", profileUrl = null),
+        CastMemberUiModel(id = 5, name = "Matt Damon", character = "Mann", profileUrl = null),
+    )
+
 internal val previewMovieDetailUiModel =
     MovieDetailUiModel(
         id = 1,
@@ -57,4 +67,5 @@ internal val previewMovieDetailUiModel =
         runtime = "2h 49m",
         tagline = "Mankind was born on Earth. It was never meant to die here.",
         genres = "Adventure, Drama, Science Fiction",
+        cast = previewCast,
     )

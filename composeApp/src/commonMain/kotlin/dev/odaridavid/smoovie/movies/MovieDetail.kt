@@ -16,10 +16,25 @@ data class MovieDetail(
     val runtime: Int? = null,
     val tagline: String = "",
     val genres: List<Genre> = emptyList(),
+    val credits: Credits? = null,
 )
 
 @Serializable
 data class Genre(
     val id: Int,
     val name: String,
+)
+
+@Serializable
+data class Credits(
+    val cast: List<CastMember> = emptyList(),
+)
+
+@Serializable
+data class CastMember(
+    val id: Int,
+    val name: String,
+    val character: String = "",
+    @SerialName("profile_path") val profilePath: String? = null,
+    val order: Int = 0,
 )

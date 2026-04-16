@@ -12,6 +12,7 @@ data class MovieDetailUiModel(
     val runtime: String,
     val tagline: String,
     val genres: String,
+    val director: String = "",
     val cast: List<CastMemberUiModel> = emptyList(),
 )
 
@@ -32,12 +33,15 @@ internal fun MovieDetail.toDetailUiModel(
     overview = overview,
     releaseDate = releaseDate.toReadableDate(),
     voteAverage = voteAverage.toDisplayRating(),
-    voteCount = voteCount.toString(),
+    voteCount = voteCount.toFormattedCount(),
     backdropUrl = backdropUrl,
     posterUrl = posterUrl,
     runtime = runtime?.let { "${it / 60}h ${it % 60}m" } ?: "",
     tagline = tagline,
     genres = genres.joinToString { it.name },
+    director = credits?.crew
+        ?.firstOrNull { it.job == DIRECTOR_JOB }
+        ?.name ?: "",
     cast = credits?.cast
         ?.sortedBy { it.order }
         ?.take(MAX_CAST_DISPLAY)
@@ -51,4 +55,8 @@ internal fun MovieDetail.toDetailUiModel(
         } ?: emptyList(),
 )
 
+private fun Int.toFormattedCount(): String =
+    toString().reversed().chunked(3).joinToString(",").reversed()
+
 private const val MAX_CAST_DISPLAY = 20
+private const val DIRECTOR_JOB = "Director"

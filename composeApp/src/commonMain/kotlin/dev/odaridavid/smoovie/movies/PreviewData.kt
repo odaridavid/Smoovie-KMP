@@ -67,5 +67,6 @@ internal val previewMovieDetailUiModel =
         runtime = "2h 49m",
         tagline = "Mankind was born on Earth. It was never meant to die here.",
         genres = "Adventure, Drama, Science Fiction",
+        director = "Christopher Nolan",
         cast = previewCast,
     )

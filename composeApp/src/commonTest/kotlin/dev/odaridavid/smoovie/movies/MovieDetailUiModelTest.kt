@@ -60,12 +60,12 @@ class MovieDetailUiModelTest {
     }
 
     @Test
-    fun `given movie detail with vote count - when mapped - then vote count is stringified`() {
+    fun `given movie detail with vote count - when mapped - then vote count is formatted`() {
         val detail = movieDetail(voteCount = 34521)
 
         val uiModel = detail.toDetailUiModel(backdropUrl = null, posterUrl = null)
 
-        assertEquals("34521", uiModel.voteCount)
+        assertEquals("34,521", uiModel.voteCount)
     }
 
     @Test

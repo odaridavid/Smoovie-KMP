@@ -28,6 +28,7 @@ data class Genre(
 @Serializable
 data class Credits(
     val cast: List<CastMember> = emptyList(),
+    val crew: List<CrewMember> = emptyList(),
 )
 
 @Serializable
@@ -37,4 +38,11 @@ data class CastMember(
     val character: String = "",
     @SerialName("profile_path") val profilePath: String? = null,
     val order: Int = 0,
+)
+
+@Serializable
+data class CrewMember(
+    val id: Int,
+    val name: String,
+    val job: String = "",
 )

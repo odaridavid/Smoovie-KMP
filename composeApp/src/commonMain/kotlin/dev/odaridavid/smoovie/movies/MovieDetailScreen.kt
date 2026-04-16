@@ -126,9 +126,16 @@ private fun MetadataSection(
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         if (movie.voteAverage.isNotBlank()) {
+            val voteCount = detail?.voteCount
+            val ratingLabel =
+                if (!voteCount.isNullOrBlank()) {
+                    "★ ${movie.voteAverage} ($voteCount)"
+                } else {
+                    "★ ${movie.voteAverage}"
+                }
             AssistChip(
                 onClick = {},
-                label = { Text("★ ${movie.voteAverage}") },
+                label = { Text(ratingLabel) },
             )
         }
         val runtime = detail?.runtime
@@ -149,6 +156,13 @@ private fun MetadataSection(
             AssistChip(
                 onClick = {},
                 label = { Text(genres) },
+            )
+        }
+        val director = detail?.director
+        if (!director.isNullOrBlank()) {
+            AssistChip(
+                onClick = {},
+                label = { Text("🎬 $director") },
             )
         }
     }

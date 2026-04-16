@@ -79,6 +79,12 @@ internal fun MovieDetailContent(
                         modifier = Modifier.padding(horizontal = 16.dp),
                     )
                 }
+                if (detail.reviews.isNotEmpty()) {
+                    ReviewsSection(
+                        reviews = detail.reviews,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                    )
+                }
             }
 
             is MovieDetailUiState.Error -> {

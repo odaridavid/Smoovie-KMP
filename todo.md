@@ -9,7 +9,9 @@
 ## Movie Details
 
 - [ ] Detail screen — tap a card to see full overview, backdrop image, cast, etc. (`backdropUrl` is already mapped but unused in the UI)
-- [ ] Trailers — TMDB has a videos endpoint
+- [ ] Trailers — TMDB `/movie/{id}/videos` endpoint; play button on hero or dedicated section with YouTube thumbnails
+- [ ] Reviews — TMDB `/movie/{id}/reviews`; expandable user review cards below the overview
+- [ ] Chip variety — use distinct chip styles/icons for metadata (e.g. filled chip for rating, outlined for genres, icon chips for runtime/director)
 
 ## Offline & Performance
 

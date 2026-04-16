@@ -10,4 +10,8 @@
     <string name="action_retry">Retry</string>
     <string name="navigate_back">Navigate back</string>
     <string name="cast_section_title">Cast</string>
+    <string name="reviews_section_title">Reviews</string>
+    <string name="reviews_read_more">Read more</string>
+    <string name="reviews_show_less">Show less</string>
+    <string name="reviews_anonymous">Anonymous</string>
 </resources>

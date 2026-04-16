@@ -1,6 +1,7 @@
 import dev.odaridavid.smoovie.movies.CastMemberUiModel
 import dev.odaridavid.smoovie.movies.Movie
 import dev.odaridavid.smoovie.movies.MovieDetailUiModel
+import dev.odaridavid.smoovie.movies.ReviewUiModel
 import dev.odaridavid.smoovie.movies.toUiModel
 
 internal val previewMovies =
@@ -52,6 +53,39 @@ internal val previewCast =
         CastMemberUiModel(id = 5, name = "Matt Damon", character = "Mann", profileUrl = null),
     )
 
+internal val previewReviews =
+    listOf(
+        ReviewUiModel(
+            id = "r1",
+            author = "JaneDoe",
+            date = "12 Nov 2014",
+            rating = "9.0",
+            content =
+                "An absolute masterpiece. Nolan weaves science, emotion, and spectacle into a film " +
+                    "that demands to be seen on the biggest screen possible. The performances are " +
+                    "stellar, Hans Zimmer's score is unforgettable, and the ending leaves you " +
+                    "breathless. A rare example of a blockbuster that respects its audience's " +
+                    "intelligence while still delivering huge emotional payoffs across every act.",
+        ),
+        ReviewUiModel(
+            id = "r2",
+            author = "Critic42",
+            date = "18 Nov 2014",
+            rating = "7.5",
+            content = "Visually stunning but the third act stumbles a little.",
+        ),
+        ReviewUiModel(
+            id = "r3",
+            author = "SpaceFan",
+            date = "22 Nov 2014",
+            rating = "",
+            content =
+                "The physics consultation really shows. Every shot in the black hole sequence " +
+                    "feels earned. Docking scene is still one of the most tense moments in " +
+                    "modern cinema.",
+        ),
+    )
+
 internal val previewMovieDetailUiModel =
     MovieDetailUiModel(
         id = 1,
@@ -69,4 +103,5 @@ internal val previewMovieDetailUiModel =
         genres = "Adventure, Drama, Science Fiction",
         director = "Christopher Nolan",
         cast = previewCast,
+        reviews = previewReviews,
     )

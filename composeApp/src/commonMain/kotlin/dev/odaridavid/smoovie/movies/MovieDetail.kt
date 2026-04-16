@@ -17,6 +17,7 @@ data class MovieDetail(
     val tagline: String = "",
     val genres: List<Genre> = emptyList(),
     val credits: Credits? = null,
+    val reviews: ReviewsResponse? = null,
 )
 
 @Serializable
@@ -45,4 +46,24 @@ data class CrewMember(
     val id: Int,
     val name: String,
     val job: String = "",
+)
+
+@Serializable
+data class ReviewsResponse(
+    val results: List<Review> = emptyList(),
+)
+
+@Serializable
+data class Review(
+    val id: String,
+    val author: String = "",
+    val content: String = "",
+    @SerialName("created_at") val createdAt: String = "",
+    @SerialName("author_details") val authorDetails: AuthorDetails? = null,
+)
+
+@Serializable
+data class AuthorDetails(
+    val username: String = "",
+    val rating: Double? = null,
 )

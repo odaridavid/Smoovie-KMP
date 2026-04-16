@@ -69,6 +69,81 @@ class MovieDetailUiModelTest {
     }
 
     @Test
+    fun `given no reviews - when mapped - then reviews is empty`() {
+        val detail = movieDetail(reviews = null)
+
+        val uiModel = detail.toDetailUiModel(backdropUrl = null, posterUrl = null)
+
+        assertEquals(emptyList(), uiModel.reviews)
+    }
+
+    @Test
+    fun `given more reviews than display limit - when mapped - then reviews are capped at 3`() {
+        val detail =
+            movieDetail(
+                reviews =
+                    ReviewsResponse(
+                        results =
+                            (1..5).map {
+                                Review(
+                                    id = "r$it",
+                                    author = "Author$it",
+                                    content = "Review content $it",
+                                )
+                            },
+                    ),
+            )
+
+        val uiModel = detail.toDetailUiModel(backdropUrl = null, posterUrl = null)
+
+        assertEquals(3, uiModel.reviews.size)
+        assertEquals(listOf("r1", "r2", "r3"), uiModel.reviews.map { it.id })
+    }
+
+    @Test
+    fun `given review with blank author - when mapped - then falls back to username`() {
+        val detail =
+            movieDetail(
+                reviews =
+                    ReviewsResponse(
+                        results =
+                            listOf(
+                                Review(
+                                    id = "r1",
+                                    author = "",
+                                    content = "Content",
+                                    authorDetails = AuthorDetails(username = "fallback_user", rating = 8.0),
+                                ),
+                            ),
+                    ),
+            )
+
+        val uiModel = detail.toDetailUiModel(backdropUrl = null, posterUrl = null)
+
+        assertEquals("fallback_user", uiModel.reviews.first().author)
+        assertEquals("8.0", uiModel.reviews.first().rating)
+    }
+
+    @Test
+    fun `given review with blank content - when mapped - then it is filtered out`() {
+        val detail =
+            movieDetail(
+                reviews =
+                    ReviewsResponse(
+                        results =
+                            listOf(
+                                Review(id = "r1", author = "A", content = "   "),
+                                Review(id = "r2", author = "B", content = "Good movie"),
+                            ),
+                    ),
+            )
+
+        val uiModel = detail.toDetailUiModel(backdropUrl = null, posterUrl = null)
+
+        assertEquals(listOf("r2"), uiModel.reviews.map { it.id })
+    }
+
+    @Test
     fun `given backdrop and poster urls - when mapped - then urls are set`() {
         val detail = movieDetail()
 
@@ -86,6 +161,7 @@ class MovieDetailUiModelTest {
         genres: List<Genre> = emptyList(),
         tagline: String = "",
         voteCount: Int = 0,
+        reviews: ReviewsResponse? = null,
     ) = MovieDetail(
         id = 1,
         title = "Test Movie",
@@ -96,5 +172,6 @@ class MovieDetailUiModelTest {
         runtime = runtime,
         tagline = tagline,
         genres = genres,
+        reviews = reviews,
     )
 }

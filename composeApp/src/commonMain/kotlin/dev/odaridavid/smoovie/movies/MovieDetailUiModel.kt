@@ -14,6 +14,7 @@ data class MovieDetailUiModel(
     val genres: String,
     val director: String = "",
     val cast: List<CastMemberUiModel> = emptyList(),
+    val reviews: List<ReviewUiModel> = emptyList(),
 )
 
 data class CastMemberUiModel(
@@ -21,6 +22,14 @@ data class CastMemberUiModel(
     val name: String,
     val character: String,
     val profileUrl: String?,
+)
+
+data class ReviewUiModel(
+    val id: String,
+    val author: String,
+    val date: String,
+    val rating: String,
+    val content: String,
 )
 
 internal fun MovieDetail.toDetailUiModel(
@@ -53,10 +62,24 @@ internal fun MovieDetail.toDetailUiModel(
                 profileUrl = profileUrlResolver(member.profilePath),
             )
         } ?: emptyList(),
+    reviews = reviews?.results
+        ?.take(MAX_REVIEWS_DISPLAY)
+        ?.map { review ->
+            ReviewUiModel(
+                id = review.id,
+                author = review.author.ifBlank { review.authorDetails?.username.orEmpty() },
+                date = review.createdAt.take(10).toReadableDate(),
+                rating = review.authorDetails?.rating?.toDisplayRating().orEmpty(),
+                content = review.content.trim(),
+            )
+        }
+        ?.filter { it.content.isNotBlank() }
+        ?: emptyList(),
 )
 
 private fun Int.toFormattedCount(): String =
     toString().reversed().chunked(3).joinToString(",").reversed()
 
 private const val MAX_CAST_DISPLAY = 20
+private const val MAX_REVIEWS_DISPLAY = 3
 private const val DIRECTOR_JOB = "Director"

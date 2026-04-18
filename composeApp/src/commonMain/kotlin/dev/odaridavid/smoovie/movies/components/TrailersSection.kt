@@ -57,7 +57,7 @@ internal fun TrailersSection(
             items(trailers, key = { it.id }) { trailer ->
                 TrailerItem(
                     trailer = trailer,
-                    onClick = { uriHandler.openUri(trailer.watchUrl) },
+                    onClick = { uriHandler.openUri("https://www.youtube.com/watch?v=${trailer.videoKey}") },
                 )
             }
         }

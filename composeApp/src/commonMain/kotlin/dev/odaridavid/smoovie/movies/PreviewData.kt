@@ -92,20 +92,20 @@ internal val previewTrailers =
         TrailerUiModel(
             id = "t1",
             name = "Official Trailer",
+            videoKey = "zSWdZVtXT7E",
             thumbnailUrl = "",
-            watchUrl = "https://www.youtube.com/watch?v=zSWdZVtXT7E",
         ),
         TrailerUiModel(
             id = "t2",
             name = "Teaser",
+            videoKey = "0vxOhd4qlnA",
             thumbnailUrl = "",
-            watchUrl = "https://www.youtube.com/watch?v=0vxOhd4qlnA",
         ),
         TrailerUiModel(
             id = "t3",
             name = "Behind the Scenes",
+            videoKey = "2LqzF5WauAw",
             thumbnailUrl = "",
-            watchUrl = "https://www.youtube.com/watch?v=2LqzF5WauAw",
         ),
     )
 

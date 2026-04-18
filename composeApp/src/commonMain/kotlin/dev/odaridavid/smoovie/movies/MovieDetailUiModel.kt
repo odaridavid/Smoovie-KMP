@@ -39,8 +39,8 @@ data class ReviewUiModel(
 data class TrailerUiModel(
     val id: String,
     val name: String,
+    val videoKey: String,
     val thumbnailUrl: String,
-    val watchUrl: String,
 )
 
 internal fun MovieDetail.toDetailUiModel(
@@ -97,8 +97,8 @@ internal fun MovieDetail.toDetailUiModel(
             TrailerUiModel(
                 id = video.id,
                 name = video.name,
+                videoKey = video.key,
                 thumbnailUrl = "https://img.youtube.com/vi/${video.key}/mqdefault.jpg",
-                watchUrl = "https://www.youtube.com/watch?v=${video.key}",
             )
         } ?: emptyList(),
 )

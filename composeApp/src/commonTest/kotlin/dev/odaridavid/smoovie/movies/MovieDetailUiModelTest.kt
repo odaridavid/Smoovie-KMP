@@ -227,7 +227,7 @@ class MovieDetailUiModelTest {
     }
 
     @Test
-    fun `given youtube video - when mapped - then thumbnail and watch urls are built from key`() {
+    fun `given youtube video - when mapped - then thumbnail url and video key are set`() {
         val detail =
             movieDetail(
                 videos =
@@ -243,7 +243,7 @@ class MovieDetailUiModelTest {
         val trailer = uiModel.trailers.first()
 
         assertEquals("https://img.youtube.com/vi/abc123/mqdefault.jpg", trailer.thumbnailUrl)
-        assertEquals("https://www.youtube.com/watch?v=abc123", trailer.watchUrl)
+        assertEquals("abc123", trailer.videoKey)
     }
 
     @Test

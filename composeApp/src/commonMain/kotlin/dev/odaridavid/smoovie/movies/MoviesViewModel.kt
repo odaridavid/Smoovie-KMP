@@ -14,7 +14,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MoviesViewModel(
@@ -24,17 +27,8 @@ class MoviesViewModel(
     private val getGenres: GetGenresUseCase,
     private val loadConfiguration: LoadConfigurationUseCase,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow<MoviesUiState>(MoviesUiState.Loading)
-    val uiState: StateFlow<MoviesUiState> = _uiState.asStateFlow()
-
-    private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
-
-    private val _genres = MutableStateFlow<List<GenreUiModel>>(emptyList())
-    val genres: StateFlow<List<GenreUiModel>> = _genres.asStateFlow()
-
-    private val _selectedGenre = MutableStateFlow<GenreUiModel?>(null)
-    val selectedGenre: StateFlow<GenreUiModel?> = _selectedGenre.asStateFlow()
+    private val _state = MutableStateFlow(MoviesScreenState())
+    val state: StateFlow<MoviesScreenState> = _state.asStateFlow()
 
     private var currentPage = 1
     private var totalPages = 1
@@ -45,44 +39,48 @@ class MoviesViewModel(
     }
 
     fun onSearchQueryChanged(query: String) {
-        _searchQuery.value = query
+        _state.update { it.copy(searchQuery = query) }
     }
 
     fun onGenreSelected(genre: GenreUiModel?) {
-        if (_selectedGenre.value == genre) return
-        _selectedGenre.value = genre
+        if (_state.value.selectedGenre == genre) return
+        _state.update { it.copy(selectedGenre = genre) }
         loadMovies()
     }
 
     fun loadMovies() {
         viewModelScope.launch {
-            _uiState.value = MoviesUiState.Loading
+            _state.update { it.copy(uiState = MoviesUiState.Loading) }
             try {
-                _uiState.value = processPage(fetchPage())
+                _state.update { it.copy(uiState = processPage(fetchPage())) }
             } catch (e: Exception) {
-                _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
+                _state.update { it.copy(uiState = MoviesUiState.Error(e.message ?: "Something went wrong")) }
             }
         }
     }
 
     fun loadNextPage() {
-        val currentState = _uiState.value as? MoviesUiState.Success ?: return
-        if (currentState.isLoadingMore || !currentState.hasMorePages) return
+        val currentUiState = _state.value.uiState as? MoviesUiState.Success ?: return
+        if (currentUiState.isLoadingMore || !currentUiState.hasMorePages) return
         viewModelScope.launch {
-            _uiState.value = currentState.copy(isLoadingMore = true)
+            _state.update { it.copy(uiState = currentUiState.copy(isLoadingMore = true)) }
             try {
                 val result = fetchPage(currentPage + 1)
                 currentPage = result.page
                 totalPages = result.totalPages
-                val existingIds = currentState.movies.map { it.id }.toSet()
+                val existingIds = currentUiState.movies.map { it.id }.toSet()
                 val newMovies = result.movies.filter { it.id !in existingIds }
-                _uiState.value =
-                    MoviesUiState.Success(
-                        movies = currentState.movies + newMovies,
-                        hasMorePages = currentPage < totalPages,
+                _state.update {
+                    it.copy(
+                        uiState =
+                            MoviesUiState.Success(
+                                movies = currentUiState.movies + newMovies,
+                                hasMorePages = currentPage < totalPages,
+                            ),
                     )
+                }
             } catch (_: Exception) {
-                _uiState.value = currentState.copy(isLoadingMore = false)
+                _state.update { it.copy(uiState = currentUiState.copy(isLoadingMore = false)) }
             }
         }
     }
@@ -90,15 +88,17 @@ class MoviesViewModel(
     @OptIn(FlowPreview::class)
     private fun observeSearchQuery() {
         viewModelScope.launch {
-            _searchQuery
+            _state
+                .map { it.searchQuery }
+                .distinctUntilChanged()
                 .drop(1)
                 .debounce(300)
                 .collectLatest {
-                    _uiState.value = MoviesUiState.Loading
+                    _state.update { s -> s.copy(uiState = MoviesUiState.Loading) }
                     try {
-                        _uiState.value = processPage(fetchPage())
+                        _state.update { s -> s.copy(uiState = processPage(fetchPage())) }
                     } catch (e: Exception) {
-                        _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
+                        _state.update { s -> s.copy(uiState = MoviesUiState.Error(e.message ?: "Something went wrong")) }
                     }
                 }
         }
@@ -106,13 +106,13 @@ class MoviesViewModel(
 
     private fun loadData() {
         viewModelScope.launch {
-            _uiState.value = MoviesUiState.Loading
+            _state.update { it.copy(uiState = MoviesUiState.Loading) }
             try {
                 loadConfiguration()
                 loadGenresList()
-                _uiState.value = processPage(fetchPage())
+                _state.update { it.copy(uiState = processPage(fetchPage())) }
             } catch (e: Exception) {
-                _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
+                _state.update { it.copy(uiState = MoviesUiState.Error(e.message ?: "Something went wrong")) }
             }
         }
     }
@@ -120,15 +120,15 @@ class MoviesViewModel(
     private fun loadGenresList() {
         viewModelScope.launch {
             try {
-                _genres.value = getGenres()
+                _state.update { it.copy(genres = getGenres()) }
             } catch (_: Exception) {
             }
         }
     }
 
     private suspend fun fetchPage(page: Int = 1): MoviesPage {
-        val query = _searchQuery.value
-        val genreId = _selectedGenre.value?.id
+        val query = _state.value.searchQuery
+        val genreId = _state.value.selectedGenre?.id
         return when {
             query.isNotBlank() -> searchMovies(query, page)
             genreId != null -> getMoviesByGenre(genreId, page)

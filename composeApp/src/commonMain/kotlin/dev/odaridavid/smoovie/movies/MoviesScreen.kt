@@ -15,15 +15,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,6 +35,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import dev.odaridavid.smoovie.movies.components.CollapsedToolbar
+import dev.odaridavid.smoovie.movies.components.GenreChips
 import dev.odaridavid.smoovie.movies.components.MovieCard
 import dev.odaridavid.smoovie.movies.components.SearchToolbar
 import dev.odaridavid.smoovie.movies.components.ShimmerMovieList
@@ -46,10 +43,7 @@ import dev.odaridavid.smoovie.theme.EmptyContent
 import dev.odaridavid.smoovie.theme.ErrorContent
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import kotlinx.coroutines.delay
-import org.jetbrains.compose.resources.stringResource
 import previewMovieUiModels
-import smoovie.composeapp.generated.resources.Res
-import smoovie.composeapp.generated.resources.genre_filter_all
 
 private const val SLOW_ANIM_DURATION = 500
 
@@ -66,32 +60,24 @@ fun MoviesScreen(
     viewModel: MoviesViewModel,
     onMovieClick: (MovieUiModel) -> Unit,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val searchQuery by viewModel.searchQuery.collectAsState()
-    val genres by viewModel.genres.collectAsState()
-    val selectedGenre by viewModel.selectedGenre.collectAsState()
+    val state by viewModel.state.collectAsState()
     MoviesContent(
-        uiState = uiState,
-        searchQuery = searchQuery,
-        genres = genres,
-        selectedGenre = selectedGenre,
-        actions = MovieActions(
-            onSearchQueryChanged = viewModel::onSearchQueryChanged,
-            onGenreSelected = viewModel::onGenreSelected,
-            onRetry = viewModel::loadMovies,
-            onLoadMore = viewModel::loadNextPage,
-            onMovieClick = onMovieClick,
-        )
+        state = state,
+        actions =
+            MovieActions(
+                onSearchQueryChanged = viewModel::onSearchQueryChanged,
+                onGenreSelected = viewModel::onGenreSelected,
+                onRetry = viewModel::loadMovies,
+                onLoadMore = viewModel::loadNextPage,
+                onMovieClick = onMovieClick,
+            ),
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MoviesContent(
-    uiState: MoviesUiState,
-    searchQuery: String,
-    genres: List<GenreUiModel>,
-    selectedGenre: GenreUiModel?,
+    state: MoviesScreenState,
     actions: MovieActions,
 ) {
     var isSearchActive by rememberSaveable { mutableStateOf(false) }
@@ -109,7 +95,7 @@ private fun MoviesContent(
                     exit = fadeOut(tween(SLOW_ANIM_DURATION)),
                 ) {
                     SearchToolbar(
-                        query = searchQuery,
+                        query = state.searchQuery,
                         onQueryChanged = actions.onSearchQueryChanged,
                         onClose = {
                             isSearchActive = false
@@ -126,15 +112,15 @@ private fun MoviesContent(
                     .padding(padding)
                     .fillMaxSize(),
         ) {
-            if (genres.isNotEmpty() && searchQuery.isBlank()) {
+            if (state.genres.isNotEmpty() && state.searchQuery.isBlank()) {
                 GenreChips(
-                    genres = genres,
-                    selectedGenre = selectedGenre,
+                    genres = state.genres,
+                    selectedGenre = state.selectedGenre,
                     onGenreSelected = actions.onGenreSelected,
                 )
             }
             AnimatedContent(
-                targetState = uiState,
+                targetState = state.uiState,
                 transitionSpec = {
                     fadeIn(tween(SLOW_ANIM_DURATION)) togetherWith fadeOut(tween(SLOW_ANIM_DURATION))
                 },
@@ -226,33 +212,6 @@ private fun MoviesList(
     }
 }
 
-@Composable
-private fun GenreChips(
-    genres: List<GenreUiModel>,
-    selectedGenre: GenreUiModel?,
-    onGenreSelected: (GenreUiModel?) -> Unit,
-) {
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        item {
-            FilterChip(
-                selected = selectedGenre == null,
-                onClick = { onGenreSelected(null) },
-                label = { Text(stringResource(Res.string.genre_filter_all)) },
-            )
-        }
-        items(genres, key = { it.id }) { genre ->
-            FilterChip(
-                selected = selectedGenre?.id == genre.id,
-                onClick = { onGenreSelected(if (selectedGenre?.id == genre.id) null else genre) },
-                label = { Text(genre.name) },
-            )
-        }
-    }
-}
-
 private const val CARD_ANIM_DURATION = 350
 private const val CARD_STAGGER_MS = 60
 private const val CARD_STAGGER_LIMIT = 5
@@ -314,10 +273,7 @@ private val previewGenres =
 private fun MoviesLoadingPreview() {
     SmoovieTheme {
         MoviesContent(
-            uiState = MoviesUiState.Loading,
-            searchQuery = "",
-            genres = previewGenres,
-            selectedGenre = null,
+            state = MoviesScreenState(uiState = MoviesUiState.Loading, genres = previewGenres),
             actions = MovieActions(),
         )
     }
@@ -328,10 +284,12 @@ private fun MoviesLoadingPreview() {
 private fun MoviesSuccessPreview() {
     SmoovieTheme {
         MoviesContent(
-            uiState = MoviesUiState.Success(previewMovieUiModels),
-            searchQuery = "",
-            genres = previewGenres,
-            selectedGenre = previewGenres[0],
+            state =
+                MoviesScreenState(
+                    uiState = MoviesUiState.Success(previewMovieUiModels),
+                    genres = previewGenres,
+                    selectedGenre = previewGenres[0],
+                ),
             actions = MovieActions(),
         )
     }

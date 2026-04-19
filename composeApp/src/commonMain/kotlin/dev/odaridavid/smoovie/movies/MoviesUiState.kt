@@ -1,5 +1,12 @@
 package dev.odaridavid.smoovie.movies
 
+data class MoviesScreenState(
+    val uiState: MoviesUiState = MoviesUiState.Loading,
+    val searchQuery: String = "",
+    val genres: List<GenreUiModel> = emptyList(),
+    val selectedGenre: GenreUiModel? = null,
+)
+
 sealed interface MoviesUiState {
     data object Loading : MoviesUiState
 

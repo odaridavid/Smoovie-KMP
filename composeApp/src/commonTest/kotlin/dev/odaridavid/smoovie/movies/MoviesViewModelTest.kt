@@ -64,7 +64,7 @@ class MoviesViewModelTest {
         runTest {
             val viewModel = buildViewModel(FakeMoviesRepository(movies = testMovies))
 
-            val state = viewModel.uiState.value
+            val state = viewModel.state.value.uiState
 
             assertIs<MoviesUiState.Success>(state)
             assertEquals(expectedUiModels, state.movies)
@@ -76,7 +76,7 @@ class MoviesViewModelTest {
             val viewModel =
                 buildViewModel(FakeMoviesRepository(error = Exception("Network error")))
 
-            val state = viewModel.uiState.value
+            val state = viewModel.state.value.uiState
 
             assertIs<MoviesUiState.Error>(state)
             assertEquals("Network error", state.message)
@@ -87,7 +87,7 @@ class MoviesViewModelTest {
         runTest {
             val viewModel = buildViewModel(FakeMoviesRepository(error = Exception()))
 
-            val state = viewModel.uiState.value
+            val state = viewModel.state.value.uiState
 
             assertIs<MoviesUiState.Error>(state)
             assertEquals("Something went wrong", state.message)
@@ -98,13 +98,13 @@ class MoviesViewModelTest {
         runTest {
             val repo = FakeMoviesRepository(error = Exception("Network error"))
             val viewModel = buildViewModel(repo)
-            assertIs<MoviesUiState.Error>(viewModel.uiState.value)
+            assertIs<MoviesUiState.Error>(viewModel.state.value.uiState)
 
             repo.error = null
             repo.movies = testMovies
             viewModel.loadMovies()
 
-            val state = viewModel.uiState.value
+            val state = viewModel.state.value.uiState
             assertIs<MoviesUiState.Success>(state)
             assertEquals(expectedUiModels, state.movies)
         }
@@ -114,7 +114,7 @@ class MoviesViewModelTest {
         runTest {
             val viewModel = buildViewModel(FakeMoviesRepository(movies = emptyList()))
 
-            val state = viewModel.uiState.value
+            val state = viewModel.state.value.uiState
 
             assertIs<MoviesUiState.Empty>(state)
         }
@@ -128,7 +128,7 @@ class MoviesViewModelTest {
                     configRepo = FakeConfigurationRepository(error = Exception("Config error")),
                 )
 
-            val state = viewModel.uiState.value
+            val state = viewModel.state.value.uiState
 
             assertIs<MoviesUiState.Error>(state)
             assertEquals("Config error", state.message)
@@ -144,14 +144,14 @@ class MoviesViewModelTest {
                 )
             val repo = FakeMoviesRepository(movies = testMovies, totalPages = 2)
             val viewModel = buildViewModel(repo)
-            val firstPage = viewModel.uiState.value
+            val firstPage = viewModel.state.value.uiState
             assertIs<MoviesUiState.Success>(firstPage)
             assertTrue(firstPage.hasMorePages)
 
             repo.movies = page2Movies
             viewModel.loadNextPage()
 
-            val state = viewModel.uiState.value
+            val state = viewModel.state.value.uiState
             assertIs<MoviesUiState.Success>(state)
             assertEquals(testMovies.size + page2Movies.size, state.movies.size)
             assertFalse(state.hasMorePages)
@@ -162,13 +162,13 @@ class MoviesViewModelTest {
         runTest {
             val repo = FakeMoviesRepository(movies = testMovies, totalPages = 1)
             val viewModel = buildViewModel(repo)
-            val initial = viewModel.uiState.value
+            val initial = viewModel.state.value.uiState
             assertIs<MoviesUiState.Success>(initial)
             assertFalse(initial.hasMorePages)
 
             viewModel.loadNextPage()
 
-            val state = viewModel.uiState.value
+            val state = viewModel.state.value.uiState
             assertIs<MoviesUiState.Success>(state)
             assertEquals(testMovies.size, state.movies.size)
         }
@@ -178,12 +178,12 @@ class MoviesViewModelTest {
         runTest {
             val repo = FakeMoviesRepository(movies = testMovies, totalPages = 2)
             val viewModel = buildViewModel(repo)
-            assertIs<MoviesUiState.Success>(viewModel.uiState.value)
+            assertIs<MoviesUiState.Success>(viewModel.state.value.uiState)
 
             repo.error = Exception("Network error")
             viewModel.loadNextPage()
 
-            val state = viewModel.uiState.value
+            val state = viewModel.state.value.uiState
             assertIs<MoviesUiState.Success>(state)
             assertEquals(testMovies.size, state.movies.size)
             assertFalse(state.isLoadingMore)
@@ -198,7 +198,7 @@ class MoviesViewModelTest {
 
             viewModel.onGenreSelected(GenreUiModel(28, "Action"))
 
-            val state = viewModel.uiState.value
+            val state = viewModel.state.value.uiState
             assertIs<MoviesUiState.Success>(state)
             assertEquals(1, state.movies.size)
             assertEquals("Mad Max", state.movies[0].title)
@@ -212,12 +212,12 @@ class MoviesViewModelTest {
             val repo = FakeMoviesRepository(movies = testMovies, discoverMovies = actionMovies)
             val viewModel = buildViewModel(repo)
             viewModel.onGenreSelected(genre)
-            val stateAfterFirst = viewModel.uiState.value
+            val stateAfterFirst = viewModel.state.value.uiState
 
             repo.discoverMovies = listOf(Movie(id = 11, title = "Different", overview = "Film."))
             viewModel.onGenreSelected(genre)
 
-            assertEquals(stateAfterFirst, viewModel.uiState.value)
+            assertEquals(stateAfterFirst, viewModel.state.value.uiState)
         }
 
     @Test
@@ -227,11 +227,11 @@ class MoviesViewModelTest {
             val repo = FakeMoviesRepository(movies = testMovies, discoverMovies = actionMovies)
             val viewModel = buildViewModel(repo)
             viewModel.onGenreSelected(GenreUiModel(28, "Action"))
-            assertIs<MoviesUiState.Success>(viewModel.uiState.value)
+            assertIs<MoviesUiState.Success>(viewModel.state.value.uiState)
 
             viewModel.onGenreSelected(null)
 
-            val state = viewModel.uiState.value
+            val state = viewModel.state.value.uiState
             assertIs<MoviesUiState.Success>(state)
             assertEquals(expectedUiModels, state.movies)
         }
@@ -244,13 +244,13 @@ class MoviesViewModelTest {
             val repo = FakeMoviesRepository(discoverMovies = page1Movies, totalPages = 2)
             val viewModel = buildViewModel(repo)
             viewModel.onGenreSelected(GenreUiModel(28, "Action"))
-            assertIs<MoviesUiState.Success>(viewModel.uiState.value)
-            assertTrue((viewModel.uiState.value as MoviesUiState.Success).hasMorePages)
+            assertIs<MoviesUiState.Success>(viewModel.state.value.uiState)
+            assertTrue((viewModel.state.value.uiState as MoviesUiState.Success).hasMorePages)
 
             repo.discoverMovies = page2Movies
             viewModel.loadNextPage()
 
-            val state = viewModel.uiState.value
+            val state = viewModel.state.value.uiState
             assertIs<MoviesUiState.Success>(state)
             assertEquals(2, state.movies.size)
             assertFalse(state.hasMorePages)
@@ -263,9 +263,9 @@ class MoviesViewModelTest {
             val repo = FakeMoviesRepository(movies = testMovies, genres = genres)
             val viewModel = buildViewModel(repo)
 
-            assertEquals(2, viewModel.genres.value.size)
-            assertEquals("Action", viewModel.genres.value[0].name)
-            assertEquals("Comedy", viewModel.genres.value[1].name)
+            assertEquals(2, viewModel.state.value.genres.size)
+            assertEquals("Action", viewModel.state.value.genres[0].name)
+            assertEquals("Comedy", viewModel.state.value.genres[1].name)
         }
 
     @Test
@@ -274,7 +274,7 @@ class MoviesViewModelTest {
             val repo = FakeMoviesRepository(movies = testMovies, genresError = Exception("genres failed"))
             val viewModel = buildViewModel(repo)
 
-            assertIs<MoviesUiState.Success>(viewModel.uiState.value)
-            assertEquals(emptyList(), viewModel.genres.value)
+            assertIs<MoviesUiState.Success>(viewModel.state.value.uiState)
+            assertEquals(emptyList(), viewModel.state.value.genres)
         }
 }

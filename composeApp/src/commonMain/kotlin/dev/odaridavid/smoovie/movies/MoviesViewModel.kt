@@ -2,10 +2,10 @@ package dev.odaridavid.smoovie.movies
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.odaridavid.smoovie.configuration.ConfigurationRepository
-import dev.odaridavid.smoovie.configuration.ConfigurationStore
-import dev.odaridavid.smoovie.movies.data.MoviesResponse
-import dev.odaridavid.smoovie.movies.domain.MoviesRepository
+import dev.odaridavid.smoovie.configuration.LoadConfigurationUseCase
+import dev.odaridavid.smoovie.movies.domain.GetPopularMoviesUseCase
+import dev.odaridavid.smoovie.movies.domain.MoviesPage
+import dev.odaridavid.smoovie.movies.domain.SearchMoviesUseCase
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,10 +16,9 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
 class MoviesViewModel(
-    private val moviesRepository: MoviesRepository,
-    private val configurationRepository: ConfigurationRepository,
-    private val configurationStore: ConfigurationStore,
-    private val mapper: MovieUiMapper,
+    private val getPopularMovies: GetPopularMoviesUseCase,
+    private val searchMovies: SearchMoviesUseCase,
+    private val loadConfiguration: LoadConfigurationUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<MoviesUiState>(MoviesUiState.Loading)
     val uiState: StateFlow<MoviesUiState> = _uiState.asStateFlow()
@@ -44,13 +43,8 @@ class MoviesViewModel(
             _uiState.value = MoviesUiState.Loading
             try {
                 val query = _searchQuery.value
-                val response =
-                    if (query.isBlank()) {
-                        moviesRepository.getPopularMovies()
-                    } else {
-                        moviesRepository.searchMovies(query)
-                    }
-                _uiState.value = processResponse(response)
+                val page = if (query.isBlank()) getPopularMovies() else searchMovies(query)
+                _uiState.value = processPage(page)
             } catch (e: Exception) {
                 _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
             }
@@ -65,16 +59,11 @@ class MoviesViewModel(
             try {
                 val nextPage = currentPage + 1
                 val query = _searchQuery.value
-                val response =
-                    if (query.isBlank()) {
-                        moviesRepository.getPopularMovies(nextPage)
-                    } else {
-                        moviesRepository.searchMovies(query, nextPage)
-                    }
-                currentPage = response.page
-                totalPages = response.totalPages
+                val result = if (query.isBlank()) getPopularMovies(nextPage) else searchMovies(query, nextPage)
+                currentPage = result.page
+                totalPages = result.totalPages
                 val existingIds = currentState.movies.map { it.id }.toSet()
-                val newMovies = mapper.toUiModels(response.results).filter { it.id !in existingIds }
+                val newMovies = result.movies.filter { it.id !in existingIds }
                 _uiState.value =
                     MoviesUiState.Success(
                         movies = currentState.movies + newMovies,
@@ -95,13 +84,8 @@ class MoviesViewModel(
                 .collectLatest { query ->
                     _uiState.value = MoviesUiState.Loading
                     try {
-                        val response =
-                            if (query.isBlank()) {
-                                moviesRepository.getPopularMovies()
-                            } else {
-                                moviesRepository.searchMovies(query)
-                            }
-                        _uiState.value = processResponse(response)
+                        val page = if (query.isBlank()) getPopularMovies() else searchMovies(query)
+                        _uiState.value = processPage(page)
                     } catch (e: Exception) {
                         _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
                     }
@@ -113,24 +97,21 @@ class MoviesViewModel(
         viewModelScope.launch {
             _uiState.value = MoviesUiState.Loading
             try {
-                val config = configurationRepository.getImagesConfiguration()
-                configurationStore.save(config)
-                val response = moviesRepository.getPopularMovies()
-                _uiState.value = processResponse(response)
+                loadConfiguration()
+                _uiState.value = processPage(getPopularMovies())
             } catch (e: Exception) {
                 _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
             }
         }
     }
 
-    private fun processResponse(response: MoviesResponse): MoviesUiState {
-        currentPage = response.page
-        totalPages = response.totalPages
-        val uiModels = mapper.toUiModels(response.results)
-        return if (uiModels.isEmpty()) {
+    private fun processPage(result: MoviesPage): MoviesUiState {
+        currentPage = result.page
+        totalPages = result.totalPages
+        return if (result.movies.isEmpty()) {
             MoviesUiState.Empty
         } else {
-            MoviesUiState.Success(uiModels, hasMorePages = response.page < response.totalPages)
+            MoviesUiState.Success(result.movies, hasMorePages = result.page < result.totalPages)
         }
     }
 }

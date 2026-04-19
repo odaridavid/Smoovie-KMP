@@ -4,7 +4,10 @@ import dev.odaridavid.smoovie.FakeConfigurationRepository
 import dev.odaridavid.smoovie.FakeMoviesRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
+import dev.odaridavid.smoovie.configuration.LoadConfigurationUseCase
 import dev.odaridavid.smoovie.movies.data.Movie
+import dev.odaridavid.smoovie.movies.domain.GetPopularMoviesUseCase
+import dev.odaridavid.smoovie.movies.domain.SearchMoviesUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -45,7 +48,11 @@ class MoviesViewModelTest {
         repo: FakeMoviesRepository,
         configRepo: ConfigurationRepository = FakeConfigurationRepository(),
         configStore: ConfigurationStore = ConfigurationStore(),
-    ) = MoviesViewModel(repo, configRepo, configStore, MovieUiMapper(configStore))
+    ) = MoviesViewModel(
+        getPopularMovies = GetPopularMoviesUseCase(repo, MovieUiMapper(configStore)),
+        searchMovies = SearchMoviesUseCase(repo, MovieUiMapper(configStore)),
+        loadConfiguration = LoadConfigurationUseCase(configRepo, configStore),
+    )
 
     @Test
     fun `given api returns movies - when loadMovies is called - then emits success`() =

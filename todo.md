@@ -2,13 +2,11 @@
 
 ## Search & Discovery
 
-- [ ] Pagination — the API returns `totalPages` but only the first page is loaded; add infinite scroll
 - [ ] Search history — save recent queries locally so users can quickly re-search
 - [ ] Genre filtering / chips above the movie list
 
 ## Movie Details
 
-- [x] Trailers — TMDB `/movie/{id}/videos` endpoint; play button on hero or dedicated section with YouTube thumbnails
 - [ ] Chip variety — use distinct chip styles/icons for metadata (e.g. filled chip for rating, outlined for genres, icon chips for runtime/director)
 
 ## Offline & Performance

@@ -126,7 +126,7 @@ private fun MoviesContent(
                     .padding(padding)
                     .fillMaxSize(),
         ) {
-            if (genres.isNotEmpty()) {
+            if (genres.isNotEmpty() && searchQuery.isBlank()) {
                 GenreChips(
                     genres = genres,
                     selectedGenre = selectedGenre,

@@ -2,6 +2,11 @@ package dev.odaridavid.smoovie.movies
 
 import dev.odaridavid.smoovie.movies.data.Movie
 
+data class GenreUiModel(
+    val id: Int,
+    val name: String,
+)
+
 data class MovieUiModel(
     val id: Int,
     val title: String,

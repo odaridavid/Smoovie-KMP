@@ -7,7 +7,9 @@ import dev.odaridavid.smoovie.movies.MovieDetailViewModel
 import dev.odaridavid.smoovie.movies.MovieUiMapper
 import dev.odaridavid.smoovie.movies.MoviesViewModel
 import dev.odaridavid.smoovie.movies.data.MoviesRepositoryImpl
+import dev.odaridavid.smoovie.movies.domain.GetGenresUseCase
 import dev.odaridavid.smoovie.movies.domain.GetMovieDetailUseCase
+import dev.odaridavid.smoovie.movies.domain.GetMoviesByGenreUseCase
 import dev.odaridavid.smoovie.movies.domain.GetPopularMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.MoviesRepository
 import dev.odaridavid.smoovie.movies.domain.SearchMoviesUseCase
@@ -59,7 +61,9 @@ private val appModule =
         single { LoadConfigurationUseCase(get(), get()) }
         single { GetPopularMoviesUseCase(get(), get()) }
         single { SearchMoviesUseCase(get(), get()) }
+        single { GetMoviesByGenreUseCase(get(), get()) }
+        single { GetGenresUseCase(get()) }
         single { GetMovieDetailUseCase(get(), get()) }
-        viewModel { MoviesViewModel(get(), get(), get()) }
+        viewModel { MoviesViewModel(get(), get(), get(), get(), get()) }
         viewModel { (movieId: Int) -> MovieDetailViewModel(movieId, get()) }
     }

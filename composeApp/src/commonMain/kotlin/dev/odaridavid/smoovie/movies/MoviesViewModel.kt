@@ -3,6 +3,8 @@ package dev.odaridavid.smoovie.movies
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.odaridavid.smoovie.configuration.LoadConfigurationUseCase
+import dev.odaridavid.smoovie.movies.domain.GetGenresUseCase
+import dev.odaridavid.smoovie.movies.domain.GetMoviesByGenreUseCase
 import dev.odaridavid.smoovie.movies.domain.GetPopularMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.MoviesPage
 import dev.odaridavid.smoovie.movies.domain.SearchMoviesUseCase
@@ -18,6 +20,8 @@ import kotlinx.coroutines.launch
 class MoviesViewModel(
     private val getPopularMovies: GetPopularMoviesUseCase,
     private val searchMovies: SearchMoviesUseCase,
+    private val getMoviesByGenre: GetMoviesByGenreUseCase,
+    private val getGenres: GetGenresUseCase,
     private val loadConfiguration: LoadConfigurationUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<MoviesUiState>(MoviesUiState.Loading)
@@ -25,6 +29,12 @@ class MoviesViewModel(
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    private val _genres = MutableStateFlow<List<GenreUiModel>>(emptyList())
+    val genres: StateFlow<List<GenreUiModel>> = _genres.asStateFlow()
+
+    private val _selectedGenre = MutableStateFlow<GenreUiModel?>(null)
+    val selectedGenre: StateFlow<GenreUiModel?> = _selectedGenre.asStateFlow()
 
     private var currentPage = 1
     private var totalPages = 1
@@ -38,13 +48,17 @@ class MoviesViewModel(
         _searchQuery.value = query
     }
 
+    fun onGenreSelected(genre: GenreUiModel?) {
+        if (_selectedGenre.value == genre) return
+        _selectedGenre.value = genre
+        loadMovies()
+    }
+
     fun loadMovies() {
         viewModelScope.launch {
             _uiState.value = MoviesUiState.Loading
             try {
-                val query = _searchQuery.value
-                val page = if (query.isBlank()) getPopularMovies() else searchMovies(query)
-                _uiState.value = processPage(page)
+                _uiState.value = processPage(fetchPage())
             } catch (e: Exception) {
                 _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
             }
@@ -57,9 +71,7 @@ class MoviesViewModel(
         viewModelScope.launch {
             _uiState.value = currentState.copy(isLoadingMore = true)
             try {
-                val nextPage = currentPage + 1
-                val query = _searchQuery.value
-                val result = if (query.isBlank()) getPopularMovies(nextPage) else searchMovies(query, nextPage)
+                val result = fetchPage(currentPage + 1)
                 currentPage = result.page
                 totalPages = result.totalPages
                 val existingIds = currentState.movies.map { it.id }.toSet()
@@ -81,11 +93,10 @@ class MoviesViewModel(
             _searchQuery
                 .drop(1)
                 .debounce(300)
-                .collectLatest { query ->
+                .collectLatest {
                     _uiState.value = MoviesUiState.Loading
                     try {
-                        val page = if (query.isBlank()) getPopularMovies() else searchMovies(query)
-                        _uiState.value = processPage(page)
+                        _uiState.value = processPage(fetchPage())
                     } catch (e: Exception) {
                         _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
                     }
@@ -98,10 +109,30 @@ class MoviesViewModel(
             _uiState.value = MoviesUiState.Loading
             try {
                 loadConfiguration()
-                _uiState.value = processPage(getPopularMovies())
+                loadGenresList()
+                _uiState.value = processPage(fetchPage())
             } catch (e: Exception) {
                 _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
             }
+        }
+    }
+
+    private fun loadGenresList() {
+        viewModelScope.launch {
+            try {
+                _genres.value = getGenres()
+            } catch (_: Exception) {
+            }
+        }
+    }
+
+    private suspend fun fetchPage(page: Int = 1): MoviesPage {
+        val query = _searchQuery.value
+        val genreId = _selectedGenre.value?.id
+        return when {
+            query.isNotBlank() -> searchMovies(query, page)
+            genreId != null -> getMoviesByGenre(genreId, page)
+            else -> getPopularMovies(page)
         }
     }
 

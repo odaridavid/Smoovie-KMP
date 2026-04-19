@@ -1,5 +1,6 @@
 package dev.odaridavid.smoovie
 
+import dev.odaridavid.smoovie.movies.data.Genre
 import dev.odaridavid.smoovie.movies.data.Movie
 import dev.odaridavid.smoovie.movies.data.MovieDetail
 import dev.odaridavid.smoovie.movies.domain.MoviesRepository
@@ -7,9 +8,12 @@ import dev.odaridavid.smoovie.movies.data.MoviesResponse
 
 class FakeMoviesRepository(
     var movies: List<Movie> = emptyList(),
+    var discoverMovies: List<Movie> = emptyList(),
     var movieDetail: MovieDetail? = null,
     var error: Exception? = null,
+    var genresError: Exception? = null,
     var totalPages: Int = 1,
+    var genres: List<Genre> = emptyList(),
 ) : MoviesRepository {
     override suspend fun getPopularMovies(page: Int): MoviesResponse {
         error?.let { throw it }
@@ -32,6 +36,24 @@ class FakeMoviesRepository(
             totalPages = totalPages,
             totalResults = movies.size,
         )
+    }
+
+    override suspend fun discoverMoviesByGenre(
+        genreId: Int,
+        page: Int,
+    ): MoviesResponse {
+        error?.let { throw it }
+        return MoviesResponse(
+            page = page,
+            results = discoverMovies,
+            totalPages = totalPages,
+            totalResults = discoverMovies.size,
+        )
+    }
+
+    override suspend fun getGenres(): List<Genre> {
+        genresError?.let { throw it }
+        return genres
     }
 
     override suspend fun getMovieDetail(movieId: Int): MovieDetail {

@@ -28,6 +28,11 @@ data class Genre(
 )
 
 @Serializable
+data class GenresResponse(
+    val genres: List<Genre>,
+)
+
+@Serializable
 data class Credits(
     val cast: List<CastMember> = emptyList(),
     val crew: List<CrewMember> = emptyList(),

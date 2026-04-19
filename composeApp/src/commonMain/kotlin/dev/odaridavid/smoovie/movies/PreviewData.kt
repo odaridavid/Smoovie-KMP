@@ -1,8 +1,8 @@
 import dev.odaridavid.smoovie.movies.CastMemberUiModel
-import dev.odaridavid.smoovie.movies.data.Movie
 import dev.odaridavid.smoovie.movies.MovieDetailUiModel
 import dev.odaridavid.smoovie.movies.ReviewUiModel
 import dev.odaridavid.smoovie.movies.TrailerUiModel
+import dev.odaridavid.smoovie.movies.data.Movie
 import dev.odaridavid.smoovie.movies.toUiModel
 
 internal val previewMovies =

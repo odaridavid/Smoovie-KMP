@@ -5,7 +5,10 @@ import dev.odaridavid.smoovie.FakeMoviesRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import dev.odaridavid.smoovie.configuration.LoadConfigurationUseCase
+import dev.odaridavid.smoovie.movies.data.Genre
 import dev.odaridavid.smoovie.movies.data.Movie
+import dev.odaridavid.smoovie.movies.domain.GetGenresUseCase
+import dev.odaridavid.smoovie.movies.domain.GetMoviesByGenreUseCase
 import dev.odaridavid.smoovie.movies.domain.GetPopularMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.SearchMoviesUseCase
 import kotlinx.coroutines.Dispatchers
@@ -51,6 +54,8 @@ class MoviesViewModelTest {
     ) = MoviesViewModel(
         getPopularMovies = GetPopularMoviesUseCase(repo, MovieUiMapper(configStore)),
         searchMovies = SearchMoviesUseCase(repo, MovieUiMapper(configStore)),
+        getMoviesByGenre = GetMoviesByGenreUseCase(repo, MovieUiMapper(configStore)),
+        getGenres = GetGenresUseCase(repo),
         loadConfiguration = LoadConfigurationUseCase(configRepo, configStore),
     )
 
@@ -168,4 +173,108 @@ class MoviesViewModelTest {
             assertEquals(testMovies.size, state.movies.size)
         }
 
+    @Test
+    fun `given next page load fails - when loadNextPage - then reverts to previous success state`() =
+        runTest {
+            val repo = FakeMoviesRepository(movies = testMovies, totalPages = 2)
+            val viewModel = buildViewModel(repo)
+            assertIs<MoviesUiState.Success>(viewModel.uiState.value)
+
+            repo.error = Exception("Network error")
+            viewModel.loadNextPage()
+
+            val state = viewModel.uiState.value
+            assertIs<MoviesUiState.Success>(state)
+            assertEquals(testMovies.size, state.movies.size)
+            assertFalse(state.isLoadingMore)
+        }
+
+    @Test
+    fun `given genre selected - when onGenreSelected - then emits discover movies`() =
+        runTest {
+            val actionMovies = listOf(Movie(id = 10, title = "Mad Max", overview = "Fury Road."))
+            val repo = FakeMoviesRepository(movies = testMovies, discoverMovies = actionMovies)
+            val viewModel = buildViewModel(repo)
+
+            viewModel.onGenreSelected(GenreUiModel(28, "Action"))
+
+            val state = viewModel.uiState.value
+            assertIs<MoviesUiState.Success>(state)
+            assertEquals(1, state.movies.size)
+            assertEquals("Mad Max", state.movies[0].title)
+        }
+
+    @Test
+    fun `given same genre already selected - when onGenreSelected - then movies are not reloaded`() =
+        runTest {
+            val genre = GenreUiModel(28, "Action")
+            val actionMovies = listOf(Movie(id = 10, title = "Mad Max", overview = "Fury Road."))
+            val repo = FakeMoviesRepository(movies = testMovies, discoverMovies = actionMovies)
+            val viewModel = buildViewModel(repo)
+            viewModel.onGenreSelected(genre)
+            val stateAfterFirst = viewModel.uiState.value
+
+            repo.discoverMovies = listOf(Movie(id = 11, title = "Different", overview = "Film."))
+            viewModel.onGenreSelected(genre)
+
+            assertEquals(stateAfterFirst, viewModel.uiState.value)
+        }
+
+    @Test
+    fun `given genre selected - when genre deselected - then emits popular movies`() =
+        runTest {
+            val actionMovies = listOf(Movie(id = 10, title = "Mad Max", overview = "Fury Road."))
+            val repo = FakeMoviesRepository(movies = testMovies, discoverMovies = actionMovies)
+            val viewModel = buildViewModel(repo)
+            viewModel.onGenreSelected(GenreUiModel(28, "Action"))
+            assertIs<MoviesUiState.Success>(viewModel.uiState.value)
+
+            viewModel.onGenreSelected(null)
+
+            val state = viewModel.uiState.value
+            assertIs<MoviesUiState.Success>(state)
+            assertEquals(expectedUiModels, state.movies)
+        }
+
+    @Test
+    fun `given genre selected with more pages - when loadNextPage - then appends discover movies`() =
+        runTest {
+            val page1Movies = listOf(Movie(id = 10, title = "Mad Max", overview = "Fury Road."))
+            val page2Movies = listOf(Movie(id = 11, title = "Die Hard", overview = "Action film."))
+            val repo = FakeMoviesRepository(discoverMovies = page1Movies, totalPages = 2)
+            val viewModel = buildViewModel(repo)
+            viewModel.onGenreSelected(GenreUiModel(28, "Action"))
+            assertIs<MoviesUiState.Success>(viewModel.uiState.value)
+            assertTrue((viewModel.uiState.value as MoviesUiState.Success).hasMorePages)
+
+            repo.discoverMovies = page2Movies
+            viewModel.loadNextPage()
+
+            val state = viewModel.uiState.value
+            assertIs<MoviesUiState.Success>(state)
+            assertEquals(2, state.movies.size)
+            assertFalse(state.hasMorePages)
+        }
+
+    @Test
+    fun `given genres available - when viewmodel is created - then genres state is populated`() =
+        runTest {
+            val genres = listOf(Genre(28, "Action"), Genre(35, "Comedy"))
+            val repo = FakeMoviesRepository(movies = testMovies, genres = genres)
+            val viewModel = buildViewModel(repo)
+
+            assertEquals(2, viewModel.genres.value.size)
+            assertEquals("Action", viewModel.genres.value[0].name)
+            assertEquals("Comedy", viewModel.genres.value[1].name)
+        }
+
+    @Test
+    fun `given genres api throws - when viewmodel is created - then movies still load`() =
+        runTest {
+            val repo = FakeMoviesRepository(movies = testMovies, genresError = Exception("genres failed"))
+            val viewModel = buildViewModel(repo)
+
+            assertIs<MoviesUiState.Success>(viewModel.uiState.value)
+            assertEquals(emptyList(), viewModel.genres.value)
+        }
 }

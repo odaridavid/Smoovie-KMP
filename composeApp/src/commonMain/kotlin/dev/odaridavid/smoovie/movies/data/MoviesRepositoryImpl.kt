@@ -26,6 +26,19 @@ class MoviesRepositoryImpl(
                 parameter(Parameter.PAGE, page)
             }.body()
 
+    override suspend fun discoverMoviesByGenre(
+        genreId: Int,
+        page: Int,
+    ): MoviesResponse =
+        client
+            .get(Path.DISCOVER_MOVIES) {
+                parameter(Parameter.WITH_GENRES, genreId)
+                parameter(Parameter.SORT_BY, "popularity.desc")
+                parameter(Parameter.PAGE, page)
+            }.body()
+
+    override suspend fun getGenres(): List<Genre> = client.get(Path.MOVIE_GENRES).body<GenresResponse>().genres
+
     override suspend fun getMovieDetail(movieId: Int): MovieDetail =
         client
             .get("${Path.MOVIE_DETAIL}/$movieId") {
@@ -35,12 +48,16 @@ class MoviesRepositoryImpl(
     private object Path {
         const val POPULAR_MOVIES = "${TMDB_BASE_URL}/movie/popular"
         const val SEARCH_MOVIES = "${TMDB_BASE_URL}/search/movie"
+        const val DISCOVER_MOVIES = "${TMDB_BASE_URL}/discover/movie"
+        const val MOVIE_GENRES = "${TMDB_BASE_URL}/genre/movie/list"
         const val MOVIE_DETAIL = "${TMDB_BASE_URL}/movie"
     }
 
     private object Parameter {
         const val PAGE = "page"
         const val QUERY = "query"
+        const val WITH_GENRES = "with_genres"
+        const val SORT_BY = "sort_by"
         const val APPEND_TO_RESPONSE = "append_to_response"
     }
 }

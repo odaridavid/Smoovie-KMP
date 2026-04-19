@@ -16,8 +16,6 @@
 
 ## UI Polish
 
-- [ ] Pull-to-refresh on the movie list
-- [ ] Animated card entrance (staggered fade/slide as cards appear)
 - [ ] Collapsing header with the backdrop of a featured/trending movie
 
 ## Backend & Services

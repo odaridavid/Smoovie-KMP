@@ -125,17 +125,23 @@ class MoviesViewModelTest {
     @Test
     fun `given success with more pages - when loadNextPage is called - then appends movies`() =
         runTest {
+            val page2Movies =
+                listOf(
+                    Movie(id = 3, title = "Tenet", overview = "Time inversion.", voteAverage = 7.8),
+                    Movie(id = 4, title = "Oppenheimer", overview = "The bomb.", voteAverage = 8.9),
+                )
             val repo = FakeMoviesRepository(movies = testMovies, totalPages = 2)
             val viewModel = buildViewModel(repo)
             val firstPage = viewModel.uiState.value
             assertIs<MoviesUiState.Success>(firstPage)
             assertTrue(firstPage.hasMorePages)
 
+            repo.movies = page2Movies
             viewModel.loadNextPage()
 
             val state = viewModel.uiState.value
             assertIs<MoviesUiState.Success>(state)
-            assertEquals(testMovies.size * 2, state.movies.size)
+            assertEquals(testMovies.size + page2Movies.size, state.movies.size)
             assertFalse(state.hasMorePages)
         }
 

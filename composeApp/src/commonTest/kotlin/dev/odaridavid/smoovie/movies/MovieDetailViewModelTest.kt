@@ -4,6 +4,7 @@ import dev.odaridavid.smoovie.FakeMoviesRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import dev.odaridavid.smoovie.movies.data.Genre
 import dev.odaridavid.smoovie.movies.data.MovieDetail
+import dev.odaridavid.smoovie.movies.domain.GetMovieDetailUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -46,7 +47,7 @@ class MovieDetailViewModelTest {
     private fun buildViewModel(
         repo: FakeMoviesRepository,
         configStore: ConfigurationStore = ConfigurationStore(),
-    ) = MovieDetailViewModel(testMovieDetail.id, repo, configStore)
+    ) = MovieDetailViewModel(testMovieDetail.id, GetMovieDetailUseCase(repo, configStore))
 
     @Test
     fun `given api returns movie detail - when viewmodel is created - then emits success`() =

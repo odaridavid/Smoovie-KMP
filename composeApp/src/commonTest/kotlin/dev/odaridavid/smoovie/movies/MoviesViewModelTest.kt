@@ -15,7 +15,9 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MoviesViewModelTest {
@@ -119,4 +121,38 @@ class MoviesViewModelTest {
             assertIs<MoviesUiState.Error>(state)
             assertEquals("Config error", state.message)
         }
+
+    @Test
+    fun `given success with more pages - when loadNextPage is called - then appends movies`() =
+        runTest {
+            val repo = FakeMoviesRepository(movies = testMovies, totalPages = 2)
+            val viewModel = buildViewModel(repo)
+            val firstPage = viewModel.uiState.value
+            assertIs<MoviesUiState.Success>(firstPage)
+            assertTrue(firstPage.hasMorePages)
+
+            viewModel.loadNextPage()
+
+            val state = viewModel.uiState.value
+            assertIs<MoviesUiState.Success>(state)
+            assertEquals(testMovies.size * 2, state.movies.size)
+            assertFalse(state.hasMorePages)
+        }
+
+    @Test
+    fun `given success on last page - when loadNextPage is called - then movies are not appended`() =
+        runTest {
+            val repo = FakeMoviesRepository(movies = testMovies, totalPages = 1)
+            val viewModel = buildViewModel(repo)
+            val initial = viewModel.uiState.value
+            assertIs<MoviesUiState.Success>(initial)
+            assertFalse(initial.hasMorePages)
+
+            viewModel.loadNextPage()
+
+            val state = viewModel.uiState.value
+            assertIs<MoviesUiState.Success>(state)
+            assertEquals(testMovies.size, state.movies.size)
+        }
+
 }

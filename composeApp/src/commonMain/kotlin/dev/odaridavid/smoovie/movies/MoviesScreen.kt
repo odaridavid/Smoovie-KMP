@@ -10,15 +10,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,6 +54,7 @@ fun MoviesScreen(
         searchQuery = searchQuery,
         onSearchQueryChanged = viewModel::onSearchQueryChanged,
         onRetry = viewModel::loadMovies,
+        onLoadMore = viewModel::loadNextPage,
         onMovieClick = onMovieClick,
     )
 }
@@ -59,6 +66,7 @@ private fun MoviesContent(
     searchQuery: String,
     onSearchQueryChanged: (String) -> Unit,
     onRetry: () -> Unit,
+    onLoadMore: () -> Unit,
     onMovieClick: (MovieUiModel) -> Unit,
 ) {
     var isSearchActive by rememberSaveable { mutableStateOf(false) }
@@ -107,6 +115,9 @@ private fun MoviesContent(
                     is MoviesUiState.Success -> {
                         MoviesList(
                             movies = state.movies,
+                            isLoadingMore = state.isLoadingMore,
+                            hasMorePages = state.hasMorePages,
+                            onLoadMore = onLoadMore,
                             onMovieClick = onMovieClick,
                         )
                     }
@@ -131,14 +142,38 @@ private fun MoviesContent(
 @Composable
 private fun MoviesList(
     movies: List<MovieUiModel>,
+    isLoadingMore: Boolean,
+    hasMorePages: Boolean,
+    onLoadMore: () -> Unit,
     onMovieClick: (MovieUiModel) -> Unit,
 ) {
+    val listState = rememberLazyListState()
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: return@derivedStateOf false
+            lastVisible >= listState.layoutInfo.totalItemsCount - 3
+        }
+    }
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore && hasMorePages && !isLoadingMore) onLoadMore()
+    }
     LazyColumn(
+        state = listState,
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         items(movies, key = { it.id }) { movie ->
             MovieCard(movie = movie, onClick = { onMovieClick(movie) })
+        }
+        if (isLoadingMore) {
+            item {
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
         }
     }
 }
@@ -154,6 +189,7 @@ private fun MoviesLoadingPreview() {
             searchQuery = "",
             onSearchQueryChanged = {},
             onRetry = {},
+            onLoadMore = {},
             onMovieClick = {},
         )
     }
@@ -168,6 +204,7 @@ private fun MoviesSuccessPreview() {
             searchQuery = "",
             onSearchQueryChanged = {},
             onRetry = {},
+            onLoadMore = {},
             onMovieClick = {},
         )
     }

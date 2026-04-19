@@ -9,13 +9,14 @@ class FakeMoviesRepository(
     var movies: List<Movie> = emptyList(),
     var movieDetail: MovieDetail? = null,
     var error: Exception? = null,
+    var totalPages: Int = 1,
 ) : MoviesRepository {
     override suspend fun getPopularMovies(page: Int): MoviesResponse {
         error?.let { throw it }
         return MoviesResponse(
             page = page,
             results = movies,
-            totalPages = 1,
+            totalPages = totalPages,
             totalResults = movies.size,
         )
     }
@@ -28,7 +29,7 @@ class FakeMoviesRepository(
         return MoviesResponse(
             page = page,
             results = movies,
-            totalPages = 1,
+            totalPages = totalPages,
             totalResults = movies.size,
         )
     }

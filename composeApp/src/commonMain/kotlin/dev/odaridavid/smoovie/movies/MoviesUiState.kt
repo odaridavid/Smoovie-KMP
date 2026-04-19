@@ -5,6 +5,8 @@ sealed interface MoviesUiState {
 
     data class Success(
         val movies: List<MovieUiModel>,
+        val isLoadingMore: Boolean = false,
+        val hasMorePages: Boolean = false,
     ) : MoviesUiState
 
     data object Empty : MoviesUiState

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.odaridavid.smoovie.configuration.ConfigurationRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
-import dev.odaridavid.smoovie.movies.data.Movie
+import dev.odaridavid.smoovie.movies.data.MoviesResponse
 import dev.odaridavid.smoovie.movies.domain.MoviesRepository
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +27,9 @@ class MoviesViewModel(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
+    private var currentPage = 1
+    private var totalPages = 1
+
     init {
         loadData()
         observeSearchQuery()
@@ -47,9 +50,38 @@ class MoviesViewModel(
                     } else {
                         moviesRepository.searchMovies(query)
                     }
-                _uiState.value = response.results.toUiState()
+                _uiState.value = processResponse(response)
             } catch (e: Exception) {
                 _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
+            }
+        }
+    }
+
+    fun loadNextPage() {
+        val currentState = _uiState.value as? MoviesUiState.Success ?: return
+        if (currentState.isLoadingMore || !currentState.hasMorePages) return
+        viewModelScope.launch {
+            _uiState.value = currentState.copy(isLoadingMore = true)
+            try {
+                val nextPage = currentPage + 1
+                val query = _searchQuery.value
+                val response =
+                    if (query.isBlank()) {
+                        moviesRepository.getPopularMovies(nextPage)
+                    } else {
+                        moviesRepository.searchMovies(query, nextPage)
+                    }
+                currentPage = response.page
+                totalPages = response.totalPages
+                val existingIds = currentState.movies.map { it.id }.toSet()
+                val newMovies = mapper.toUiModels(response.results).filter { it.id !in existingIds }
+                _uiState.value =
+                    MoviesUiState.Success(
+                        movies = currentState.movies + newMovies,
+                        hasMorePages = currentPage < totalPages,
+                    )
+            } catch (_: Exception) {
+                _uiState.value = currentState.copy(isLoadingMore = false)
             }
         }
     }
@@ -69,7 +101,7 @@ class MoviesViewModel(
                             } else {
                                 moviesRepository.searchMovies(query)
                             }
-                        _uiState.value = response.results.toUiState()
+                        _uiState.value = processResponse(response)
                     } catch (e: Exception) {
                         _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
                     }
@@ -84,15 +116,21 @@ class MoviesViewModel(
                 val config = configurationRepository.getImagesConfiguration()
                 configurationStore.save(config)
                 val response = moviesRepository.getPopularMovies()
-                _uiState.value = response.results.toUiState()
+                _uiState.value = processResponse(response)
             } catch (e: Exception) {
                 _uiState.value = MoviesUiState.Error(e.message ?: "Something went wrong")
             }
         }
     }
 
-    private fun List<Movie>.toUiState(): MoviesUiState {
-        val uiModels = mapper.toUiModels(this)
-        return if (uiModels.isEmpty()) MoviesUiState.Empty else MoviesUiState.Success(uiModels)
+    private fun processResponse(response: MoviesResponse): MoviesUiState {
+        currentPage = response.page
+        totalPages = response.totalPages
+        val uiModels = mapper.toUiModels(response.results)
+        return if (uiModels.isEmpty()) {
+            MoviesUiState.Empty
+        } else {
+            MoviesUiState.Success(uiModels, hasMorePages = response.page < response.totalPages)
+        }
     }
 }

@@ -44,7 +44,7 @@ class MoviesViewModel(
 
     fun onGenreSelected(genre: GenreUiModel?) {
         if (_state.value.selectedGenre == genre) return
-        _state.update { it.copy(selectedGenre = genre) }
+        _state.update { it.copy(selectedGenre = genre, searchQuery = "") }
         loadMovies()
     }
 

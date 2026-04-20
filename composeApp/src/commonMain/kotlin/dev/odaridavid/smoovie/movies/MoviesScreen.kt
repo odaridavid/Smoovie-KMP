@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import dev.odaridavid.smoovie.movies.components.CollapsedToolbar
+import dev.odaridavid.smoovie.ui.SearchBackHandler
 import dev.odaridavid.smoovie.movies.components.FeaturedMoviesPager
 import dev.odaridavid.smoovie.movies.components.GenreChips
 import dev.odaridavid.smoovie.movies.components.SearchToolbar
@@ -81,6 +82,10 @@ private fun MoviesContent(
     actions: MovieActions,
 ) {
     var isSearchActive by rememberSaveable { mutableStateOf(false) }
+    SearchBackHandler(enabled = isSearchActive) {
+        isSearchActive = false
+        actions.onSearchQueryChanged("")
+    }
     val listState = rememberLazyListState()
     val animatedIds = remember { mutableSetOf<Int>() }
 

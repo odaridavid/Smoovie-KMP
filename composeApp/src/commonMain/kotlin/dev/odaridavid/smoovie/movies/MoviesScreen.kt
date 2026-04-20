@@ -1,9 +1,12 @@
 package dev.odaridavid.smoovie.movies
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -116,18 +119,24 @@ private fun MoviesContent(
         },
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
-            if (!isSearchActive && state.featuredMovies.isNotEmpty()) {
-                FeaturedMoviesPager(
-                    movies = state.featuredMovies.take(FEATURED_COUNT),
-                    onSearchClick = { isSearchActive = true },
-                    onMovieClick = actions.onMovieClick,
-                )
-                if (state.genres.isNotEmpty()) {
-                    GenreChips(
-                        genres = state.genres,
-                        selectedGenre = state.selectedGenre,
-                        onGenreSelected = actions.onGenreSelected,
+            AnimatedVisibility(
+                visible = !isSearchActive && state.featuredMovies.isNotEmpty(),
+                enter = expandVertically(tween(400)) + fadeIn(tween(400)),
+                exit = shrinkVertically(tween(350)) + fadeOut(tween(300)),
+            ) {
+                Column {
+                    FeaturedMoviesPager(
+                        movies = state.featuredMovies.take(FEATURED_COUNT),
+                        onSearchClick = { isSearchActive = true },
+                        onMovieClick = actions.onMovieClick,
                     )
+                    if (state.genres.isNotEmpty()) {
+                        GenreChips(
+                            genres = state.genres,
+                            selectedGenre = state.selectedGenre,
+                            onGenreSelected = actions.onGenreSelected,
+                        )
+                    }
                 }
             }
             AnimatedContent(

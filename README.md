@@ -93,8 +93,8 @@ Open `/iosApp` in Xcode and run, or use the run configuration in Android Studio 
 
 ---
 
-|                                            |
-|:------------------------------------------:|
-| <img src="/docs/demo_1.webm" width="360"/> | 
+|                                           |
+|:-----------------------------------------:|
+| <img src="/docs/demo_1.gif" width="360"/> | 
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)

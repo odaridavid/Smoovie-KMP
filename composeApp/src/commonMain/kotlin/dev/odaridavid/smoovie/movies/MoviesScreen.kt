@@ -2,6 +2,7 @@ package dev.odaridavid.smoovie.movies
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -62,13 +63,14 @@ fun MoviesScreen(
     val state by viewModel.state.collectAsState()
     MoviesContent(
         state = state,
-        actions = MovieActions(
-            onSearchQueryChanged = viewModel::onSearchQueryChanged,
-            onGenreSelected = viewModel::onGenreSelected,
-            onRetry = viewModel::loadMovies,
-            onLoadMore = viewModel::loadNextPage,
-            onMovieClick = onMovieClick,
-        ),
+        actions =
+            MovieActions(
+                onSearchQueryChanged = viewModel::onSearchQueryChanged,
+                onGenreSelected = viewModel::onGenreSelected,
+                onRetry = viewModel::loadMovies,
+                onLoadMore = viewModel::loadNextPage,
+                onMovieClick = onMovieClick,
+            ),
     )
 }
 
@@ -88,8 +90,11 @@ private fun MoviesContent(
 
     val shouldLoadMore by remember {
         derivedStateOf {
-            val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-                ?: return@derivedStateOf false
+            val lastVisible =
+                listState.layoutInfo.visibleItemsInfo
+                    .lastOrNull()
+                    ?.index
+                    ?: return@derivedStateOf false
             lastVisible >= listState.layoutInfo.totalItemsCount - 3
         }
     }
@@ -102,19 +107,29 @@ private fun MoviesContent(
     Scaffold(
         contentWindowInsets = WindowInsets(0),
         topBar = {
-            when {
-                isSearchActive -> SearchToolbar(
-                    query = state.searchQuery,
-                    onQueryChanged = actions.onSearchQueryChanged,
-                    onClose = {
-                        isSearchActive = false
-                        actions.onSearchQueryChanged("")
-                    },
-                )
-                state.featuredMovies.isEmpty() -> CollapsedToolbar(
-                    visible = true,
-                    onIconClick = { isSearchActive = true },
-                )
+            AnimatedContent(
+                targetState = isSearchActive,
+                transitionSpec = {
+                    (fadeIn(tween(350)) togetherWith fadeOut(tween(300)))
+                        .using(SizeTransform(clip = true))
+                },
+                label = "topbar",
+            ) { searchActive ->
+                if (searchActive) {
+                    SearchToolbar(
+                        query = state.searchQuery,
+                        onQueryChanged = actions.onSearchQueryChanged,
+                        onClose = {
+                            isSearchActive = false
+                            actions.onSearchQueryChanged("")
+                        },
+                    )
+                } else if (state.featuredMovies.isEmpty()) {
+                    CollapsedToolbar(
+                        visible = true,
+                        onIconClick = { isSearchActive = true },
+                    )
+                }
             }
         },
     ) { padding ->
@@ -192,11 +207,12 @@ private fun MoviesContent(
 
 // region Previews
 
-private val previewGenres = listOf(
-    GenreUiModel(28, "Action"),
-    GenreUiModel(35, "Comedy"),
-    GenreUiModel(18, "Drama"),
-)
+private val previewGenres =
+    listOf(
+        GenreUiModel(28, "Action"),
+        GenreUiModel(35, "Comedy"),
+        GenreUiModel(18, "Drama"),
+    )
 
 @PreviewLightDark
 @Composable
@@ -214,12 +230,13 @@ private fun MoviesLoadingPreview() {
 private fun MoviesSuccessPreview() {
     SmoovieTheme {
         MoviesContent(
-            state = MoviesScreenState(
-                uiState = MoviesUiState.Success(previewMovieUiModels),
-                genres = previewGenres,
-                selectedGenre = previewGenres[0],
-                featuredMovies = previewMovieUiModels,
-            ),
+            state =
+                MoviesScreenState(
+                    uiState = MoviesUiState.Success(previewMovieUiModels),
+                    genres = previewGenres,
+                    selectedGenre = previewGenres[0],
+                    featuredMovies = previewMovieUiModels,
+                ),
             actions = MovieActions(),
         )
     }

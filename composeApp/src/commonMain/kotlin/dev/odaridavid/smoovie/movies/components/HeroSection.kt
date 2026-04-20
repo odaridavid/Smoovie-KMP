@@ -23,6 +23,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import dev.odaridavid.smoovie.ui.LocalAnimatedVisibilityScope
+import dev.odaridavid.smoovie.ui.LocalSharedTransitionScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -48,6 +50,7 @@ internal fun HeroSection(
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
         BackdropImage(
+            movieId = movie.id,
             backdropUrl = movie.backdropUrl,
             posterUrl = movie.posterUrl,
         )
@@ -150,21 +153,31 @@ private fun BoxScope.BackButtonScrim() {
 
 @Composable
 private fun BackdropImage(
+    movieId: Int,
     backdropUrl: String?,
     posterUrl: String?,
 ) {
+    val sharedTransitionScope = LocalSharedTransitionScope.current
+    val animatedVisibilityScope = LocalAnimatedVisibilityScope.current
     val imageUrl = backdropUrl ?: posterUrl
     if (imageUrl != null) {
+        val imageModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+            with(sharedTransitionScope) {
+                Modifier.sharedElement(
+                    sharedContentState = rememberSharedContentState(key = "hero_image_$movieId"),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                ).fillMaxWidth().aspectRatio(16f / 9f)
+            }
+        } else {
+            Modifier.fillMaxWidth().aspectRatio(16f / 9f)
+        }
         SubcomposeAsyncImage(
             model = imageUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             loading = { BackdropPlaceholder() },
             error = { BackdropPlaceholder() },
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(16f / 9f),
+            modifier = imageModifier,
         )
     } else {
         BackdropPlaceholder()

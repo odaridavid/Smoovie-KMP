@@ -5,6 +5,7 @@ data class MoviesScreenState(
     val searchQuery: String = "",
     val genres: List<GenreUiModel> = emptyList(),
     val selectedGenre: GenreUiModel? = null,
+    val featuredMovies: List<MovieUiModel> = emptyList(),
 )
 
 sealed interface MoviesUiState {

@@ -1,13 +1,15 @@
 # Smoovie
 
-A Kotlin Multiplatform app for browsing and exploring movies, powered by the [TMDB API](https://www.themoviedb.org/).
+A Kotlin Multiplatform app for browsing and exploring movies, powered by
+the [TMDB API](https://www.themoviedb.org/).
 Targets Android and iOS with a shared Compose Multiplatform UI.
 
 ## Features
 
 - Browse popular movies with shimmer loading placeholders
 - Search movies with debounced input
-- Movie detail screen with edge-to-edge backdrop image, gradient scrims, and enriched data (genres, runtime, tagline)
+- Movie detail screen with edge-to-edge backdrop image, gradient scrims, and enriched data (genres,
+  runtime, tagline)
 - Smooth slide transitions between list and detail screens
 - Light and dark theme support
 
@@ -58,20 +60,21 @@ Then edit `Config.xcconfig`:
 TMDB_ACCESS_TOKEN=YOUR_API_READ_ACCESS_TOKEN
 ```
 
-`Config.xcconfig` is gitignored — never commit it. Xcode expands the value into `Info.plist` at build time, where Kotlin reads it via `NSBundle`.
+`Config.xcconfig` is gitignored — never commit it. Xcode expands the value into `Info.plist` at
+build time, where Kotlin reads it via `NSBundle`.
 
 > **Note:** Add `Config.xcconfig` to `.gitignore` to keep the token out of version control.
 
 ## Dependencies
 
-| Library | Purpose |
-|---|---|
-| [Ktor](https://ktor.io/docs/client-create-multiplatform-application.html) | Multiplatform HTTP client |
-| [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization) | JSON parsing |
-| [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines) | Async / StateFlow |
-| [Compose Multiplatform](https://www.jetbrains.com/compose-multiplatform/) | Shared UI |
-| [AndroidX Lifecycle](https://developer.android.com/jetpack/androidx/releases/lifecycle) | ViewModel + viewModelScope (KMP) |
-| [Koin](https://insert-koin.io) | Multiplatform dependency injection |
+| Library                                                                                 | Purpose                            |
+|-----------------------------------------------------------------------------------------|------------------------------------|
+| [Ktor](https://ktor.io/docs/client-create-multiplatform-application.html)               | Multiplatform HTTP client          |
+| [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization)                | JSON parsing                       |
+| [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines)                      | Async / StateFlow                  |
+| [Compose Multiplatform](https://www.jetbrains.com/compose-multiplatform/)               | Shared UI                          |
+| [AndroidX Lifecycle](https://developer.android.com/jetpack/androidx/releases/lifecycle) | ViewModel + viewModelScope (KMP)   |
+| [Koin](https://insert-koin.io)                                                          | Multiplatform dependency injection |
 
 ## Build and Run
 
@@ -93,8 +96,9 @@ Open `/iosApp` in Xcode and run, or use the run configuration in Android Studio 
 
 ---
 
-|                                           |
-|:-----------------------------------------:|
-| <img src="/docs/demo_1.gif" width="360"/> | 
+|                                           |                                           |                                           |                                           |
+|:-----------------------------------------:|:-----------------------------------------:|:-----------------------------------------:|:-----------------------------------------:|
+| <img src="/docs/demo_1.gif" width="360"/> | <img src="/docs/demo_2.gif" width="360"/> | <img src="/docs/demo_3.gif" width="360"/> | <img src="/docs/demo_4.gif" width="360"/> |
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)
+Learn more
+about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)

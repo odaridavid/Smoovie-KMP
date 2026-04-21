@@ -4,6 +4,9 @@ import dev.odaridavid.smoovie.movies.ReviewUiModel
 import dev.odaridavid.smoovie.movies.TrailerUiModel
 import dev.odaridavid.smoovie.movies.data.Movie
 import dev.odaridavid.smoovie.movies.toUiModel
+import dev.odaridavid.smoovie.person.PersonDetailUiModel
+import dev.odaridavid.smoovie.person.PersonFilmographyItemUiModel
+import dev.odaridavid.smoovie.person.PersonSummaryUiModel
 
 internal val previewMovies =
     listOf(
@@ -110,6 +113,34 @@ internal val previewTrailers =
     )
 
 internal val previewSimilarMovies = previewMovieUiModels.take(5)
+
+internal val previewPersonSummaryUiModel =
+    PersonSummaryUiModel(
+        id = 1,
+        name = "Matthew McConaughey",
+        profileUrl = null,
+    )
+
+internal val previewPersonDetailUiModel =
+    PersonDetailUiModel(
+        id = 1,
+        name = "Matthew McConaughey",
+        biography =
+            "Matthew David McConaughey is an American actor and producer. " +
+                "He first gained notice for his breakout role in the coming-of-age comedy " +
+                "Dazed and Confused (1993). His career has spanned over three decades.",
+        birthday = "4 Nov 1969",
+        placeOfBirth = "Uvalde, Texas, USA",
+        knownForDepartment = "Acting",
+        profileUrl = null,
+        filmography =
+            previewMovieUiModels.take(3).mapIndexed { index, movie ->
+                PersonFilmographyItemUiModel(
+                    movie = movie,
+                    role = listOf("Cooper", "Rust Cohle", "Ron Woodroof").getOrElse(index) { "" },
+                )
+            },
+    )
 
 internal val previewMovieDetailUiModel =
     MovieDetailUiModel(

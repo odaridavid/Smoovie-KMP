@@ -3,8 +3,8 @@ package dev.odaridavid.smoovie
 import dev.odaridavid.smoovie.movies.data.Genre
 import dev.odaridavid.smoovie.movies.data.Movie
 import dev.odaridavid.smoovie.movies.data.MovieDetail
-import dev.odaridavid.smoovie.movies.domain.MoviesRepository
 import dev.odaridavid.smoovie.movies.data.MoviesResponse
+import dev.odaridavid.smoovie.movies.domain.MoviesRepository
 
 class FakeMoviesRepository(
     var movies: List<Movie> = emptyList(),

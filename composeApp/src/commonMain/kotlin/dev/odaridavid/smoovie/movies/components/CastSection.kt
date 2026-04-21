@@ -1,6 +1,7 @@
 package dev.odaridavid.smoovie.movies.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import dev.odaridavid.smoovie.movies.CastMemberUiModel
+import dev.odaridavid.smoovie.person.PersonSummaryUiModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
 import previewCast
@@ -36,6 +38,7 @@ import smoovie.composeapp.generated.resources.cast_section_title
 internal fun CastSection(
     cast: List<CastMemberUiModel>,
     modifier: Modifier = Modifier,
+    onPersonClick: (PersonSummaryUiModel) -> Unit = {},
 ) {
     Column(
         modifier = modifier,
@@ -47,17 +50,31 @@ internal fun CastSection(
         )
         LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             items(cast, key = { it.id }) { member ->
-                CastMemberItem(member = member)
+                CastMemberItem(
+                    member = member,
+                    onClick = {
+                        onPersonClick(
+                            PersonSummaryUiModel(
+                                id = member.id,
+                                name = member.name,
+                                profileUrl = member.profileUrl,
+                            ),
+                        )
+                    },
+                )
             }
         }
     }
 }
 
 @Composable
-private fun CastMemberItem(member: CastMemberUiModel) {
+private fun CastMemberItem(
+    member: CastMemberUiModel,
+    onClick: () -> Unit,
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(80.dp),
+        modifier = Modifier.width(80.dp).clickable(onClick = onClick),
     ) {
         if (member.profileUrl != null) {
             SubcomposeAsyncImage(

@@ -31,6 +31,7 @@ import dev.odaridavid.smoovie.movies.components.ReviewsSection
 import dev.odaridavid.smoovie.movies.components.ShimmerMovieDetail
 import dev.odaridavid.smoovie.movies.components.SimilarMoviesSection
 import dev.odaridavid.smoovie.movies.components.TrailersSection
+import dev.odaridavid.smoovie.person.PersonSummaryUiModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
 import previewMovieDetailUiModel
@@ -45,6 +46,7 @@ fun MovieDetailScreen(
     movie: MovieUiModel,
     onBack: () -> Unit,
     onMovieClick: (MovieUiModel) -> Unit,
+    onPersonClick: (PersonSummaryUiModel) -> Unit,
 ) {
     val detailState by viewModel.uiState.collectAsState()
     MovieDetailContent(
@@ -53,6 +55,7 @@ fun MovieDetailScreen(
         onBack = onBack,
         onRetry = viewModel::loadMovieDetail,
         onMovieClick = onMovieClick,
+        onPersonClick = onPersonClick,
     )
 }
 
@@ -63,6 +66,7 @@ internal fun MovieDetailContent(
     onBack: () -> Unit,
     onRetry: () -> Unit,
     onMovieClick: (MovieUiModel) -> Unit = {},
+    onPersonClick: (PersonSummaryUiModel) -> Unit = {},
 ) {
     Column(
         modifier =
@@ -86,6 +90,7 @@ internal fun MovieDetailContent(
                     CastSection(
                         cast = detail.cast,
                         modifier = Modifier.padding(horizontal = 16.dp),
+                        onPersonClick = onPersonClick,
                     )
                 }
                 if (detail.trailers.isNotEmpty()) {

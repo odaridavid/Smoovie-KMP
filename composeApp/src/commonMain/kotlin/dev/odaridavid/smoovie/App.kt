@@ -10,15 +10,19 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import dev.odaridavid.smoovie.movies.MovieDetailScreen
 import dev.odaridavid.smoovie.movies.MovieDetailViewModel
 import dev.odaridavid.smoovie.movies.MovieUiModel
 import dev.odaridavid.smoovie.movies.MoviesScreen
 import dev.odaridavid.smoovie.movies.MoviesViewModel
+import dev.odaridavid.smoovie.person.PersonDetailScreen
+import dev.odaridavid.smoovie.person.PersonDetailViewModel
+import dev.odaridavid.smoovie.person.PersonSummaryUiModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.ui.LocalAnimatedVisibilityScope
 import dev.odaridavid.smoovie.ui.LocalSharedTransitionScope
@@ -29,7 +33,20 @@ import org.koin.core.parameter.parametersOf
 fun App() {
     SmoovieTheme {
         Surface {
-            var currentScreen by remember { mutableStateOf<Screen>(Screen.MovieList) }
+            val backStack = remember { mutableStateListOf<Screen>(Screen.MovieList) }
+            var isForward by remember { mutableStateOf(true) }
+            val currentScreen = backStack.last()
+
+            val push: (Screen) -> Unit = { screen ->
+                isForward = true
+                backStack.add(screen)
+            }
+            val pop: () -> Unit = {
+                if (backStack.size > 1) {
+                    isForward = false
+                    backStack.removeAt(backStack.lastIndex)
+                }
+            }
 
             SharedTransitionLayout {
                 CompositionLocalProvider(LocalSharedTransitionScope provides this) {
@@ -37,7 +54,7 @@ fun App() {
                         targetState = currentScreen,
                         transitionSpec = {
                             val easing = CubicBezierEasing(0.4f, 0.0f, 0.2f, 1.0f)
-                            if (targetState is Screen.MovieDetail) {
+                            if (isForward) {
                                 slideInHorizontally(tween(500, easing = easing)) { it } togetherWith
                                     slideOutHorizontally(tween(500, easing = easing)) { -it / 3 }
                             } else {
@@ -51,13 +68,12 @@ fun App() {
                             SetupNavigation(
                                 currentScreen = screen,
                                 onMovieClick = { movie ->
-                                    currentScreen =
-                                        Screen.MovieDetail(
-                                            movieId = movie.id,
-                                            movie = movie,
-                                        )
+                                    push(Screen.MovieDetail(movieId = movie.id, movie = movie))
                                 },
-                                onBack = { currentScreen = Screen.MovieList },
+                                onPersonClick = { person ->
+                                    push(Screen.PersonDetail(personId = person.id, person = person))
+                                },
+                                onBack = pop,
                             )
                         }
                     }
@@ -71,6 +87,7 @@ fun App() {
 private fun SetupNavigation(
     currentScreen: Screen,
     onMovieClick: (MovieUiModel) -> Unit,
+    onPersonClick: (PersonSummaryUiModel) -> Unit,
     onBack: () -> Unit,
 ) {
     when (currentScreen) {
@@ -91,6 +108,21 @@ private fun SetupNavigation(
             MovieDetailScreen(
                 viewModel = detailViewModel,
                 movie = currentScreen.movie,
+                onBack = onBack,
+                onMovieClick = onMovieClick,
+                onPersonClick = onPersonClick,
+            )
+        }
+
+        is Screen.PersonDetail -> {
+            val personViewModel: PersonDetailViewModel =
+                koinViewModel(
+                    key = "person_${currentScreen.personId}",
+                    parameters = { parametersOf(currentScreen.personId) },
+                )
+            PersonDetailScreen(
+                viewModel = personViewModel,
+                person = currentScreen.person,
                 onBack = onBack,
                 onMovieClick = onMovieClick,
             )

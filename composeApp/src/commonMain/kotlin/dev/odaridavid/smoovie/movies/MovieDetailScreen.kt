@@ -29,6 +29,7 @@ import dev.odaridavid.smoovie.movies.components.CastSection
 import dev.odaridavid.smoovie.movies.components.HeroSection
 import dev.odaridavid.smoovie.movies.components.ReviewsSection
 import dev.odaridavid.smoovie.movies.components.ShimmerMovieDetail
+import dev.odaridavid.smoovie.movies.components.SimilarMoviesSection
 import dev.odaridavid.smoovie.movies.components.TrailersSection
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
@@ -43,6 +44,7 @@ fun MovieDetailScreen(
     viewModel: MovieDetailViewModel,
     movie: MovieUiModel,
     onBack: () -> Unit,
+    onMovieClick: (MovieUiModel) -> Unit,
 ) {
     val detailState by viewModel.uiState.collectAsState()
     MovieDetailContent(
@@ -50,6 +52,7 @@ fun MovieDetailScreen(
         detailState = detailState,
         onBack = onBack,
         onRetry = viewModel::loadMovieDetail,
+        onMovieClick = onMovieClick,
     )
 }
 
@@ -59,6 +62,7 @@ internal fun MovieDetailContent(
     detailState: MovieDetailUiState,
     onBack: () -> Unit,
     onRetry: () -> Unit,
+    onMovieClick: (MovieUiModel) -> Unit = {},
 ) {
     Column(
         modifier =
@@ -93,6 +97,13 @@ internal fun MovieDetailContent(
                 if (detail.reviews.isNotEmpty()) {
                     ReviewsSection(
                         reviews = detail.reviews,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                    )
+                }
+                if (detail.similar.isNotEmpty()) {
+                    SimilarMoviesSection(
+                        movies = detail.similar,
+                        onMovieClick = onMovieClick,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                     )
                 }

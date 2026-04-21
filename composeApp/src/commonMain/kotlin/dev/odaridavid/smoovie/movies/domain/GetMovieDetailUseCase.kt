@@ -15,6 +15,8 @@ class GetMovieDetailUseCase(
                 backdropUrl = configurationStore.backdropUrl(detail.backdropPath, BackdropSize.LARGE),
                 posterUrl = configurationStore.posterUrl(detail.posterPath),
                 profileUrlResolver = { configurationStore.profileUrl(it) },
+                movieBackdropUrlResolver = { configurationStore.backdropUrl(it) },
+                moviePosterUrlResolver = { configurationStore.posterUrl(it) },
             )
         }
 }

@@ -109,6 +109,8 @@ internal val previewTrailers =
         ),
     )
 
+internal val previewSimilarMovies = previewMovieUiModels.take(5)
+
 internal val previewMovieDetailUiModel =
     MovieDetailUiModel(
         id = 1,
@@ -128,4 +130,5 @@ internal val previewMovieDetailUiModel =
         cast = previewCast,
         reviews = previewReviews,
         trailers = previewTrailers,
+        similar = previewSimilarMovies,
     )

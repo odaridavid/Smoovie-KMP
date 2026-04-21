@@ -2,7 +2,9 @@ package dev.odaridavid.smoovie.movies
 
 import dev.odaridavid.smoovie.movies.data.AuthorDetails
 import dev.odaridavid.smoovie.movies.data.Genre
+import dev.odaridavid.smoovie.movies.data.Movie
 import dev.odaridavid.smoovie.movies.data.MovieDetail
+import dev.odaridavid.smoovie.movies.data.MoviesResponse
 import dev.odaridavid.smoovie.movies.data.Review
 import dev.odaridavid.smoovie.movies.data.ReviewsResponse
 import dev.odaridavid.smoovie.movies.data.Video
@@ -247,6 +249,95 @@ class MovieDetailUiModelTest {
     }
 
     @Test
+    fun `given no recommendations or similar - when mapped - then similar rail is empty`() {
+        val detail = movieDetail()
+
+        val uiModel = detail.toDetailUiModel(backdropUrl = null, posterUrl = null)
+
+        assertEquals(emptyList(), uiModel.similar)
+    }
+
+    @Test
+    fun `given recommendations - when mapped - then rail is populated in recommendation order`() {
+        val detail =
+            movieDetail(
+                recommendations = moviesResponse((2..4).map { movie(id = it, title = "Rec $it") }),
+            )
+
+        val uiModel = detail.toDetailUiModel(backdropUrl = null, posterUrl = null)
+
+        assertEquals(listOf(2, 3, 4), uiModel.similar.map { it.id })
+    }
+
+    @Test
+    fun `given recommendations and similar - when mapped - then recommendations come first and fill from similar`() {
+        val detail =
+            movieDetail(
+                recommendations = moviesResponse(listOf(movie(id = 10), movie(id = 11))),
+                similar = moviesResponse(listOf(movie(id = 20), movie(id = 21), movie(id = 22))),
+            )
+
+        val uiModel = detail.toDetailUiModel(backdropUrl = null, posterUrl = null)
+
+        assertEquals(listOf(10, 11, 20, 21, 22), uiModel.similar.map { it.id })
+    }
+
+    @Test
+    fun `given overlap between recommendations and similar - when mapped - then duplicates are removed`() {
+        val detail =
+            movieDetail(
+                recommendations = moviesResponse(listOf(movie(id = 10), movie(id = 11))),
+                similar = moviesResponse(listOf(movie(id = 11), movie(id = 12))),
+            )
+
+        val uiModel = detail.toDetailUiModel(backdropUrl = null, posterUrl = null)
+
+        assertEquals(listOf(10, 11, 12), uiModel.similar.map { it.id })
+    }
+
+    @Test
+    fun `given current movie appears in similar feed - when mapped - then it is excluded`() {
+        val detail =
+            movieDetail(
+                recommendations = moviesResponse(listOf(movie(id = 1), movie(id = 2))),
+            )
+
+        val uiModel = detail.toDetailUiModel(backdropUrl = null, posterUrl = null)
+
+        assertEquals(listOf(2), uiModel.similar.map { it.id })
+    }
+
+    @Test
+    fun `given more than five combined - when mapped - then rail is capped at 5`() {
+        val detail =
+            movieDetail(
+                recommendations = moviesResponse((2..5).map { movie(id = it) }),
+                similar = moviesResponse((6..10).map { movie(id = it) }),
+            )
+
+        val uiModel = detail.toDetailUiModel(backdropUrl = null, posterUrl = null)
+
+        assertEquals(5, uiModel.similar.size)
+        assertEquals(listOf(2, 3, 4, 5, 6), uiModel.similar.map { it.id })
+    }
+
+    @Test
+    fun `given similar movie with poster path - when mapped - then resolver is used for poster url`() {
+        val detail =
+            movieDetail(
+                recommendations = moviesResponse(listOf(movie(id = 2, posterPath = "/abc.jpg"))),
+            )
+
+        val uiModel = detail.toDetailUiModel(
+            backdropUrl = null,
+            posterUrl = null,
+            moviePosterUrlResolver = { path -> path?.let { "https://img.example/$it" } },
+        )
+
+        assertEquals("https://img.example//abc.jpg", uiModel.similar.first().posterUrl)
+    }
+
+    @Test
     fun `given backdrop and poster urls - when mapped - then urls are set`() {
         val detail = movieDetail()
 
@@ -266,6 +357,8 @@ class MovieDetailUiModelTest {
         voteCount: Int = 0,
         reviews: ReviewsResponse? = null,
         videos: VideosResponse? = null,
+        recommendations: MoviesResponse? = null,
+        similar: MoviesResponse? = null,
     ) = MovieDetail(
         id = 1,
         title = "Test Movie",
@@ -278,5 +371,28 @@ class MovieDetailUiModelTest {
         genres = genres,
         reviews = reviews,
         videos = videos,
+        recommendations = recommendations,
+        similar = similar,
     )
+
+    private fun movie(
+        id: Int,
+        title: String = "Movie $id",
+        posterPath: String? = null,
+    ) = Movie(
+        id = id,
+        title = title,
+        overview = "",
+        posterPath = posterPath,
+        releaseDate = "2023-01-01",
+        voteAverage = 7.0,
+    )
+
+    private fun moviesResponse(results: List<Movie>) =
+        MoviesResponse(
+            page = 1,
+            results = results,
+            totalPages = 1,
+            totalResults = results.size,
+        )
 }

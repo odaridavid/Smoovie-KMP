@@ -19,6 +19,8 @@ data class MovieDetail(
     val credits: Credits? = null,
     val reviews: ReviewsResponse? = null,
     val videos: VideosResponse? = null,
+    val recommendations: MoviesResponse? = null,
+    val similar: MoviesResponse? = null,
 )
 
 @Serializable

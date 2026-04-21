@@ -51,10 +51,11 @@ fun App() {
                             SetupNavigation(
                                 currentScreen = screen,
                                 onMovieClick = { movie ->
-                                    currentScreen = Screen.MovieDetail(
-                                        movieId = movie.id,
-                                        movie = movie,
-                                    )
+                                    currentScreen =
+                                        Screen.MovieDetail(
+                                            movieId = movie.id,
+                                            movie = movie,
+                                        )
                                 },
                                 onBack = { currentScreen = Screen.MovieList },
                             )
@@ -82,14 +83,16 @@ private fun SetupNavigation(
         }
 
         is Screen.MovieDetail -> {
-            val detailViewModel: MovieDetailViewModel = koinViewModel(
-                key = currentScreen.movieId.toString(),
-                parameters = { parametersOf(currentScreen.movieId) },
-            )
+            val detailViewModel: MovieDetailViewModel =
+                koinViewModel(
+                    key = currentScreen.movieId.toString(),
+                    parameters = { parametersOf(currentScreen.movieId) },
+                )
             MovieDetailScreen(
                 viewModel = detailViewModel,
                 movie = currentScreen.movie,
                 onBack = onBack,
+                onMovieClick = onMovieClick,
             )
         }
     }

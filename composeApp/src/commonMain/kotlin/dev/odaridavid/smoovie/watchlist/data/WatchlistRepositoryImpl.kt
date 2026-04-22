@@ -1,5 +1,6 @@
 package dev.odaridavid.smoovie.watchlist.data
 
+import dev.odaridavid.smoovie.utils.currentTimeMillis
 import dev.odaridavid.smoovie.watchlist.domain.WatchlistEntry
 import dev.odaridavid.smoovie.watchlist.domain.WatchlistRepository
 import kotlinx.coroutines.flow.Flow

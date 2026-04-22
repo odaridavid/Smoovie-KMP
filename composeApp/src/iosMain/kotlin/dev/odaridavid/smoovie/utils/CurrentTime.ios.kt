@@ -1,4 +1,4 @@
-package dev.odaridavid.smoovie.watchlist.data
+package dev.odaridavid.smoovie.utils
 
 import platform.Foundation.NSDate
 import platform.Foundation.timeIntervalSince1970

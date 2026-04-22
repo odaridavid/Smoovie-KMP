@@ -1,3 +1,3 @@
-package dev.odaridavid.smoovie.watchlist.data
+package dev.odaridavid.smoovie.utils
 
 internal expect fun currentTimeMillis(): Long

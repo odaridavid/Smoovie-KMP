@@ -8,6 +8,9 @@ import kotlinx.serialization.Serializable
 internal data object MoviesRoute
 
 @Serializable
+internal data object WatchlistRoute
+
+@Serializable
 internal data class MovieDetailRoute(
     val id: Int,
     val title: String,

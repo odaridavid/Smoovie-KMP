@@ -1,5 +1,6 @@
 package dev.odaridavid.smoovie
 
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import dev.odaridavid.smoovie.configuration.ConfigurationRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationRepositoryImpl
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
@@ -18,6 +19,14 @@ import dev.odaridavid.smoovie.person.PersonDetailViewModel
 import dev.odaridavid.smoovie.person.data.PersonRepositoryImpl
 import dev.odaridavid.smoovie.person.domain.GetPersonDetailUseCase
 import dev.odaridavid.smoovie.person.domain.PersonRepository
+import dev.odaridavid.smoovie.storage.DatabaseBuilderFactory
+import dev.odaridavid.smoovie.storage.SmoovieDatabase
+import dev.odaridavid.smoovie.watchlist.WatchlistViewModel
+import dev.odaridavid.smoovie.watchlist.data.WatchlistRepositoryImpl
+import dev.odaridavid.smoovie.watchlist.domain.ObserveIsInWatchlistUseCase
+import dev.odaridavid.smoovie.watchlist.domain.ObserveWatchlistUseCase
+import dev.odaridavid.smoovie.watchlist.domain.ToggleWatchlistUseCase
+import dev.odaridavid.smoovie.watchlist.domain.WatchlistRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -26,14 +35,17 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
+import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-fun initKoin() {
+fun initKoin(setup: KoinApplication.() -> Unit = {}) {
     startKoin {
-        modules(appModule)
+        setup()
+        modules(appModule, platformModule)
     }
 }
 
@@ -61,6 +73,15 @@ private val appModule =
         single<ConfigurationRepository> { ConfigurationRepositoryImpl(get()) }
         single<MoviesRepository> { MoviesRepositoryImpl(get()) }
         single<PersonRepository> { PersonRepositoryImpl(get()) }
+        single<SmoovieDatabase> {
+            get<DatabaseBuilderFactory>()
+                .create()
+                .setDriver(BundledSQLiteDriver())
+                .setQueryCoroutineContext(Dispatchers.Default)
+                .build()
+        }
+        single { get<SmoovieDatabase>().watchlistDao() }
+        single<WatchlistRepository> { WatchlistRepositoryImpl(get()) }
 
         single { MovieUiMapper(get()) }
 
@@ -71,8 +92,27 @@ private val appModule =
         single { GetGenresUseCase(get()) }
         single { GetMovieDetailUseCase(get(), get()) }
         single { GetPersonDetailUseCase(get(), get()) }
+        single { ObserveIsInWatchlistUseCase(get()) }
+        single { ObserveWatchlistUseCase(get()) }
+        single { ToggleWatchlistUseCase(get()) }
 
-        viewModel { MoviesViewModel(get(), get(), get(), get(), get()) }
-        viewModel { (movieId: Int) -> MovieDetailViewModel(movieId, get()) }
+        viewModel {
+            MoviesViewModel(
+                getPopularMovies = get(),
+                searchMovies = get(),
+                getMoviesByGenre = get(),
+                getGenres = get(),
+                loadConfiguration = get(),
+            )
+        }
+        viewModel { (movieId: Int) ->
+            MovieDetailViewModel(
+                observeIsInWatchlist = get(),
+                movieId = movieId,
+                getMovieDetail = get(),
+                toggleWatchlistUseCase = get(),
+            )
+        }
         viewModel { (personId: Int) -> PersonDetailViewModel(personId, get()) }
+        viewModel { WatchlistViewModel(get()) }
     }

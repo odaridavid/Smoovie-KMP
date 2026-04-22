@@ -22,4 +22,9 @@
     <string name="filmography_section_title">Filmography</string>
     <string name="error_person_detail_failed">Failed to load person</string>
     <string name="person_known_for_format">Known for %1$s</string>
+    <string name="watchlist_title">Watchlist</string>
+    <string name="watchlist_empty">No saved movies yet</string>
+    <string name="watchlist_add_content_description">Add to watchlist</string>
+    <string name="watchlist_remove_content_description">Remove from watchlist</string>
+    <string name="watchlist_open_content_description">Open watchlist</string>
 </resources>

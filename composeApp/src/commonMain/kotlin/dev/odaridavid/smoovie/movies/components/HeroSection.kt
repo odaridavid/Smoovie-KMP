@@ -13,8 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,12 +44,16 @@ import previewMovieDetailUiModel
 import previewMovieUiModels
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.navigate_back
+import smoovie.composeapp.generated.resources.watchlist_add_content_description
+import smoovie.composeapp.generated.resources.watchlist_remove_content_description
 
 @Composable
 internal fun HeroSection(
     movie: MovieUiModel,
     detailState: MovieDetailUiState,
     onBack: () -> Unit,
+    isInWatchlist: Boolean = false,
+    onToggleWatchlist: () -> Unit = {},
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
         BackdropImage(
@@ -63,6 +70,9 @@ internal fun HeroSection(
 
         // Back button
         BackButton(onBack)
+
+        // Watchlist toggle
+        WatchlistToggle(isInWatchlist = isInWatchlist, onToggle = onToggleWatchlist)
 
         // Title on bottom scrim
         Column(
@@ -91,6 +101,43 @@ internal fun HeroSection(
 }
 
 @Composable
+private fun BoxScope.WatchlistToggle(
+    isInWatchlist: Boolean,
+    onToggle: () -> Unit,
+) {
+    IconButton(
+        onClick = onToggle,
+        colors =
+            IconButtonDefaults.iconButtonColors(
+                contentColor = Color.White,
+            ),
+        modifier =
+            Modifier
+                .align(Alignment.TopEnd)
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .padding(4.dp)
+                .background(SCRIM_COLOR, CircleShape),
+    ) {
+        Icon(
+            imageVector =
+                if (isInWatchlist) {
+                    Icons.Default.Bookmark
+                } else {
+                    Icons.Default.BookmarkBorder
+                },
+            contentDescription =
+                stringResource(
+                    if (isInWatchlist) {
+                        Res.string.watchlist_remove_content_description
+                    } else {
+                        Res.string.watchlist_add_content_description
+                    },
+                ),
+        )
+    }
+}
+
+@Composable
 private fun BoxScope.BackButton(onBack: () -> Unit) {
     IconButton(
         onClick = onBack,
@@ -102,7 +149,8 @@ private fun BoxScope.BackButton(onBack: () -> Unit) {
             Modifier
                 .align(Alignment.TopStart)
                 .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(4.dp),
+                .padding(4.dp)
+                .background(SCRIM_COLOR, CircleShape),
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -110,6 +158,8 @@ private fun BoxScope.BackButton(onBack: () -> Unit) {
         )
     }
 }
+
+private val SCRIM_COLOR = Color.Black.copy(alpha = 0.35f)
 
 @Composable
 private fun BoxScope.TitleScrim() {

@@ -1,10 +1,13 @@
 package dev.odaridavid.smoovie.movies
 
 import dev.odaridavid.smoovie.FakeMoviesRepository
+import dev.odaridavid.smoovie.FakeWatchlistRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import dev.odaridavid.smoovie.movies.data.Genre
 import dev.odaridavid.smoovie.movies.data.MovieDetail
 import dev.odaridavid.smoovie.movies.domain.GetMovieDetailUseCase
+import dev.odaridavid.smoovie.watchlist.domain.ObserveIsInWatchlistUseCase
+import dev.odaridavid.smoovie.watchlist.domain.ToggleWatchlistUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -47,7 +50,13 @@ class MovieDetailViewModelTest {
     private fun buildViewModel(
         repo: FakeMoviesRepository,
         configStore: ConfigurationStore = ConfigurationStore(),
-    ) = MovieDetailViewModel(testMovieDetail.id, GetMovieDetailUseCase(repo, configStore))
+        watchlistRepository: FakeWatchlistRepository = FakeWatchlistRepository(),
+    ) = MovieDetailViewModel(
+        observeIsInWatchlist = ObserveIsInWatchlistUseCase(watchlistRepository),
+        movieId = testMovieDetail.id,
+        getMovieDetail = GetMovieDetailUseCase(repo, configStore),
+        toggleWatchlistUseCase = ToggleWatchlistUseCase(watchlistRepository),
+    )
 
     @Test
     fun `given api returns movie detail - when viewmodel is created - then emits success`() =

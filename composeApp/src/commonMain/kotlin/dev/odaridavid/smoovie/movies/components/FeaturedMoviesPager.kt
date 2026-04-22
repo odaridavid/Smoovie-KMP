@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
@@ -47,14 +49,17 @@ import org.jetbrains.compose.resources.stringResource
 import previewMovieUiModels
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.search_movies_hint
+import smoovie.composeapp.generated.resources.watchlist_open_content_description
 
 private val PAGER_HEIGHT = 340.dp
+private val ICON_SCRIM_COLOR = Color.Black.copy(alpha = 0.35f)
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun FeaturedMoviesPager(
     movies: List<MovieUiModel>,
     onSearchClick: () -> Unit,
+    onWatchlistClick: () -> Unit,
     onMovieClick: (MovieUiModel) -> Unit,
 ) {
     if (movies.isEmpty()) return
@@ -116,19 +121,34 @@ internal fun FeaturedMoviesPager(
                 ),
         )
 
-        // Search icon — top right, below status bar
-        IconButton(
-            onClick = onSearchClick,
-            colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White),
+        // Top-right action row — watchlist + search, below status bar
+        Row(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .windowInsetsPadding(WindowInsets.statusBars)
                 .padding(end = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = stringResource(Res.string.search_movies_hint),
-            )
+            IconButton(
+                onClick = onWatchlistClick,
+                colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White),
+                modifier = Modifier.background(ICON_SCRIM_COLOR, CircleShape),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.BookmarkBorder,
+                    contentDescription = stringResource(Res.string.watchlist_open_content_description),
+                )
+            }
+            IconButton(
+                onClick = onSearchClick,
+                colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White),
+                modifier = Modifier.background(ICON_SCRIM_COLOR, CircleShape),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = stringResource(Res.string.search_movies_hint),
+                )
+            }
         }
 
         // Movie title
@@ -227,6 +247,7 @@ private fun FeaturedMoviesPagerPreview() {
         FeaturedMoviesPager(
             movies = previewMovieUiModels.take(4),
             onSearchClick = {},
+            onWatchlistClick = {},
             onMovieClick = {},
         )
     }

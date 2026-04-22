@@ -22,6 +22,8 @@ import dev.odaridavid.smoovie.person.PersonDetailViewModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.ui.LocalAnimatedVisibilityScope
 import dev.odaridavid.smoovie.ui.LocalSharedTransitionScope
+import dev.odaridavid.smoovie.watchlist.WatchlistScreen
+import dev.odaridavid.smoovie.watchlist.WatchlistViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -57,6 +59,18 @@ fun App() {
                                 val viewModel: MoviesViewModel = koinViewModel()
                                 MoviesScreen(
                                     viewModel = viewModel,
+                                    onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
+                                    onWatchlistClick = { navController.navigate(WatchlistRoute) },
+                                )
+                            }
+                        }
+
+                        composable<WatchlistRoute> {
+                            WithAnimatedVisibilityScope {
+                                val viewModel: WatchlistViewModel = koinViewModel()
+                                WatchlistScreen(
+                                    viewModel = viewModel,
+                                    onBack = { navController.navigateUp() },
                                     onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
                                 )
                             }

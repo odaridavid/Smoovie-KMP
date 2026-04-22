@@ -6,7 +6,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,6 +25,7 @@ import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.app_name
 import smoovie.composeapp.generated.resources.search_movies_hint
+import smoovie.composeapp.generated.resources.watchlist_open_content_description
 
 private const val ANIMATION_DURATION_MS = 500
 
@@ -30,7 +33,8 @@ private const val ANIMATION_DURATION_MS = 500
 @Composable
 internal fun CollapsedToolbar(
     visible: Boolean,
-    onIconClick: () -> Unit,
+    onSearchClick: () -> Unit,
+    onWatchlistClick: () -> Unit,
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -63,11 +67,19 @@ internal fun CollapsedToolbar(
                     fadeOut(tween(ANIMATION_DURATION_MS)) +
                         slideOutHorizontally(tween(ANIMATION_DURATION_MS)) { it },
             ) {
-                IconButton(onClick = onIconClick) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = stringResource(Res.string.search_movies_hint),
-                    )
+                Row {
+                    IconButton(onClick = onWatchlistClick) {
+                        Icon(
+                            imageVector = Icons.Default.BookmarkBorder,
+                            contentDescription = stringResource(Res.string.watchlist_open_content_description),
+                        )
+                    }
+                    IconButton(onClick = onSearchClick) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = stringResource(Res.string.search_movies_hint),
+                        )
+                    }
                 }
             }
         },
@@ -78,6 +90,6 @@ internal fun CollapsedToolbar(
 @Composable
 private fun CollapsedToolbarPreview() {
     SmoovieTheme {
-        CollapsedToolbar(visible = true) { }
+        CollapsedToolbar(visible = true, onSearchClick = {}, onWatchlistClick = {})
     }
 }

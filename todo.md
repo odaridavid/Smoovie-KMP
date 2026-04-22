@@ -8,10 +8,11 @@
 
 - [ ] Local caching with a database (SQLDelight / Room KMP) so the app works offline
 
-## UI Polish
+## UI Polish + Features
 
-- [ ] Collapsing header with the backdrop of a featured/trending movie
 - [ ] Error ui could look better
+- [ ] Add tv shows
+- [ ] Gate behind auth
 
 ## Backend & Services
 
@@ -24,8 +25,4 @@
   user-friendly messages, retry strategies
 - [ ] Compose UI tests for the screens (screenshot tests or interaction tests)
 - [ ] Error retry per-search-query (currently retry always reloads popular movies)
-- Clean files and mapping
-- Shared transition to person details
-- Improve navigation
-- Add github ci/cd
-- Improve the claude.md and use skills
+- [ ] Add github ci/cd

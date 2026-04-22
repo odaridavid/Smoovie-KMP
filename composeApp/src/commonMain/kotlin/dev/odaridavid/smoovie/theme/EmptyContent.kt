@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,20 +24,24 @@ import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.empty_no_movies_found
 
 @Composable
-fun EmptyContent(modifier: Modifier = Modifier) {
+fun EmptyContent(
+    modifier: Modifier = Modifier,
+    imageVector: ImageVector = Icons.Default.MovieFilter,
+    message: String = stringResource(Res.string.empty_no_movies_found),
+) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
-            imageVector = Icons.Default.MovieFilter,
+            imageVector = imageVector,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = stringResource(Res.string.empty_no_movies_found),
+            text = message,
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -55,4 +60,3 @@ private fun EmptyContentPreview() {
         }
     }
 }
-

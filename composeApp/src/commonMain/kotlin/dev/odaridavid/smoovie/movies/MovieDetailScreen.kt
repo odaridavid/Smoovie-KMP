@@ -49,11 +49,14 @@ fun MovieDetailScreen(
     onPersonClick: (PersonSummaryUiModel) -> Unit,
 ) {
     val detailState by viewModel.uiState.collectAsState()
+    val isInWatchlist by viewModel.isInWatchlist.collectAsState()
     MovieDetailContent(
         movie = movie,
         detailState = detailState,
+        isInWatchlist = isInWatchlist,
         onBack = onBack,
         onRetry = viewModel::loadMovieDetail,
+        onToggleWatchlist = { viewModel.toggleWatchlist(movie) },
         onMovieClick = onMovieClick,
         onPersonClick = onPersonClick,
     )
@@ -65,6 +68,8 @@ internal fun MovieDetailContent(
     detailState: MovieDetailUiState,
     onBack: () -> Unit,
     onRetry: () -> Unit,
+    isInWatchlist: Boolean = false,
+    onToggleWatchlist: () -> Unit = {},
     onMovieClick: (MovieUiModel) -> Unit = {},
     onPersonClick: (PersonSummaryUiModel) -> Unit = {},
 ) {
@@ -76,7 +81,13 @@ internal fun MovieDetailContent(
                 .verticalScroll(rememberScrollState())
                 .windowInsetsPadding(WindowInsets.navigationBars),
     ) {
-        HeroSection(movie = movie, detailState = detailState, onBack = onBack)
+        HeroSection(
+            movie = movie,
+            detailState = detailState,
+            onBack = onBack,
+            isInWatchlist = isInWatchlist,
+            onToggleWatchlist = onToggleWatchlist,
+        )
 
         when (detailState) {
             is MovieDetailUiState.Loading -> {

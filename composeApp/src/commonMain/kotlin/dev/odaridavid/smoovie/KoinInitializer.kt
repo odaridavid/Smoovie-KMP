@@ -25,6 +25,7 @@ import dev.odaridavid.smoovie.watchlist.WatchlistViewModel
 import dev.odaridavid.smoovie.watchlist.data.WatchlistRepositoryImpl
 import dev.odaridavid.smoovie.watchlist.domain.ObserveIsInWatchlistUseCase
 import dev.odaridavid.smoovie.watchlist.domain.ObserveWatchlistUseCase
+import dev.odaridavid.smoovie.watchlist.domain.RemoveFromWatchlistUseCase
 import dev.odaridavid.smoovie.watchlist.domain.ToggleWatchlistUseCase
 import dev.odaridavid.smoovie.watchlist.domain.WatchlistRepository
 import io.ktor.client.HttpClient
@@ -95,6 +96,7 @@ private val appModule =
         single { ObserveIsInWatchlistUseCase(get()) }
         single { ObserveWatchlistUseCase(get()) }
         single { ToggleWatchlistUseCase(get()) }
+        single { RemoveFromWatchlistUseCase(get()) }
 
         viewModel {
             MoviesViewModel(
@@ -114,5 +116,5 @@ private val appModule =
             )
         }
         viewModel { (personId: Int) -> PersonDetailViewModel(personId, get()) }
-        viewModel { WatchlistViewModel(get()) }
+        viewModel { WatchlistViewModel(get(), get()) }
     }

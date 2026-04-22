@@ -87,7 +87,8 @@ internal fun PersonDetailContent(
                     contentAlignment = Alignment.Center,
                 ) {
                     ErrorContent(
-                        message = stringResource(Res.string.error_person_detail_failed),
+                        title = stringResource(Res.string.error_person_detail_failed),
+                        message = "",
                         onRetry = onRetry,
                     )
                 }

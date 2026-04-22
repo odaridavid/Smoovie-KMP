@@ -1,18 +1,14 @@
 # Smoovie — Enhancement Ideas
 
-## Search & Discovery
+## Features
 
 - [ ] Search history — save recent queries locally so users can quickly re-search
+- [ ] Add tv shows
+- [ ] Auth login/logout
 
 ## Offline & Performance
 
 - [ ] Local caching with a database (SQLDelight / Room KMP) so the app works offline
-
-## UI Polish + Features
-
-- [ ] Error ui could look better
-- [ ] Add tv shows
-- [ ] Gate behind auth
 
 ## Backend & Services
 

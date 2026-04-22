@@ -7,25 +7,42 @@ Targets Android and iOS with a shared Compose Multiplatform UI.
 ## Features
 
 - Browse popular movies with shimmer loading placeholders
+- Featured movies hero pager with auto-scroll and shared-element transitions into the detail screen
+- Genre filtering via chip row
 - Search movies with debounced input
-- Movie detail screen with edge-to-edge backdrop image, gradient scrims, and enriched data (genres,
-  runtime, tagline)
-- Smooth slide transitions between list and detail screens
+- Movie detail screen with edge-to-edge backdrop, gradient scrims, tagline, cast, trailers,
+  reviews, and a "More like this" section
+- Person detail screen with biography, birthday, place of birth, and filmography
+- Watchlist — tap the bookmark on any movie detail to save it locally; dedicated watchlist screen
+  reachable from the home toolbar
+- In-memory TTL caching for TMDB requests (1 hour) so navigating back and forth doesn't re-hit the
+  network
+- Typed navigation via Jetpack Compose Navigation (KMP) with serializable routes
+- Smooth slide transitions between destinations, shared-element transitions on hero images
 - Light and dark theme support
 
 ## Project Structure
 
 ```
 composeApp/src/
-├── commonMain/       # Shared code (UI, ViewModels, API client)
+├── commonMain/       # Shared code (UI, ViewModels, API client, persistence)
 │   └── dev/odaridavid/smoovie/
-│       ├── configuration/   # TMDB image config + URL builder
-│       ├── movies/          # Movie list, detail, search, models, repositories
-│       └── theme/           # SmoovieTheme (Material3, dark/light)
-├── androidMain/      # Android-specific (BuildConfig, OkHttp engine)
-├── iosMain/          # iOS-specific (NSBundle, Darwin engine)
-└── commonTest/       # Unit tests
+│       ├── App.kt              # NavHost + shared-transition scaffolding
+│       ├── Screen.kt           # @Serializable navigation routes
+│       ├── KoinInitializer.kt  # DI module
+│       ├── configuration/      # TMDB image config + URL builder
+│       ├── movies/             # Movie list, detail, search, featured pager, use cases
+│       ├── person/             # Person detail screen + filmography
+│       ├── watchlist/          # Watchlist screen, repository, Room DAO + entity
+│       ├── storage/            # SmoovieDatabase (Room KMP) + platform DB builder
+│       ├── utils/              # TtlCache, currentTimeMillis (expect/actual)
+│       ├── ui/                 # Shared composables (search back handler, transition locals)
+│       └── theme/              # SmoovieTheme (Material3, dark/light), ErrorContent, EmptyContent
+├── androidMain/      # Android-specific (BuildConfig, OkHttp engine, Room builder)
+├── iosMain/          # iOS-specific (NSBundle, Darwin engine, Room builder)
+└── commonTest/       # Unit tests (ViewModels, use cases, TtlCache)
 
+composeApp/schemas/   # Exported Room schemas (tracked in git for migration review)
 iosApp/               # Xcode project / Swift entry point
 ```
 
@@ -67,14 +84,19 @@ build time, where Kotlin reads it via `NSBundle`.
 
 ## Dependencies
 
-| Library                                                                                 | Purpose                            |
-|-----------------------------------------------------------------------------------------|------------------------------------|
-| [Ktor](https://ktor.io/docs/client-create-multiplatform-application.html)               | Multiplatform HTTP client          |
-| [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization)                | JSON parsing                       |
-| [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines)                      | Async / StateFlow                  |
-| [Compose Multiplatform](https://www.jetbrains.com/compose-multiplatform/)               | Shared UI                          |
-| [AndroidX Lifecycle](https://developer.android.com/jetpack/androidx/releases/lifecycle) | ViewModel + viewModelScope (KMP)   |
-| [Koin](https://insert-koin.io)                                                          | Multiplatform dependency injection |
+| Library                                                                                   | Purpose                                      |
+|-------------------------------------------------------------------------------------------|----------------------------------------------|
+| [Ktor](https://ktor.io/docs/client-create-multiplatform-application.html)                 | Multiplatform HTTP client                    |
+| [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization)                  | JSON parsing, typed nav route args           |
+| [kotlinx.coroutines](https://github.com/Kotlin/kotlinx.coroutines)                        | Async / StateFlow                            |
+| [Compose Multiplatform](https://www.jetbrains.com/compose-multiplatform/)                 | Shared UI                                    |
+| [AndroidX Lifecycle](https://developer.android.com/jetpack/androidx/releases/lifecycle)   | ViewModel + viewModelScope (KMP)             |
+| [AndroidX Navigation Compose](https://developer.android.com/jetpack/compose/navigation)   | Typed KMP navigation + shared transitions    |
+| [Room KMP](https://developer.android.com/kotlin/multiplatform/room)                       | Local persistence for the watchlist          |
+| [androidx.sqlite (bundled)](https://developer.android.com/kotlin/multiplatform/sqlite)    | Bundled SQLite driver for KMP                |
+| [Koin](https://insert-koin.io)                                                            | Multiplatform dependency injection           |
+| [Coil 3](https://coil-kt.github.io/coil/)                                                 | Image loading (backdrops, posters, profiles) |
+| [KSP](https://github.com/google/ksp)                                                      | Room annotation processing                   |
 
 ## Build and Run
 
@@ -93,6 +115,12 @@ Run from the IDE toolbar or from the terminal:
 ### iOS
 
 Open `/iosApp` in Xcode and run, or use the run configuration in Android Studio / Fleet.
+
+### Tests
+
+```shell
+./gradlew :composeApp:allTests
+```
 
 ---
 

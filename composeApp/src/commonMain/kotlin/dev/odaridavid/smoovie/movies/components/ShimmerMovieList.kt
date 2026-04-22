@@ -11,16 +11,24 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,6 +41,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import dev.odaridavid.smoovie.theme.SmoovieTheme
+import org.jetbrains.compose.resources.stringResource
+import smoovie.composeapp.generated.resources.Res
+import smoovie.composeapp.generated.resources.search_movies_hint
 
 private const val SHIMMER_ITEM_COUNT = 5
 private val PAGER_SHIMMER_HEIGHT = 340.dp
@@ -41,11 +52,12 @@ private val PAGER_SHIMMER_HEIGHT = 340.dp
 internal fun ShimmerMovieList(
     modifier: Modifier = Modifier,
     showHero: Boolean = true,
+    onSearchClick: () -> Unit = {},
 ) {
     val shimmerBrush = rememberShimmerBrush()
     Column(modifier = modifier) {
         if (showHero) {
-            ShimmerFeaturedHero(brush = shimmerBrush)
+            ShimmerFeaturedHero(brush = shimmerBrush, onSearchClick = onSearchClick)
             ShimmerGenreChips(brush = shimmerBrush)
         }
         LazyColumn(
@@ -64,7 +76,10 @@ internal fun ShimmerMovieList(
 }
 
 @Composable
-private fun ShimmerFeaturedHero(brush: Brush) {
+private fun ShimmerFeaturedHero(
+    brush: Brush,
+    onSearchClick: () -> Unit,
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -88,6 +103,19 @@ private fun ShimmerFeaturedHero(brush: Brush) {
                     .fillMaxWidth(0.45f)
                     .height(16.dp)
                     .background(Color.White.copy(alpha = 0.15f), MaterialTheme.shapes.small),
+            )
+        }
+        IconButton(
+            onClick = onSearchClick,
+            colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White),
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .padding(end = 4.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = stringResource(Res.string.search_movies_hint),
             )
         }
         Row(

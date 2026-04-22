@@ -129,7 +129,7 @@ private fun MoviesContent(
                             actions.onSearchQueryChanged("")
                         },
                     )
-                } else if (state.featuredMovies.isEmpty()) {
+                } else if (state.featuredMovies.isEmpty() && state.uiState !is MoviesUiState.Loading) {
                     CollapsedToolbar(
                         visible = true,
                         onIconClick = { isSearchActive = true },
@@ -173,6 +173,7 @@ private fun MoviesContent(
                             ShimmerMovieList(
                                 modifier = Modifier.fillMaxSize(),
                                 showHero = state.featuredMovies.isEmpty(),
+                                onSearchClick = { isSearchActive = true },
                             )
                         }
 

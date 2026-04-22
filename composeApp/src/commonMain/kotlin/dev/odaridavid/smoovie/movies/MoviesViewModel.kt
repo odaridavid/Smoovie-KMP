@@ -59,6 +59,10 @@ class MoviesViewModel(
         }
     }
 
+    fun retry() {
+        loadData()
+    }
+
     fun loadNextPage() {
         val currentUiState = _state.value.uiState as? MoviesUiState.Success ?: return
         if (currentUiState.isLoadingMore || !currentUiState.hasMorePages) return

@@ -5,10 +5,7 @@
 - [ ] Search history — save recent queries locally so users can quickly re-search
 - [ ] Add tv shows
 - [ ] Auth login/logout
-
-## Offline & Performance
-
-- [ ] Local caching with a database (SQLDelight / Room KMP) so the app works offline
+- [ ] Swipe to delete
 
 ## Backend & Services
 
@@ -20,5 +17,4 @@
 - [ ] Improve error handling — more granular error types (network vs server vs parsing),
   user-friendly messages, retry strategies
 - [ ] Compose UI tests for the screens (screenshot tests or interaction tests)
-- [ ] Error retry per-search-query (currently retry always reloads popular movies)
 - [ ] Add github ci/cd

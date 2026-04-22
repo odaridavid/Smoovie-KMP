@@ -71,7 +71,7 @@ fun MoviesScreen(
             MovieActions(
                 onSearchQueryChanged = viewModel::onSearchQueryChanged,
                 onGenreSelected = viewModel::onGenreSelected,
-                onRetry = viewModel::loadMovies,
+                onRetry = viewModel::retry,
                 onLoadMore = viewModel::loadNextPage,
                 onMovieClick = onMovieClick,
                 onWatchlistClick = onWatchlistClick,

@@ -38,6 +38,7 @@ import dev.odaridavid.smoovie.ui.SearchBackHandler
 import dev.odaridavid.smoovie.movies.components.FeaturedMoviesPager
 import dev.odaridavid.smoovie.movies.components.GenreChips
 import dev.odaridavid.smoovie.movies.components.SearchToolbar
+import dev.odaridavid.smoovie.movies.components.ShimmerFeaturedSection
 import dev.odaridavid.smoovie.movies.components.ShimmerMovieList
 import dev.odaridavid.smoovie.movies.components.movieItems
 import dev.odaridavid.smoovie.theme.EmptyContent
@@ -140,21 +141,37 @@ private fun MoviesContent(
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
             AnimatedVisibility(
-                visible = !isSearchActive && state.featuredMovies.isNotEmpty(),
+                visible =
+                    !isSearchActive &&
+                        (state.featuredMovies.isNotEmpty() || state.uiState is MoviesUiState.Loading),
                 enter = expandVertically(tween(400)) + fadeIn(tween(400)),
                 exit = shrinkVertically(tween(350)) + fadeOut(tween(300)),
             ) {
-                Column {
-                    FeaturedMoviesPager(
-                        movies = state.featuredMovies.take(FEATURED_COUNT),
-                        onSearchClick = { isSearchActive = true },
-                        onMovieClick = actions.onMovieClick,
-                    )
-                    if (state.genres.isNotEmpty()) {
-                        GenreChips(
-                            genres = state.genres,
-                            selectedGenre = state.selectedGenre,
-                            onGenreSelected = actions.onGenreSelected,
+                AnimatedContent(
+                    targetState = state.featuredMovies.isNotEmpty(),
+                    transitionSpec = {
+                        fadeIn(tween(SLOW_ANIM_DURATION)) togetherWith fadeOut(tween(SLOW_ANIM_DURATION))
+                    },
+                    label = "featured",
+                ) { hasFeatured ->
+                    if (hasFeatured) {
+                        Column {
+                            FeaturedMoviesPager(
+                                movies = state.featuredMovies.take(FEATURED_COUNT),
+                                onSearchClick = { isSearchActive = true },
+                                onMovieClick = actions.onMovieClick,
+                            )
+                            if (state.genres.isNotEmpty()) {
+                                GenreChips(
+                                    genres = state.genres,
+                                    selectedGenre = state.selectedGenre,
+                                    onGenreSelected = actions.onGenreSelected,
+                                )
+                            }
+                        }
+                    } else {
+                        ShimmerFeaturedSection(
+                            onSearchClick = { isSearchActive = true },
                         )
                     }
                 }
@@ -172,8 +189,7 @@ private fun MoviesContent(
                         is MoviesUiState.Loading -> {
                             ShimmerMovieList(
                                 modifier = Modifier.fillMaxSize(),
-                                showHero = state.featuredMovies.isEmpty(),
-                                onSearchClick = { isSearchActive = true },
+                                showHero = false,
                             )
                         }
 

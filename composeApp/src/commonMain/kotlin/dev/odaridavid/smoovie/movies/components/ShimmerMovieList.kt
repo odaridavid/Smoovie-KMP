@@ -49,6 +49,18 @@ private const val SHIMMER_ITEM_COUNT = 5
 private val PAGER_SHIMMER_HEIGHT = 340.dp
 
 @Composable
+internal fun ShimmerFeaturedSection(
+    onSearchClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val shimmerBrush = rememberShimmerBrush()
+    Column(modifier = modifier) {
+        ShimmerFeaturedHero(brush = shimmerBrush, onSearchClick = onSearchClick)
+        ShimmerGenreChips(brush = shimmerBrush)
+    }
+}
+
+@Composable
 internal fun ShimmerMovieList(
     modifier: Modifier = Modifier,
     showHero: Boolean = true,

@@ -1,5 +1,8 @@
 package dev.odaridavid.smoovie.person
 
+import dev.odaridavid.smoovie.person.data.MovieCredits
+import dev.odaridavid.smoovie.person.data.PersonDetail
+import dev.odaridavid.smoovie.person.data.PersonMovieCredit
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

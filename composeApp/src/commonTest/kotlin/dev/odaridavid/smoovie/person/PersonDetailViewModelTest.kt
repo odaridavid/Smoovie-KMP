@@ -2,6 +2,9 @@ package dev.odaridavid.smoovie.person
 
 import dev.odaridavid.smoovie.FakePersonRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
+import dev.odaridavid.smoovie.person.data.MovieCredits
+import dev.odaridavid.smoovie.person.data.PersonDetail
+import dev.odaridavid.smoovie.person.data.PersonMovieCredit
 import dev.odaridavid.smoovie.person.domain.GetPersonDetailUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,8 +35,18 @@ class PersonDetailViewModelTest {
                 MovieCredits(
                     cast =
                         listOf(
-                            credit(id = 1, title = "Interstellar", character = "Cooper", popularity = 50.0),
-                            credit(id = 2, title = "Dallas Buyers Club", character = "Ron", popularity = 30.0),
+                            credit(
+                                id = 1,
+                                title = "Interstellar",
+                                character = "Cooper",
+                                popularity = 50.0
+                            ),
+                            credit(
+                                id = 2,
+                                title = "Dallas Buyers Club",
+                                character = "Ron",
+                                popularity = 30.0
+                            ),
                         ),
                 ),
         )

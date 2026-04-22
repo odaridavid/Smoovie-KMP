@@ -1,7 +1,6 @@
 package dev.odaridavid.smoovie.person.data
 
 import dev.odaridavid.smoovie.TMDB_BASE_URL
-import dev.odaridavid.smoovie.person.PersonDetail
 import dev.odaridavid.smoovie.person.domain.PersonRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body

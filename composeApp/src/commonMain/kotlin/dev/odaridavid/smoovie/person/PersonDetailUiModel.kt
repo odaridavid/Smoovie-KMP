@@ -3,6 +3,8 @@ package dev.odaridavid.smoovie.person
 import dev.odaridavid.smoovie.movies.MovieUiModel
 import dev.odaridavid.smoovie.movies.toDisplayRating
 import dev.odaridavid.smoovie.movies.toReadableDate
+import dev.odaridavid.smoovie.person.data.PersonDetail
+import dev.odaridavid.smoovie.person.data.PersonMovieCredit
 
 data class PersonSummaryUiModel(
     val id: Int,

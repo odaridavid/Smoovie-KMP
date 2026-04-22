@@ -1,6 +1,6 @@
 package dev.odaridavid.smoovie
 
-import dev.odaridavid.smoovie.person.PersonDetail
+import dev.odaridavid.smoovie.person.data.PersonDetail
 import dev.odaridavid.smoovie.person.domain.PersonRepository
 
 class FakePersonRepository(

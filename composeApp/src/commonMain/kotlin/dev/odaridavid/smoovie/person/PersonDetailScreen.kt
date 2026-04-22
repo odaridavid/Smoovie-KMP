@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +29,7 @@ import dev.odaridavid.smoovie.movies.MovieUiModel
 import dev.odaridavid.smoovie.movies.components.MovieCard
 import dev.odaridavid.smoovie.person.components.HeaderFrame
 import dev.odaridavid.smoovie.person.components.PersonPhoto
+import dev.odaridavid.smoovie.person.components.ShimmerPersonDetail
 import dev.odaridavid.smoovie.theme.ErrorContent
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
@@ -73,13 +73,7 @@ internal fun PersonDetailContent(
     ) {
         when (state) {
             is PersonDetailUiState.Loading -> {
-                SummaryHeader(person = person, onBack = onBack)
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
-                }
+                ShimmerPersonDetail(onBack = onBack)
             }
 
             is PersonDetailUiState.Success -> {

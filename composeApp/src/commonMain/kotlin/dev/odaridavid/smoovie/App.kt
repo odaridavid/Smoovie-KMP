@@ -1,14 +1,11 @@
 package dev.odaridavid.smoovie
 
-import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -20,8 +17,6 @@ import dev.odaridavid.smoovie.movies.MoviesViewModel
 import dev.odaridavid.smoovie.person.PersonDetailScreen
 import dev.odaridavid.smoovie.person.PersonDetailViewModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
-import dev.odaridavid.smoovie.ui.LocalAnimatedVisibilityScope
-import dev.odaridavid.smoovie.ui.LocalSharedTransitionScope
 import dev.odaridavid.smoovie.watchlist.WatchlistScreen
 import dev.odaridavid.smoovie.watchlist.WatchlistViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -36,90 +31,71 @@ fun App() {
         Surface {
             val navController = rememberNavController()
 
-            SharedTransitionLayout {
-                CompositionLocalProvider(LocalSharedTransitionScope provides this) {
-                    NavHost(
-                        navController = navController,
-                        startDestination = MoviesRoute,
-                        enterTransition = {
-                            slideInHorizontally(tween(TRANSITION_DURATION_MS, easing = TransitionEasing)) { it }
-                        },
-                        exitTransition = {
-                            slideOutHorizontally(tween(TRANSITION_DURATION_MS, easing = TransitionEasing)) { -it / 3 }
-                        },
-                        popEnterTransition = {
-                            slideInHorizontally(tween(TRANSITION_DURATION_MS, easing = TransitionEasing)) { -it / 3 }
-                        },
-                        popExitTransition = {
-                            slideOutHorizontally(tween(TRANSITION_DURATION_MS, easing = TransitionEasing)) { it }
-                        },
-                    ) {
-                        composable<MoviesRoute> {
-                            WithAnimatedVisibilityScope {
-                                val viewModel: MoviesViewModel = koinViewModel()
-                                MoviesScreen(
-                                    viewModel = viewModel,
-                                    onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
-                                    onWatchlistClick = { navController.navigate(WatchlistRoute) },
-                                )
-                            }
-                        }
+            NavHost(
+                navController = navController,
+                startDestination = MoviesRoute,
+                enterTransition = {
+                    slideInHorizontally(tween(TRANSITION_DURATION_MS, easing = TransitionEasing)) { it }
+                },
+                exitTransition = {
+                    slideOutHorizontally(tween(TRANSITION_DURATION_MS, easing = TransitionEasing)) { -it / 3 }
+                },
+                popEnterTransition = {
+                    slideInHorizontally(tween(TRANSITION_DURATION_MS, easing = TransitionEasing)) { -it / 3 }
+                },
+                popExitTransition = {
+                    slideOutHorizontally(tween(TRANSITION_DURATION_MS, easing = TransitionEasing)) { it }
+                },
+            ) {
+                composable<MoviesRoute> {
+                    val viewModel: MoviesViewModel = koinViewModel()
+                    MoviesScreen(
+                        viewModel = viewModel,
+                        onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
+                        onWatchlistClick = { navController.navigate(WatchlistRoute) },
+                    )
+                }
 
-                        composable<WatchlistRoute> {
-                            WithAnimatedVisibilityScope {
-                                val viewModel: WatchlistViewModel = koinViewModel()
-                                WatchlistScreen(
-                                    viewModel = viewModel,
-                                    onBack = { navController.navigateUp() },
-                                    onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
-                                )
-                            }
-                        }
+                composable<WatchlistRoute> {
+                    val viewModel: WatchlistViewModel = koinViewModel()
+                    WatchlistScreen(
+                        viewModel = viewModel,
+                        onBack = { navController.navigateUp() },
+                        onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
+                    )
+                }
 
-                        composable<MovieDetailRoute> { entry ->
-                            val route: MovieDetailRoute = entry.toRoute()
-                            WithAnimatedVisibilityScope {
-                                val viewModel: MovieDetailViewModel =
-                                    koinViewModel(
-                                        key = route.id.toString(),
-                                        parameters = { parametersOf(route.id) },
-                                    )
-                                MovieDetailScreen(
-                                    viewModel = viewModel,
-                                    movie = route.toUiModel(),
-                                    onBack = { navController.navigateUp() },
-                                    onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
-                                    onPersonClick = { person -> navController.navigate(person.toRoute()) },
-                                )
-                            }
-                        }
+                composable<MovieDetailRoute> { entry ->
+                    val route: MovieDetailRoute = entry.toRoute()
+                    val viewModel: MovieDetailViewModel =
+                        koinViewModel(
+                            key = route.id.toString(),
+                            parameters = { parametersOf(route.id) },
+                        )
+                    MovieDetailScreen(
+                        viewModel = viewModel,
+                        movie = route.toUiModel(),
+                        onBack = { navController.navigateUp() },
+                        onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
+                        onPersonClick = { person -> navController.navigate(person.toRoute()) },
+                    )
+                }
 
-                        composable<PersonDetailRoute> { entry ->
-                            val route: PersonDetailRoute = entry.toRoute()
-                            WithAnimatedVisibilityScope {
-                                val viewModel: PersonDetailViewModel =
-                                    koinViewModel(
-                                        key = "person_${route.id}",
-                                        parameters = { parametersOf(route.id) },
-                                    )
-                                PersonDetailScreen(
-                                    viewModel = viewModel,
-                                    person = route.toUiModel(),
-                                    onBack = { navController.navigateUp() },
-                                    onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
-                                )
-                            }
-                        }
-                    }
+                composable<PersonDetailRoute> { entry ->
+                    val route: PersonDetailRoute = entry.toRoute()
+                    val viewModel: PersonDetailViewModel =
+                        koinViewModel(
+                            key = "person_${route.id}",
+                            parameters = { parametersOf(route.id) },
+                        )
+                    PersonDetailScreen(
+                        viewModel = viewModel,
+                        person = route.toUiModel(),
+                        onBack = { navController.navigateUp() },
+                        onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
+                    )
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun AnimatedContentScope.WithAnimatedVisibilityScope(content: @Composable () -> Unit) {
-    CompositionLocalProvider(LocalAnimatedVisibilityScope provides this) {
-        content()
     }
 }

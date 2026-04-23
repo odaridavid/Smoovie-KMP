@@ -29,7 +29,7 @@ composeApp/
     ├── commonMain/
     │   ├── composeResources/values/strings.xml
     │   └── kotlin/dev/odaridavid/smoovie/
-    │       ├── App.kt                    # NavHost + SharedTransitionLayout scaffolding
+    │       ├── App.kt                    # NavHost with slide-horizontal route transitions
     │       ├── Screen.kt                 # @Serializable nav routes + UI↔route converters
     │       ├── AppConfig.kt              # expect val tmdbApiKey + TMDB_BASE_URL const
     │       ├── KoinInitializer.kt        # appModule + initKoin { setup }
@@ -53,7 +53,7 @@ composeApp/
     │       │   └── domain/               # WatchlistRepository, WatchlistEntry, ObserveWatchlist/ToggleWatchlist/ObserveIsInWatchlist use cases
     │       ├── storage/                  # SmoovieDatabase (Room KMP), DatabaseBuilderFactory (expect)
     │       ├── theme/                    # SmoovieTheme, ErrorContent, EmptyContent, Type.kt
-    │       ├── ui/                       # LocalSharedTransitionScope, LocalAnimatedVisibilityScope, SearchBackHandler (expect)
+    │       ├── ui/                       # SearchBackHandler (expect)
     │       └── utils/                    # TtlCache, currentTimeMillis (expect), PreviewData
     ├── androidMain/kotlin/dev/odaridavid/smoovie/
     │   ├── SmoovieApplication.kt         # initKoin { androidContext(this) }
@@ -101,13 +101,8 @@ iosApp/                                   # Xcode project / Swift entry point
 
 - Jetpack Compose Navigation (KMP variant, `org.jetbrains.androidx.navigation:navigation-compose`).
 - Routes live in `Screen.kt` as top-level `@Serializable` types (`data object MoviesRoute`, `data class MovieDetailRoute(...)`, etc.) plus `toRoute()` / `toUiModel()` converters.
-- `App.kt` sets up a single `NavHost` inside a `SharedTransitionLayout`. Each `composable<Route>` block unpacks typed args with `entry.toRoute<Route>()`, wraps the body in `WithAnimatedVisibilityScope { ... }` so feature composables can pick up `LocalAnimatedVisibilityScope` for shared-element transitions.
+- `App.kt` sets up a single `NavHost` with slide-horizontal enter/exit/pop transitions. Each `composable<Route>` block unpacks typed args with `entry.toRoute<Route>()`.
 - **Adding a new destination**: add a `@Serializable` route in `Screen.kt`, add a `composable<Route> { ... }` block in `App.kt`, wire up back/forward callbacks with `navController.navigate(...)` / `navController.navigateUp()`.
-
-### Shared transitions
-
-- `App.kt` provides `LocalSharedTransitionScope` and `LocalAnimatedVisibilityScope` (defined in `ui/SharedTransitionLocals.kt`).
-- `HeroSection` and `FeaturedMoviesPager` use `Modifier.sharedElement(...)` keyed by `"hero_image_$movieId"` to animate the poster between the list and the detail screen.
 
 ### In-memory request cache
 

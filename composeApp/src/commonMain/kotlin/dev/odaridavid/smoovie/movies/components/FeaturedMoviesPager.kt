@@ -32,8 +32,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
-import dev.odaridavid.smoovie.ui.LocalAnimatedVisibilityScope
-import dev.odaridavid.smoovie.ui.LocalSharedTransitionScope
 import kotlinx.coroutines.delay
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -189,9 +187,6 @@ private fun FeaturedPage(
     movie: MovieUiModel,
     onClick: () -> Unit,
 ) {
-    val sharedTransitionScope = LocalSharedTransitionScope.current
-    val animatedVisibilityScope = LocalAnimatedVisibilityScope.current
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -199,23 +194,13 @@ private fun FeaturedPage(
     ) {
         val imageUrl = movie.backdropUrl ?: movie.posterUrl
         if (imageUrl != null) {
-            val imageModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
-                with(sharedTransitionScope) {
-                    Modifier.sharedElement(
-                        sharedContentState = rememberSharedContentState(key = "hero_image_${movie.id}"),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                    ).fillMaxSize()
-                }
-            } else {
-                Modifier.fillMaxSize()
-            }
             SubcomposeAsyncImage(
                 model = imageUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 loading = { FeaturedPlaceholder() },
                 error = { FeaturedPlaceholder() },
-                modifier = imageModifier,
+                modifier = Modifier.fillMaxSize(),
             )
         } else {
             FeaturedPlaceholder()

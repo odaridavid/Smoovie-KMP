@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +24,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import dev.odaridavid.smoovie.movies.components.CastSection
@@ -78,63 +81,116 @@ internal fun MovieDetailContent(
     onMovieClick: (MovieUiModel) -> Unit = {},
     onPersonClick: (PersonSummaryUiModel) -> Unit = {},
 ) {
+    val background = MaterialTheme.colorScheme.background
+    val sheetShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+    val sheetOverlap = 28.dp
+
     Column(
         modifier =
             Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(background)
                 .verticalScroll(rememberScrollState())
                 .windowInsetsPadding(WindowInsets.navigationBars),
     ) {
-        HeroSection(
-            movie = movie,
-            detailState = detailState,
-            onBack = onBack,
-            isInWatchlist = isInWatchlist,
-            onToggleWatchlist = onToggleWatchlist,
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .layout { measurable, constraints ->
+                        val placeable = measurable.measure(constraints)
+                        val overlapPx = sheetOverlap.roundToPx()
+                        val reportedHeight = (placeable.height - overlapPx).coerceAtLeast(0)
+                        layout(placeable.width, reportedHeight) {
+                            placeable.place(0, 0)
+                        }
+                    },
+        ) {
+            HeroSection(
+                movie = movie,
+                onBack = onBack,
+                isInWatchlist = isInWatchlist,
+                onToggleWatchlist = onToggleWatchlist,
+            )
+        }
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .background(background, sheetShape)
+                    .padding(top = 20.dp),
+        ) {
+            TitleHeader(
+                title = movie.title,
+                tagline = (detailState as? MovieDetailUiState.Success)?.movieDetail?.tagline,
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+
+            when (detailState) {
+                is MovieDetailUiState.Loading -> {
+                    ShimmerMovieDetail(modifier = Modifier.fillMaxWidth())
+                }
+
+                is MovieDetailUiState.Success -> {
+                    val detail = detailState.movieDetail
+                    DetailBody(movie = movie, detail = detail)
+                    if (detail.cast.isNotEmpty()) {
+                        CastSection(
+                            cast = detail.cast,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            onPersonClick = onPersonClick,
+                        )
+                    }
+                    if (detail.trailers.isNotEmpty()) {
+                        TrailersSection(
+                            trailers = detail.trailers,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                        )
+                    }
+                    if (detail.reviews.isNotEmpty()) {
+                        ReviewsSection(
+                            reviews = detail.reviews,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                        )
+                    }
+                    if (detail.similar.isNotEmpty()) {
+                        SimilarMoviesSection(
+                            movies = detail.similar,
+                            onMovieClick = onMovieClick,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                        )
+                    }
+                }
+
+                is MovieDetailUiState.Error -> {
+                    DetailBody(movie = movie) {
+                        ErrorBanner(error = detailState.error, onRetry = onRetry)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TitleHeader(
+    title: String,
+    tagline: String?,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.headlineMedium,
         )
-
-        when (detailState) {
-            is MovieDetailUiState.Loading -> {
-                ShimmerMovieDetail(modifier = Modifier.fillMaxWidth())
-            }
-
-            is MovieDetailUiState.Success -> {
-                val detail = detailState.movieDetail
-                DetailBody(movie = movie, detail = detail)
-                if (detail.cast.isNotEmpty()) {
-                    CastSection(
-                        cast = detail.cast,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        onPersonClick = onPersonClick,
-                    )
-                }
-                if (detail.trailers.isNotEmpty()) {
-                    TrailersSection(
-                        trailers = detail.trailers,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-                    )
-                }
-                if (detail.reviews.isNotEmpty()) {
-                    ReviewsSection(
-                        reviews = detail.reviews,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-                    )
-                }
-                if (detail.similar.isNotEmpty()) {
-                    SimilarMoviesSection(
-                        movies = detail.similar,
-                        onMovieClick = onMovieClick,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-                    )
-                }
-            }
-
-            is MovieDetailUiState.Error -> {
-                DetailBody(movie = movie) {
-                    ErrorBanner(error = detailState.error, onRetry = onRetry)
-                }
-            }
+        if (!tagline.isNullOrBlank()) {
+            Text(
+                text = tagline,
+                style = MaterialTheme.typography.bodyMedium,
+                fontStyle = FontStyle.Italic,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp),
+            )
         }
     }
 }

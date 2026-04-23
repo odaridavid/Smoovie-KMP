@@ -8,6 +8,7 @@ import dev.odaridavid.smoovie.movies.domain.GetMoviesByGenreUseCase
 import dev.odaridavid.smoovie.movies.domain.GetPopularMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.MoviesPage
 import dev.odaridavid.smoovie.movies.domain.SearchMoviesUseCase
+import dev.odaridavid.smoovie.utils.toAppError
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,7 +55,7 @@ class MoviesViewModel(
             try {
                 _state.update { it.copy(uiState = processPage(fetchPage())) }
             } catch (e: Exception) {
-                _state.update { it.copy(uiState = MoviesUiState.Error(e.message ?: "Something went wrong")) }
+                _state.update { it.copy(uiState = MoviesUiState.Error(e.toAppError())) }
             }
         }
     }
@@ -102,7 +103,7 @@ class MoviesViewModel(
                     try {
                         _state.update { s -> s.copy(uiState = processPage(fetchPage())) }
                     } catch (e: Exception) {
-                        _state.update { s -> s.copy(uiState = MoviesUiState.Error(e.message ?: "Something went wrong")) }
+                        _state.update { s -> s.copy(uiState = MoviesUiState.Error(e.toAppError())) }
                     }
                 }
         }
@@ -118,7 +119,7 @@ class MoviesViewModel(
                 val featured = (uiState as? MoviesUiState.Success)?.movies ?: emptyList()
                 _state.update { it.copy(uiState = uiState, featuredMovies = featured) }
             } catch (e: Exception) {
-                _state.update { it.copy(uiState = MoviesUiState.Error(e.message ?: "Something went wrong")) }
+                _state.update { it.copy(uiState = MoviesUiState.Error(e.toAppError())) }
             }
         }
     }

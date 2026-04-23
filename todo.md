@@ -5,7 +5,6 @@
 - [ ] Search history — save recent queries locally so users can quickly re-search
 - [ ] Add tv shows
 - [ ] Auth login/logout
-- [ ] Swipe to delete
 
 ## Backend & Services
 
@@ -14,7 +13,5 @@
 
 ## Architecture & Quality
 
-- [ ] Improve error handling — more granular error types (network vs server vs parsing),
-  user-friendly messages, retry strategies
 - [ ] Compose UI tests for the screens (screenshot tests or interaction tests)
 - [ ] Add github ci/cd

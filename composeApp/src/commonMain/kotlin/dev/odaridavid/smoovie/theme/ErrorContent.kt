@@ -30,19 +30,35 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
+import dev.odaridavid.smoovie.utils.AppError
 import smoovie.composeapp.generated.resources.action_retry
 import smoovie.composeapp.generated.resources.error_movies_failed
+import smoovie.composeapp.generated.resources.error_network
+import smoovie.composeapp.generated.resources.error_not_found
+import smoovie.composeapp.generated.resources.error_server
+import smoovie.composeapp.generated.resources.error_unauthorized
+import smoovie.composeapp.generated.resources.error_unknown
 
 private val ICON_BADGE_SIZE = 112.dp
 private val ICON_SIZE = 56.dp
 
 @Composable
 internal fun ErrorContent(
-    message: String,
+    error: AppError,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     title: String = stringResource(Res.string.error_movies_failed),
 ) {
+    val message =
+        stringResource(
+            when (error) {
+                AppError.NetworkError -> Res.string.error_network
+                AppError.ServerError -> Res.string.error_server
+                AppError.NotFound -> Res.string.error_not_found
+                AppError.Unauthorized -> Res.string.error_unauthorized
+                AppError.Unknown -> Res.string.error_unknown
+            },
+        )
     Column(
         modifier = modifier.padding(horizontal = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -73,14 +89,12 @@ internal fun ErrorContent(
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurface,
         )
-        if (message.isNotBlank()) {
-            Text(
-                text = message,
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        Text(
+            text = message,
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
         Spacer(modifier = Modifier.height(8.dp))
         FilledTonalButton(onClick = onRetry) {
             Icon(
@@ -102,7 +116,7 @@ private fun ErrorContentPreview() {
         Scaffold {
             Box(modifier = Modifier.fillMaxSize()) {
                 ErrorContent(
-                    message = "No internet connection",
+                    error = AppError.NetworkError,
                     onRetry = {},
                     modifier = Modifier.align(Alignment.Center),
                 )

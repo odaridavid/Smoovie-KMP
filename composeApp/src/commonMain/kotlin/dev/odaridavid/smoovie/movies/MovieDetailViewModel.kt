@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.odaridavid.smoovie.movies.domain.GetMovieDetailUseCase
 import dev.odaridavid.smoovie.watchlist.domain.ObserveIsInWatchlistUseCase
+import dev.odaridavid.smoovie.utils.toAppError
 import dev.odaridavid.smoovie.watchlist.domain.ToggleWatchlistUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -39,7 +40,7 @@ class MovieDetailViewModel(
             try {
                 _uiState.value = MovieDetailUiState.Success(getMovieDetail(movieId))
             } catch (e: Exception) {
-                _uiState.value = MovieDetailUiState.Error(e.message ?: "Something went wrong")
+                _uiState.value = MovieDetailUiState.Error(e.toAppError())
             }
         }
     }

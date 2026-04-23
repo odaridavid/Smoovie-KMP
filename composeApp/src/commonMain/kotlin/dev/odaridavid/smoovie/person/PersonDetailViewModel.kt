@@ -3,6 +3,7 @@ package dev.odaridavid.smoovie.person
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.odaridavid.smoovie.person.domain.GetPersonDetailUseCase
+import dev.odaridavid.smoovie.utils.toAppError
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +26,7 @@ class PersonDetailViewModel(
             try {
                 _uiState.value = PersonDetailUiState.Success(getPersonDetail(personId))
             } catch (e: Exception) {
-                _uiState.value = PersonDetailUiState.Error(e.message ?: "Something went wrong")
+                _uiState.value = PersonDetailUiState.Error(e.toAppError())
             }
         }
     }

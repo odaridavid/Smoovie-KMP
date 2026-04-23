@@ -32,6 +32,7 @@ import dev.odaridavid.smoovie.person.components.PersonPhoto
 import dev.odaridavid.smoovie.person.components.ShimmerPersonDetail
 import dev.odaridavid.smoovie.theme.ErrorContent
 import dev.odaridavid.smoovie.theme.SmoovieTheme
+import dev.odaridavid.smoovie.utils.AppError
 import org.jetbrains.compose.resources.stringResource
 import previewPersonDetailUiModel
 import previewPersonSummaryUiModel
@@ -87,8 +88,8 @@ internal fun PersonDetailContent(
                     contentAlignment = Alignment.Center,
                 ) {
                     ErrorContent(
+                        error = state.error,
                         title = stringResource(Res.string.error_person_detail_failed),
-                        message = "",
                         onRetry = onRetry,
                     )
                 }
@@ -229,7 +230,7 @@ private fun PersonDetailErrorPreview() {
     SmoovieTheme {
         PersonDetailContent(
             person = previewPersonSummaryUiModel,
-            state = PersonDetailUiState.Error("Network error"),
+            state = PersonDetailUiState.Error(AppError.NetworkError),
             onBack = {},
             onRetry = {},
         )

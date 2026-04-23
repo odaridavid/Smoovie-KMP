@@ -33,12 +33,17 @@ import dev.odaridavid.smoovie.movies.components.SimilarMoviesSection
 import dev.odaridavid.smoovie.movies.components.TrailersSection
 import dev.odaridavid.smoovie.person.PersonSummaryUiModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
+import dev.odaridavid.smoovie.utils.AppError
 import org.jetbrains.compose.resources.stringResource
 import previewMovieDetailUiModel
 import previewMovieUiModels
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.action_retry
-import smoovie.composeapp.generated.resources.error_movie_detail_failed
+import smoovie.composeapp.generated.resources.error_network
+import smoovie.composeapp.generated.resources.error_not_found
+import smoovie.composeapp.generated.resources.error_server
+import smoovie.composeapp.generated.resources.error_unauthorized
+import smoovie.composeapp.generated.resources.error_unknown
 
 @Composable
 fun MovieDetailScreen(
@@ -127,7 +132,7 @@ internal fun MovieDetailContent(
 
             is MovieDetailUiState.Error -> {
                 DetailBody(movie = movie) {
-                    ErrorBanner(onRetry = onRetry)
+                    ErrorBanner(error = detailState.error, onRetry = onRetry)
                 }
             }
         }
@@ -212,7 +217,20 @@ private fun MetadataSection(
 }
 
 @Composable
-private fun ErrorBanner(onRetry: () -> Unit) {
+private fun ErrorBanner(
+    error: AppError,
+    onRetry: () -> Unit,
+) {
+    val message =
+        stringResource(
+            when (error) {
+                AppError.NetworkError -> Res.string.error_network
+                AppError.ServerError -> Res.string.error_server
+                AppError.NotFound -> Res.string.error_not_found
+                AppError.Unauthorized -> Res.string.error_unauthorized
+                AppError.Unknown -> Res.string.error_unknown
+            },
+        )
     Box(
         modifier =
             Modifier
@@ -223,7 +241,7 @@ private fun ErrorBanner(onRetry: () -> Unit) {
                 ).padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         Text(
-            text = stringResource(Res.string.error_movie_detail_failed),
+            text = message,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onErrorContainer,
             modifier = Modifier.align(Alignment.CenterStart),
@@ -271,7 +289,7 @@ private fun MovieDetailErrorPreview() {
     SmoovieTheme {
         MovieDetailContent(
             movie = previewMovieUiModels[0],
-            detailState = MovieDetailUiState.Error("Network error"),
+            detailState = MovieDetailUiState.Error(AppError.NetworkError),
             onBack = {},
             onRetry = {},
         )

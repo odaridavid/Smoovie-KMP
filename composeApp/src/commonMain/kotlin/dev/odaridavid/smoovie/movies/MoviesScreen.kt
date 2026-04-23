@@ -205,7 +205,7 @@ private fun MoviesContent(
 
                         is MoviesUiState.Error -> {
                             ErrorContent(
-                                message = uiState.message,
+                                error = uiState.error,
                                 onRetry = actions.onRetry,
                                 modifier = Modifier.align(Alignment.Center),
                             )

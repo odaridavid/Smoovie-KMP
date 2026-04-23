@@ -1,5 +1,7 @@
 package dev.odaridavid.smoovie.movies
 
+import dev.odaridavid.smoovie.utils.AppError
+
 sealed interface MovieDetailUiState {
     data object Loading : MovieDetailUiState
 
@@ -8,6 +10,6 @@ sealed interface MovieDetailUiState {
     ) : MovieDetailUiState
 
     data class Error(
-        val message: String,
+        val error: AppError,
     ) : MovieDetailUiState
 }

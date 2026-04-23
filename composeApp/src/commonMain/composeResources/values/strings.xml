@@ -7,6 +7,11 @@
     <string name="release_date_tba" translatable="false">TBA</string>
     <string name="error_movies_failed">Failed to load movies</string>
     <string name="error_movie_detail_failed">Failed to load movie details</string>
+    <string name="error_network">Check your connection and try again</string>
+    <string name="error_server">Something went wrong on our end. Try again later</string>
+    <string name="error_not_found">The content you requested could not be found</string>
+    <string name="error_unauthorized">Access denied. Authenticate</string>
+    <string name="error_unknown">Something went wrong. Try again</string>
     <string name="genre_filter_all">All</string>
     <string name="action_retry">Retry</string>
     <string name="navigate_back">Navigate back</string>

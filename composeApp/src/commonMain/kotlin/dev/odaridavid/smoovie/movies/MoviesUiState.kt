@@ -1,5 +1,7 @@
 package dev.odaridavid.smoovie.movies
 
+import dev.odaridavid.smoovie.utils.AppError
+
 data class MoviesScreenState(
     val uiState: MoviesUiState = MoviesUiState.Loading,
     val searchQuery: String = "",
@@ -20,6 +22,6 @@ sealed interface MoviesUiState {
     data object Empty : MoviesUiState
 
     data class Error(
-        val message: String,
+        val error: AppError,
     ) : MoviesUiState
 }

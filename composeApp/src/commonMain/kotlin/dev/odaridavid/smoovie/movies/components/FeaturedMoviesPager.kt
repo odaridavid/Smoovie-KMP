@@ -26,7 +26,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
@@ -49,7 +48,7 @@ import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.search_movies_hint
 import smoovie.composeapp.generated.resources.watchlist_open_content_description
 
-private val PAGER_HEIGHT = 340.dp
+private val PAGER_HEIGHT = 260.dp
 private val ICON_SCRIM_COLOR = Color.Black.copy(alpha = 0.35f)
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -148,16 +147,6 @@ internal fun FeaturedMoviesPager(
                 )
             }
         }
-
-        // Movie title
-        Text(
-            text = movies[pagerState.currentPage].title,
-            style = MaterialTheme.typography.headlineMedium,
-            color = Color.White,
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = 16.dp, end = 72.dp, bottom = 36.dp),
-        )
 
         // Pagination dots
         Row(

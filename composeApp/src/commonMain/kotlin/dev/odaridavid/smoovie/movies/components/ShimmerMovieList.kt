@@ -48,7 +48,7 @@ import smoovie.composeapp.generated.resources.search_movies_hint
 import smoovie.composeapp.generated.resources.watchlist_open_content_description
 
 private const val SHIMMER_ITEM_COUNT = 5
-private val PAGER_SHIMMER_HEIGHT = 340.dp
+private val PAGER_SHIMMER_HEIGHT = 260.dp
 private val ICON_SCRIM_COLOR = Color.Black.copy(alpha = 0.35f)
 
 @Composable
@@ -107,25 +107,6 @@ private fun ShimmerFeaturedHero(
             .height(PAGER_SHIMMER_HEIGHT)
             .background(brush),
     ) {
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = 16.dp, end = 72.dp, bottom = 36.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.65f)
-                    .height(22.dp)
-                    .background(Color.White.copy(alpha = 0.2f), MaterialTheme.shapes.small),
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.45f)
-                    .height(16.dp)
-                    .background(Color.White.copy(alpha = 0.15f), MaterialTheme.shapes.small),
-            )
-        }
         Row(
             modifier = Modifier
                 .align(Alignment.TopEnd)

@@ -124,13 +124,10 @@ Open `/iosApp` in Xcode and run, or use the run configuration in Android Studio 
 
 ---
 
-|                                           |                                           |
+|          Android                                 |         iOS                                  |
 |:-----------------------------------------:|:-----------------------------------------:|
-| <img src="/docs/demo_1.gif" width="360"/> | <img src="/docs/demo_2.gif" width="360"/> |
+| <video src="https://github.com/user-attachments/assets/9d80af08-665f-4e59-b06f-1695cf886324" width="360"/> | <video src="https://github.com/user-attachments/assets/9817f814-fb88-4b8e-8f5b-2f7d52bec108" width="360"/> |
 
-|                                            |                                           |
-|:------------------------------------------:|:-----------------------------------------:|
-|  <img src="/docs/demo_3.gif" width="360"/> | <img src="/docs/demo_4.gif" width="360"/> |
 
 Learn more
 about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)

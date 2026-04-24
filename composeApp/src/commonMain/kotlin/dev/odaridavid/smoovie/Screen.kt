@@ -43,6 +43,13 @@ internal data class TvShowDetailRoute(
     val posterUrl: String?,
 )
 
+@Serializable
+internal data class TvSeasonDetailRoute(
+    val tvShowId: Int,
+    val seasonNumber: Int,
+    val seasonName: String,
+)
+
 internal fun MovieUiModel.toRoute() =
     MovieDetailRoute(
         id = id,

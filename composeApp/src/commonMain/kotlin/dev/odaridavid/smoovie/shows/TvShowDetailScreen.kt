@@ -55,6 +55,7 @@ fun TvShowDetailScreen(
     onBack: () -> Unit,
     onTvShowClick: (TvShowUiModel) -> Unit,
     onPersonClick: (PersonSummaryUiModel) -> Unit,
+    onSeasonClick: (SeasonUiModel) -> Unit = {},
 ) {
     val detailState by viewModel.uiState.collectAsState()
     TvShowDetailContent(
@@ -64,6 +65,7 @@ fun TvShowDetailScreen(
         onRetry = viewModel::loadTvShowDetail,
         onTvShowClick = onTvShowClick,
         onPersonClick = onPersonClick,
+        onSeasonClick = onSeasonClick,
     )
 }
 
@@ -75,6 +77,7 @@ internal fun TvShowDetailContent(
     onRetry: () -> Unit,
     onTvShowClick: (TvShowUiModel) -> Unit = {},
     onPersonClick: (PersonSummaryUiModel) -> Unit = {},
+    onSeasonClick: (SeasonUiModel) -> Unit = {},
 ) {
     val background = MaterialTheme.colorScheme.background
     val sheetShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
@@ -139,6 +142,7 @@ internal fun TvShowDetailContent(
                         SeasonsSection(
                             seasons = detail.seasons,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                            onSeasonClick = onSeasonClick,
                         )
                     }
                     if (detail.trailers.isNotEmpty()) {
@@ -348,8 +352,8 @@ private val previewTvShowDetail =
         networks = "AMC",
         seasons =
             listOf(
-                SeasonUiModel(1, "Season 1", "2008", "7 episodes", null),
-                SeasonUiModel(2, "Season 2", "2009", "13 episodes", null),
+                SeasonUiModel(1, 1, "Season 1", "2008", "7 episodes", null),
+                SeasonUiModel(2, 2, "Season 2", "2009", "13 episodes", null),
             ),
     )
 

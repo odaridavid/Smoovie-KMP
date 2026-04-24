@@ -144,9 +144,46 @@ Notes for Phase 4 (episodes):
 - Ideally a new `TvSeasonDetailRoute` with (tvShowId, seasonNumber, seasonName) — the season
   name is already in the route payload from `SeasonUiModel`.
 
-## Deferred / parallel work
+## Phase 4 — Episodes drill-in
 
-- [ ] **Episodes drill-in** — Phase 4. `/tv/{id}/season/{n}` + new episodes screen.
+**Goal:** tapping a season on the TV show detail opens a season screen showing all episodes
+with metadata and overviews. Ships the final piece of the core TV browsing story.
+
+- [x] `Screen.kt`: `@Serializable TvSeasonDetailRoute(tvShowId, seasonNumber, seasonName)`
+- [x] `App.kt`: `composable<TvSeasonDetailRoute>` block
+- [x] `shows/data/SeasonDetail.kt` DTO — `SeasonDetail` + `Episode`
+      (`still_path`, `episode_number`, `air_date`, `runtime`, `vote_average`)
+- [x] `TvShowsRepository.getSeasonDetail(tvShowId, seasonNumber)` + impl with a
+      `(tvShowId, seasonNumber)` keyed `TtlCache`
+- [x] `GetSeasonDetailUseCase` — maps episode stills via `backdropUrl(BackdropSize.SMALL)`
+      since TMDB episode stills share the backdrop CDN path
+- [x] `SeasonDetailUiModel` + `EpisodeUiModel` + mapper:
+      - Episodes sorted by `episodeNumber`
+      - `headerLabel` is `"Ep N · Name"` (drops the "· Name" if blank)
+      - `episodeCountLabel` respects singular/plural ("1 episode" vs "N episodes")
+      - `runtimeLabel` is `"N min"` or blank if runtime is null
+- [x] `SeasonDetailViewModel` parametrized by `(tvShowId, seasonNumber)`
+- [x] `SeasonDetailScreen` — `CenterAlignedTopAppBar` with back + season name, scrollable list
+      with season overview header and episode cards
+- [x] `components/EpisodeItem` composable — still image, header label, date · runtime metadata,
+      rating, expandable overview (reuses `ExpandableText`)
+- [x] `SeasonsSection` items now tappable via `onSeasonClick: (SeasonUiModel) -> Unit` default
+- [x] `SeasonUiModel` gained `seasonNumber` field (required for the TMDB query)
+- [x] `TvShowDetailScreen` takes an `onSeasonClick` param, threads through `App.kt` which
+      builds a `TvSeasonDetailRoute` from `(route.id, season.seasonNumber, season.name)`
+- [x] Koin: `GetSeasonDetailUseCase` single +
+      `viewModel { (tvShowId: Int, seasonNumber: Int) -> SeasonDetailViewModel(...) }`
+- [x] Strings: `error_season_detail_failed`
+- [x] `FakeTvShowsRepository.seasonDetail` + `getSeasonDetail` impl
+- [x] `SeasonDetailViewModelTest` — 9 cases (success, sort order, header label with/without
+      name, singular episode label, runtime with/without, network error, retry)
+
+**Definition of done:** episodes drill-in is live — tap a season poster → season screen with
+episode cards → tap "Read more" on long overviews → expand inline.
+✅ **Done at code level.** Android + iOS compile, all unit tests pass. Not yet verified in a
+running emulator.
+
+## Deferred / parallel work
 - [ ] **Watchlist TV support** — Room migration: add `mediaType` column to
       `WatchlistMovieEntity`. Filter chip on watchlist screen. Can ship after Phase 3.
 - [ ] **Person filmography TV credits** — `append_to_response=tv_credits` on `/person/{id}`,

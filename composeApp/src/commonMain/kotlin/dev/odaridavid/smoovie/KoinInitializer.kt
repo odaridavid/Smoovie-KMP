@@ -19,11 +19,13 @@ import dev.odaridavid.smoovie.person.PersonDetailViewModel
 import dev.odaridavid.smoovie.person.data.PersonRepositoryImpl
 import dev.odaridavid.smoovie.person.domain.GetPersonDetailUseCase
 import dev.odaridavid.smoovie.person.domain.PersonRepository
+import dev.odaridavid.smoovie.shows.SeasonDetailViewModel
 import dev.odaridavid.smoovie.shows.ShowsViewModel
 import dev.odaridavid.smoovie.shows.TvShowDetailViewModel
 import dev.odaridavid.smoovie.shows.TvShowUiMapper
 import dev.odaridavid.smoovie.shows.data.TvShowsRepositoryImpl
 import dev.odaridavid.smoovie.shows.domain.GetPopularTvShowsUseCase
+import dev.odaridavid.smoovie.shows.domain.GetSeasonDetailUseCase
 import dev.odaridavid.smoovie.shows.domain.GetTvGenresUseCase
 import dev.odaridavid.smoovie.shows.domain.GetTvShowDetailUseCase
 import dev.odaridavid.smoovie.shows.domain.GetTvShowsByGenreUseCase
@@ -109,6 +111,7 @@ private val appModule =
         single { GetTvShowsByGenreUseCase(get(), get()) }
         single { GetTvGenresUseCase(get()) }
         single { GetTvShowDetailUseCase(get(), get()) }
+        single { GetSeasonDetailUseCase(get(), get()) }
         single { GetPersonDetailUseCase(get(), get()) }
         single { ObserveIsInWatchlistUseCase(get()) }
         single { ObserveWatchlistUseCase(get()) }
@@ -138,6 +141,13 @@ private val appModule =
                 tvShowId = tvShowId,
                 presentLabel = presentLabel,
                 getTvShowDetail = get(),
+            )
+        }
+        viewModel { (tvShowId: Int, seasonNumber: Int) ->
+            SeasonDetailViewModel(
+                tvShowId = tvShowId,
+                seasonNumber = seasonNumber,
+                getSeasonDetail = get(),
             )
         }
         viewModel { (movieId: Int) ->

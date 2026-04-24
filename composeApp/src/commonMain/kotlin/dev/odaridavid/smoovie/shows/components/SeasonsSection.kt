@@ -1,6 +1,7 @@
 package dev.odaridavid.smoovie.shows.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ private const val POSTER_ASPECT_RATIO = 2f / 3f
 internal fun SeasonsSection(
     seasons: List<SeasonUiModel>,
     modifier: Modifier = Modifier,
+    onSeasonClick: (SeasonUiModel) -> Unit = {},
 ) {
     Column(
         modifier = modifier,
@@ -49,16 +51,19 @@ internal fun SeasonsSection(
         )
         LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             items(seasons, key = { it.id }) { season ->
-                SeasonItem(season)
+                SeasonItem(season = season, onClick = { onSeasonClick(season) })
             }
         }
     }
 }
 
 @Composable
-private fun SeasonItem(season: SeasonUiModel) {
+private fun SeasonItem(
+    season: SeasonUiModel,
+    onClick: () -> Unit,
+) {
     Column(
-        modifier = Modifier.width(POSTER_WIDTH),
+        modifier = Modifier.width(POSTER_WIDTH).clickable(onClick = onClick),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Box(
@@ -115,9 +120,9 @@ private fun SeasonsSectionPreview() {
         SeasonsSection(
             seasons =
                 listOf(
-                    SeasonUiModel(1, "Season 1", "2008", "7 episodes", null),
-                    SeasonUiModel(2, "Season 2", "2009", "13 episodes", null),
-                    SeasonUiModel(3, "Season 3", "2010", "13 episodes", null),
+                    SeasonUiModel(1, 1, "Season 1", "2008", "7 episodes", null),
+                    SeasonUiModel(2, 2, "Season 2", "2009", "13 episodes", null),
+                    SeasonUiModel(3, 3, "Season 3", "2010", "13 episodes", null),
                 ),
         )
     }

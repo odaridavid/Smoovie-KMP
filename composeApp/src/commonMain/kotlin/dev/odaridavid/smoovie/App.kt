@@ -36,6 +36,8 @@ import dev.odaridavid.smoovie.movies.MoviesScreen
 import dev.odaridavid.smoovie.movies.MoviesViewModel
 import dev.odaridavid.smoovie.person.PersonDetailScreen
 import dev.odaridavid.smoovie.person.PersonDetailViewModel
+import dev.odaridavid.smoovie.shows.SeasonDetailScreen
+import dev.odaridavid.smoovie.shows.SeasonDetailViewModel
 import dev.odaridavid.smoovie.shows.ShowsScreen
 import dev.odaridavid.smoovie.shows.ShowsViewModel
 import dev.odaridavid.smoovie.shows.TvShowDetailScreen
@@ -175,6 +177,29 @@ fun App() {
                             onBack = { navController.navigateUp() },
                             onTvShowClick = { show -> navController.navigate(show.toRoute()) },
                             onPersonClick = { person -> navController.navigate(person.toRoute()) },
+                            onSeasonClick = { season ->
+                                navController.navigate(
+                                    TvSeasonDetailRoute(
+                                        tvShowId = route.id,
+                                        seasonNumber = season.seasonNumber,
+                                        seasonName = season.name,
+                                    ),
+                                )
+                            },
+                        )
+                    }
+
+                    composable<TvSeasonDetailRoute> { entry ->
+                        val route: TvSeasonDetailRoute = entry.toRoute()
+                        val viewModel: SeasonDetailViewModel =
+                            koinViewModel(
+                                key = "season_${route.tvShowId}_${route.seasonNumber}",
+                                parameters = { parametersOf(route.tvShowId, route.seasonNumber) },
+                            )
+                        SeasonDetailScreen(
+                            viewModel = viewModel,
+                            seasonName = route.seasonName,
+                            onBack = { navController.navigateUp() },
                         )
                     }
                 }

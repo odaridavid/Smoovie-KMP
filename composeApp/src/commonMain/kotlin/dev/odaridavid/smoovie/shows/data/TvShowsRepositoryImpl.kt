@@ -16,6 +16,7 @@ class TvShowsRepositoryImpl(
     private val genreDiscoverCache = TtlCache<GenreKey, TvShowsResponse>(CACHE_TTL_MS)
     private val genresCache = TtlCache<Unit, List<TvGenre>>(CACHE_TTL_MS)
     private val detailCache = TtlCache<Int, TvShowDetail>(CACHE_TTL_MS)
+    private val seasonDetailCache = TtlCache<SeasonKey, SeasonDetail>(CACHE_TTL_MS)
 
     override suspend fun getPopularTvShows(page: Int): TvShowsResponse =
         popularCache.getOrFetch(page) {
@@ -63,6 +64,14 @@ class TvShowsRepositoryImpl(
                 }.body()
         }
 
+    override suspend fun getSeasonDetail(
+        tvShowId: Int,
+        seasonNumber: Int,
+    ): SeasonDetail =
+        seasonDetailCache.getOrFetch(SeasonKey(tvShowId, seasonNumber)) {
+            client.get("${Path.TV_DETAIL}/$tvShowId/season/$seasonNumber").body()
+        }
+
     private data class SearchKey(
         val query: String,
         val page: Int,
@@ -71,6 +80,11 @@ class TvShowsRepositoryImpl(
     private data class GenreKey(
         val genreId: Int,
         val page: Int,
+    )
+
+    private data class SeasonKey(
+        val tvShowId: Int,
+        val seasonNumber: Int,
     )
 
     private object Path {

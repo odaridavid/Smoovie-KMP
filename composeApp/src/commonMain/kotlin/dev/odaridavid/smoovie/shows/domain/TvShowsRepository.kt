@@ -1,5 +1,6 @@
 package dev.odaridavid.smoovie.shows.domain
 
+import dev.odaridavid.smoovie.shows.data.SeasonDetail
 import dev.odaridavid.smoovie.shows.data.TvGenre
 import dev.odaridavid.smoovie.shows.data.TvShowDetail
 import dev.odaridavid.smoovie.shows.data.TvShowsResponse
@@ -20,4 +21,9 @@ interface TvShowsRepository {
     suspend fun getGenres(): List<TvGenre>
 
     suspend fun getTvShowDetail(tvShowId: Int): TvShowDetail
+
+    suspend fun getSeasonDetail(
+        tvShowId: Int,
+        seasonNumber: Int,
+    ): SeasonDetail
 }

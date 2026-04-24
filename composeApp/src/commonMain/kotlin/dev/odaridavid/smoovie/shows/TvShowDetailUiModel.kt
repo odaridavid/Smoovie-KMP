@@ -33,6 +33,7 @@ data class TvShowDetailUiModel(
 
 data class SeasonUiModel(
     val id: Int,
+    val seasonNumber: Int,
     val name: String,
     val year: String,
     val episodeCountLabel: String,
@@ -68,6 +69,7 @@ internal fun TvShowDetail.toDetailUiModel(
             .map { season ->
                 SeasonUiModel(
                     id = season.id,
+                    seasonNumber = season.seasonNumber,
                     name = season.name,
                     year = season.airDate.orEmpty().take(4),
                     episodeCountLabel = "${season.episodeCount} episodes",

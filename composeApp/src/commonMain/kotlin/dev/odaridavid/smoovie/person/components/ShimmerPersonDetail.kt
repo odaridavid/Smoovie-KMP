@@ -15,12 +15,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import dev.odaridavid.smoovie.movies.components.rememberShimmerBrush
+import dev.odaridavid.smoovie.theme.rememberShimmerBrush
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 
 private val PHOTO_SIZE = 160.dp

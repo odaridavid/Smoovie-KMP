@@ -1,6 +1,7 @@
 package dev.odaridavid.smoovie.shows.domain
 
 import dev.odaridavid.smoovie.shows.data.TvGenre
+import dev.odaridavid.smoovie.shows.data.TvShowDetail
 import dev.odaridavid.smoovie.shows.data.TvShowsResponse
 
 interface TvShowsRepository {
@@ -17,4 +18,6 @@ interface TvShowsRepository {
     ): TvShowsResponse
 
     suspend fun getGenres(): List<TvGenre>
+
+    suspend fun getTvShowDetail(tvShowId: Int): TvShowDetail
 }

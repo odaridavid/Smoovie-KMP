@@ -2,6 +2,7 @@ package dev.odaridavid.smoovie
 
 import dev.odaridavid.smoovie.movies.MovieUiModel
 import dev.odaridavid.smoovie.person.PersonSummaryUiModel
+import dev.odaridavid.smoovie.shows.TvShowUiModel
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -29,6 +30,17 @@ internal data class PersonDetailRoute(
     val id: Int,
     val name: String,
     val profileUrl: String?,
+)
+
+@Serializable
+internal data class TvShowDetailRoute(
+    val id: Int,
+    val name: String,
+    val overview: String,
+    val firstAirDate: String,
+    val voteAverage: String,
+    val backdropUrl: String?,
+    val posterUrl: String?,
 )
 
 internal fun MovieUiModel.toRoute() =
@@ -65,4 +77,26 @@ internal fun PersonDetailRoute.toUiModel() =
         id = id,
         name = name,
         profileUrl = profileUrl,
+    )
+
+internal fun TvShowUiModel.toRoute() =
+    TvShowDetailRoute(
+        id = id,
+        name = name,
+        overview = overview,
+        firstAirDate = firstAirDate,
+        voteAverage = voteAverage,
+        backdropUrl = backdropUrl,
+        posterUrl = posterUrl,
+    )
+
+internal fun TvShowDetailRoute.toUiModel() =
+    TvShowUiModel(
+        id = id,
+        name = name,
+        overview = overview,
+        firstAirDate = firstAirDate,
+        voteAverage = voteAverage,
+        backdropUrl = backdropUrl,
+        posterUrl = posterUrl,
     )

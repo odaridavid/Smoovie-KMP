@@ -1,4 +1,4 @@
-package dev.odaridavid.smoovie.movies.components
+package dev.odaridavid.smoovie.theme
 
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -40,7 +40,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.search_movies_hint
@@ -65,7 +64,7 @@ internal fun ShimmerFeaturedSection(
 }
 
 @Composable
-internal fun ShimmerMovieList(
+internal fun ShimmerList(
     modifier: Modifier = Modifier,
     showHero: Boolean = true,
     onSearchClick: () -> Unit = {},
@@ -80,9 +79,10 @@ internal fun ShimmerMovieList(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             userScrollEnabled = false,
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
         ) {
             items(SHIMMER_ITEM_COUNT) {
                 ShimmerMovieCard(brush = shimmerBrush)
@@ -97,16 +97,18 @@ private fun ShimmerFeaturedHero(
     onSearchClick: () -> Unit,
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(PAGER_SHIMMER_HEIGHT)
-            .background(brush),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(PAGER_SHIMMER_HEIGHT)
+                .background(brush),
     ) {
         Row(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(end = 4.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.TopEnd)
+                    .windowInsetsPadding(WindowInsets.statusBars)
+                    .padding(end = 4.dp),
         ) {
             IconButton(
                 onClick = onSearchClick,
@@ -120,18 +122,20 @@ private fun ShimmerFeaturedHero(
             }
         }
         Row(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 12.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             repeat(4) { index ->
                 Box(
-                    modifier = Modifier
-                        .size(if (index == 0) 8.dp else 5.dp)
-                        .clip(CircleShape)
-                        .background(Color.White.copy(alpha = if (index == 0) 0.35f else 0.2f)),
+                    modifier =
+                        Modifier
+                            .size(if (index == 0) 8.dp else 5.dp)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = if (index == 0) 0.35f else 0.2f)),
                 )
             }
         }
@@ -141,17 +145,19 @@ private fun ShimmerFeaturedHero(
 @Composable
 private fun ShimmerGenreChips(brush: Brush) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         repeat(4) {
             Box(
-                modifier = Modifier
-                    .width(72.dp)
-                    .height(32.dp)
-                    .background(brush, MaterialTheme.shapes.extraLarge),
+                modifier =
+                    Modifier
+                        .width(72.dp)
+                        .height(32.dp)
+                        .background(brush, MaterialTheme.shapes.extraLarge),
             )
         }
     }
@@ -255,16 +261,16 @@ private fun ShimmerMovieCard(brush: Brush) {
 
 @PreviewLightDark
 @Composable
-private fun ShimmerMovieListPreview() {
+private fun ShimmerListPreview() {
     SmoovieTheme {
-        ShimmerMovieList(modifier = Modifier.fillMaxSize())
+        ShimmerList(modifier = Modifier.fillMaxSize())
     }
 }
 
 @PreviewLightDark
 @Composable
-private fun ShimmerMovieListNoHeroPreview() {
+private fun ShimmerListNoHeroPreview() {
     SmoovieTheme {
-        ShimmerMovieList(modifier = Modifier.fillMaxSize(), showHero = false)
+        ShimmerList(modifier = Modifier.fillMaxSize(), showHero = false)
     }
 }

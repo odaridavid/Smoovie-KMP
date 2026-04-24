@@ -102,21 +102,47 @@ Notes for future phases:
 **Goal:** tapping a TV show card opens a detail screen with cast, trailers, reviews, similar,
 and a seasons rail. Episodes still deferred.
 
-- [ ] `Screen.kt`: add `@Serializable TvShowDetailRoute` + `toRoute()` / `toUiModel()`
-- [ ] `App.kt`: add `composable<TvShowDetailRoute>` block
-- [ ] `TvShowDetailViewModel`, `TvShowDetailUiState`, `TvShowDetailUiModel`
-- [ ] `tv/data/TvShowDetail.kt` DTO with `seasons`, `numberOfSeasons`, `numberOfEpisodes`,
-      `firstAirDate`, `lastAirDate`, `inProduction`, `networks`
-- [ ] `GetTvShowDetailUseCase` parallel to `GetMovieDetailUseCase`
-- [ ] `TvShowDetailScreen` reuses `HeroSection`, `CastSection`, `TrailersSection`,
-      `ReviewsSection`, similar rail. Decide whether to rename `SimilarMoviesSection` →
-      `SimilarMediaSection` or keep both.
-- [ ] New `SeasonsSection` composable — horizontal rail of season posters, each showing
-      `Season N · X episodes · year`. No tap action yet.
-- [ ] Metadata chips adapt: `5 seasons · 62 episodes`, `2019 – present`, networks
+- [x] `Screen.kt`: `@Serializable TvShowDetailRoute` + `toRoute()` / `toUiModel()`
+- [x] `App.kt`: `composable<TvShowDetailRoute>` block + `ShowsScreen` now navigates to it
+- [x] `TvShowDetailViewModel` (takes `tvShowId: Int` + `presentLabel: String` params),
+      `TvShowDetailUiState` (Loading/Success/Error), `TvShowDetailUiModel` + `SeasonUiModel`
+- [x] `shows/data/TvShowDetail.kt` — DTO + `Network` + `Season`. Reuses movie DTOs
+      (`Credits`, `VideosResponse`, `ReviewsResponse`) since TMDB returns identical shapes
+- [x] `TvShowsRepository.getTvShowDetail(tvShowId)` + impl with `TtlCache` and
+      `append_to_response=credits,reviews,videos,recommendations,similar`
+- [x] `GetTvShowDetailUseCase` parallel to `GetMovieDetailUseCase` — maps inside via
+      `ConfigurationStore` URL builders, takes a `presentLabel` for the year-range suffix
+- [x] **`HeroSection` refactored to be media-agnostic**: now takes `backdropUrl: String?`,
+      `posterUrl: String?` (instead of `MovieUiModel`) and `onToggleWatchlist: (() -> Unit)?`
+      (nullable — hides the toggle if null). `MovieDetailScreen` updated to pass raw URLs;
+      `TvShowDetailScreen` passes null for the watchlist callback.
+- [x] `CastSection`, `TrailersSection`, `ReviewsSection`, `ShimmerMovieDetail` reused as-is
+- [x] Sibling `SimilarTvShowsSection` (duplicates the movies similar pattern, TV-typed) — chose
+      duplication over generalization since the two feature packages want to evolve independently
+- [x] New `SeasonsSection` composable — horizontal rail of season posters showing
+      `Season N`, `2008 · 7 episodes`. Filters out season 0 (specials). No tap action yet.
+- [x] Metadata chips: rating (with vote count when loaded), years range (`2008 – 2013` or
+      `2008 – present`), `5 seasons · 62 episodes`, genres, networks (with 📺 prefix)
+- [x] `FakeTvShowsRepository` gained `tvShowDetail` var + `getTvShowDetail` impl
+- [x] `TvShowDetailViewModelTest` — 6 cases (success mapping, in-production year range,
+      specials filtered, singular labels for 1-season shows, network error, retry success)
+- [x] Koin: `GetTvShowDetailUseCase` + `viewModel { (id: Int, presentLabel: String) -> ... }`
+      with `koinViewModel(key = "tv_${id}", parameters = { parametersOf(id, presentLabel) })`
+- [x] Strings: `tv_seasons_section_title`, `tv_show_year_range_present`,
+      `error_tv_show_detail_failed`
 
 **Definition of done:** full TV detail screen shippable; users can read cast, watch trailers,
 see seasons list but not drill in.
+✅ **Done at code level.** Android + iOS compile, all unit tests pass (including the 6 new
+TvShowDetail tests). Not yet verified in a running emulator.
+
+Notes for Phase 4 (episodes):
+
+- `SeasonsSection` currently has no tap action. Phase 4 gives each season a click handler
+  that pushes into an episodes screen.
+- TMDB endpoint: `/tv/{tv_id}/season/{season_number}` returns full episode details.
+- Ideally a new `TvSeasonDetailRoute` with (tvShowId, seasonNumber, seasonName) — the season
+  name is already in the route payload from `SeasonUiModel`.
 
 ## Deferred / parallel work
 

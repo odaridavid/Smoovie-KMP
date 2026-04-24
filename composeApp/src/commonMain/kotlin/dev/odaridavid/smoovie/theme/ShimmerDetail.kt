@@ -1,4 +1,4 @@
-package dev.odaridavid.smoovie.movies.components
+package dev.odaridavid.smoovie.theme
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,12 +17,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import dev.odaridavid.smoovie.theme.SmoovieTheme
 
 private const val SHIMMER_CAST_COUNT = 5
 
 @Composable
-internal fun ShimmerMovieDetail(modifier: Modifier = Modifier) {
+internal fun ShimmerDetail(modifier: Modifier = Modifier) {
     val brush = rememberShimmerBrush()
     Column(
         modifier = modifier.padding(16.dp),
@@ -132,8 +131,8 @@ internal fun ShimmerMovieDetail(modifier: Modifier = Modifier) {
 
 @PreviewLightDark
 @Composable
-private fun ShimmerMovieDetailPreview() {
+private fun ShimmerDetailPreview() {
     SmoovieTheme {
-        ShimmerMovieDetail()
+        ShimmerDetail()
     }
 }

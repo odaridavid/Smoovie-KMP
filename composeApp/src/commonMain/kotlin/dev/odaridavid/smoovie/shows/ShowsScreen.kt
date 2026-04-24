@@ -36,8 +36,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import dev.odaridavid.smoovie.movies.components.SearchToolbar
-import dev.odaridavid.smoovie.movies.components.ShimmerMovieList
+import dev.odaridavid.smoovie.theme.SearchToolbar
+import dev.odaridavid.smoovie.theme.ShimmerList
 import dev.odaridavid.smoovie.shows.components.TvGenreChips
 import dev.odaridavid.smoovie.shows.components.tvShowItems
 import dev.odaridavid.smoovie.theme.EmptyContent
@@ -168,7 +168,7 @@ private fun ShowsContent(
                 Box(modifier = Modifier.fillMaxSize()) {
                     when (uiState) {
                         is ShowsUiState.Loading -> {
-                            ShimmerMovieList(
+                            ShimmerList(
                                 modifier = Modifier.fillMaxSize(),
                                 showHero = false,
                             )

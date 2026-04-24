@@ -15,6 +15,7 @@ class TvShowsRepositoryImpl(
     private val searchCache = TtlCache<SearchKey, TvShowsResponse>(CACHE_TTL_MS)
     private val genreDiscoverCache = TtlCache<GenreKey, TvShowsResponse>(CACHE_TTL_MS)
     private val genresCache = TtlCache<Unit, List<TvGenre>>(CACHE_TTL_MS)
+    private val detailCache = TtlCache<Int, TvShowDetail>(CACHE_TTL_MS)
 
     override suspend fun getPopularTvShows(page: Int): TvShowsResponse =
         popularCache.getOrFetch(page) {
@@ -54,6 +55,14 @@ class TvShowsRepositoryImpl(
             client.get(Path.TV_GENRES).body<TvGenresResponse>().genres
         }
 
+    override suspend fun getTvShowDetail(tvShowId: Int): TvShowDetail =
+        detailCache.getOrFetch(tvShowId) {
+            client
+                .get("${Path.TV_DETAIL}/$tvShowId") {
+                    parameter(Parameter.APPEND_TO_RESPONSE, "credits,reviews,videos,recommendations,similar")
+                }.body()
+        }
+
     private data class SearchKey(
         val query: String,
         val page: Int,
@@ -69,6 +78,7 @@ class TvShowsRepositoryImpl(
         const val SEARCH_TV = "${TMDB_BASE_URL}/search/tv"
         const val DISCOVER_TV = "${TMDB_BASE_URL}/discover/tv"
         const val TV_GENRES = "${TMDB_BASE_URL}/genre/tv/list"
+        const val TV_DETAIL = "${TMDB_BASE_URL}/tv"
     }
 
     private object Parameter {
@@ -76,6 +86,7 @@ class TvShowsRepositoryImpl(
         const val QUERY = "query"
         const val WITH_GENRES = "with_genres"
         const val SORT_BY = "sort_by"
+        const val APPEND_TO_RESPONSE = "append_to_response"
     }
 
     private companion object {

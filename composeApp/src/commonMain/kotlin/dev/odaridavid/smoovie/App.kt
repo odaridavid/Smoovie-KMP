@@ -38,6 +38,8 @@ import dev.odaridavid.smoovie.person.PersonDetailScreen
 import dev.odaridavid.smoovie.person.PersonDetailViewModel
 import dev.odaridavid.smoovie.shows.ShowsScreen
 import dev.odaridavid.smoovie.shows.ShowsViewModel
+import dev.odaridavid.smoovie.shows.TvShowDetailScreen
+import dev.odaridavid.smoovie.shows.TvShowDetailViewModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.watchlist.WatchlistScreen
 import dev.odaridavid.smoovie.watchlist.WatchlistViewModel
@@ -47,6 +49,7 @@ import org.koin.core.parameter.parametersOf
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.media_type_movies
 import smoovie.composeapp.generated.resources.media_type_tv_shows
+import smoovie.composeapp.generated.resources.tv_show_year_range_present
 import smoovie.composeapp.generated.resources.watchlist_title
 
 private const val TRANSITION_DURATION_MS = 500
@@ -108,7 +111,10 @@ fun App() {
                         popExitTransition = { if (targetState.destination.isTopLevelTab()) ExitTransition.None else null },
                     ) {
                         val viewModel: ShowsViewModel = koinViewModel()
-                        ShowsScreen(viewModel = viewModel)
+                        ShowsScreen(
+                            viewModel = viewModel,
+                            onTvShowClick = { show -> navController.navigate(show.toRoute()) },
+                        )
                     }
 
                     composable<WatchlistRoute>(
@@ -152,6 +158,23 @@ fun App() {
                             person = route.toUiModel(),
                             onBack = { navController.navigateUp() },
                             onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
+                        )
+                    }
+
+                    composable<TvShowDetailRoute> { entry ->
+                        val route: TvShowDetailRoute = entry.toRoute()
+                        val presentLabel = stringResource(Res.string.tv_show_year_range_present)
+                        val viewModel: TvShowDetailViewModel =
+                            koinViewModel(
+                                key = "tv_${route.id}",
+                                parameters = { parametersOf(route.id, presentLabel) },
+                            )
+                        TvShowDetailScreen(
+                            viewModel = viewModel,
+                            tvShow = route.toUiModel(),
+                            onBack = { navController.navigateUp() },
+                            onTvShowClick = { show -> navController.navigate(show.toRoute()) },
+                            onPersonClick = { person -> navController.navigate(person.toRoute()) },
                         )
                     }
                 }

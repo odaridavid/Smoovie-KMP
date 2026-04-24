@@ -1,4 +1,4 @@
-package dev.odaridavid.smoovie.movies
+package dev.odaridavid.smoovie.shows
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,14 +32,13 @@ import dev.odaridavid.smoovie.movies.components.CastSection
 import dev.odaridavid.smoovie.theme.HeroSection
 import dev.odaridavid.smoovie.movies.components.ReviewsSection
 import dev.odaridavid.smoovie.theme.ShimmerDetail
-import dev.odaridavid.smoovie.movies.components.SimilarMoviesSection
 import dev.odaridavid.smoovie.movies.components.TrailersSection
 import dev.odaridavid.smoovie.person.PersonSummaryUiModel
+import dev.odaridavid.smoovie.shows.components.SeasonsSection
+import dev.odaridavid.smoovie.shows.components.SimilarTvShowsSection
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.utils.AppError
 import org.jetbrains.compose.resources.stringResource
-import previewMovieDetailUiModel
-import previewMovieUiModels
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.action_retry
 import smoovie.composeapp.generated.resources.error_network
@@ -49,36 +48,31 @@ import smoovie.composeapp.generated.resources.error_unauthorized
 import smoovie.composeapp.generated.resources.error_unknown
 
 @Composable
-fun MovieDetailScreen(
-    viewModel: MovieDetailViewModel,
-    movie: MovieUiModel,
+fun TvShowDetailScreen(
+    viewModel: TvShowDetailViewModel,
+    tvShow: TvShowUiModel,
     onBack: () -> Unit,
-    onMovieClick: (MovieUiModel) -> Unit,
+    onTvShowClick: (TvShowUiModel) -> Unit,
     onPersonClick: (PersonSummaryUiModel) -> Unit,
 ) {
     val detailState by viewModel.uiState.collectAsState()
-    val isInWatchlist by viewModel.isInWatchlist.collectAsState()
-    MovieDetailContent(
-        movie = movie,
+    TvShowDetailContent(
+        tvShow = tvShow,
         detailState = detailState,
-        isInWatchlist = isInWatchlist,
         onBack = onBack,
-        onRetry = viewModel::loadMovieDetail,
-        onToggleWatchlist = { viewModel.toggleWatchlist(movie) },
-        onMovieClick = onMovieClick,
+        onRetry = viewModel::loadTvShowDetail,
+        onTvShowClick = onTvShowClick,
         onPersonClick = onPersonClick,
     )
 }
 
 @Composable
-internal fun MovieDetailContent(
-    movie: MovieUiModel,
-    detailState: MovieDetailUiState,
+internal fun TvShowDetailContent(
+    tvShow: TvShowUiModel,
+    detailState: TvShowDetailUiState,
     onBack: () -> Unit,
     onRetry: () -> Unit,
-    isInWatchlist: Boolean = false,
-    onToggleWatchlist: () -> Unit = {},
-    onMovieClick: (MovieUiModel) -> Unit = {},
+    onTvShowClick: (TvShowUiModel) -> Unit = {},
     onPersonClick: (PersonSummaryUiModel) -> Unit = {},
 ) {
     val background = MaterialTheme.colorScheme.background
@@ -107,11 +101,9 @@ internal fun MovieDetailContent(
                     },
         ) {
             HeroSection(
-                backdropUrl = movie.backdropUrl,
-                posterUrl = movie.posterUrl,
+                backdropUrl = tvShow.backdropUrl,
+                posterUrl = tvShow.posterUrl,
                 onBack = onBack,
-                isInWatchlist = isInWatchlist,
-                onToggleWatchlist = onToggleWatchlist,
             )
         }
         Column(
@@ -122,24 +114,30 @@ internal fun MovieDetailContent(
                     .padding(top = 20.dp),
         ) {
             TitleHeader(
-                title = movie.title,
-                tagline = (detailState as? MovieDetailUiState.Success)?.movieDetail?.tagline,
+                title = tvShow.name,
+                tagline = (detailState as? TvShowDetailUiState.Success)?.tvShowDetail?.tagline,
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
 
             when (detailState) {
-                is MovieDetailUiState.Loading -> {
+                is TvShowDetailUiState.Loading -> {
                     ShimmerDetail(modifier = Modifier.fillMaxWidth())
                 }
 
-                is MovieDetailUiState.Success -> {
-                    val detail = detailState.movieDetail
-                    DetailBody(movie = movie, detail = detail)
+                is TvShowDetailUiState.Success -> {
+                    val detail = detailState.tvShowDetail
+                    DetailBody(tvShow = tvShow, detail = detail)
                     if (detail.cast.isNotEmpty()) {
                         CastSection(
                             cast = detail.cast,
                             modifier = Modifier.padding(horizontal = 16.dp),
                             onPersonClick = onPersonClick,
+                        )
+                    }
+                    if (detail.seasons.isNotEmpty()) {
+                        SeasonsSection(
+                            seasons = detail.seasons,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                         )
                     }
                     if (detail.trailers.isNotEmpty()) {
@@ -155,16 +153,16 @@ internal fun MovieDetailContent(
                         )
                     }
                     if (detail.similar.isNotEmpty()) {
-                        SimilarMoviesSection(
-                            movies = detail.similar,
-                            onMovieClick = onMovieClick,
+                        SimilarTvShowsSection(
+                            tvShows = detail.similar,
+                            onTvShowClick = onTvShowClick,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                         )
                     }
                 }
 
-                is MovieDetailUiState.Error -> {
-                    DetailBody(movie = movie) {
+                is TvShowDetailUiState.Error -> {
+                    DetailBody(tvShow = tvShow) {
                         ErrorBanner(error = detailState.error, onRetry = onRetry)
                     }
                 }
@@ -198,19 +196,19 @@ private fun TitleHeader(
 
 @Composable
 private fun DetailBody(
-    movie: MovieUiModel,
-    detail: MovieDetailUiModel? = null,
+    tvShow: TvShowUiModel,
+    detail: TvShowDetailUiModel? = null,
     extraContent: @Composable (() -> Unit)? = null,
 ) {
     Column(
         modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        MetadataSection(movie = movie, detail = detail)
+        MetadataSection(tvShow = tvShow, detail = detail)
 
         extraContent?.invoke()
 
-        val overview = detail?.overview ?: movie.overview
+        val overview = detail?.overview ?: tvShow.overview
         if (overview.isNotBlank()) {
             Text(
                 text = overview,
@@ -223,37 +221,43 @@ private fun DetailBody(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun MetadataSection(
-    movie: MovieUiModel,
-    detail: MovieDetailUiModel? = null,
+    tvShow: TvShowUiModel,
+    detail: TvShowDetailUiModel? = null,
 ) {
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        if (movie.voteAverage.isNotBlank()) {
+        if (tvShow.voteAverage.isNotBlank()) {
             val voteCount = detail?.voteCount
             val ratingLabel =
                 if (!voteCount.isNullOrBlank()) {
-                    "★ ${movie.voteAverage} ($voteCount)"
+                    "★ ${tvShow.voteAverage} ($voteCount)"
                 } else {
-                    "★ ${movie.voteAverage}"
+                    "★ ${tvShow.voteAverage}"
                 }
             AssistChip(
                 onClick = {},
                 label = { Text(ratingLabel) },
             )
         }
-        val runtime = detail?.runtime
-        if (!runtime.isNullOrBlank()) {
+        val yearsRange = detail?.yearsRange
+        if (!yearsRange.isNullOrBlank()) {
             AssistChip(
                 onClick = {},
-                label = { Text(runtime) },
+                label = { Text(yearsRange) },
+            )
+        } else if (tvShow.firstAirDate.isNotBlank()) {
+            AssistChip(
+                onClick = {},
+                label = { Text(tvShow.firstAirDate) },
             )
         }
-        if (movie.releaseDate.isNotBlank()) {
+        val seasonsLabel = detail?.seasonsLabel
+        if (!seasonsLabel.isNullOrBlank()) {
             AssistChip(
                 onClick = {},
-                label = { Text(movie.releaseDate) },
+                label = { Text(seasonsLabel) },
             )
         }
         val genres = detail?.genres
@@ -263,11 +267,11 @@ private fun MetadataSection(
                 label = { Text(genres) },
             )
         }
-        val director = detail?.director
-        if (!director.isNullOrBlank()) {
+        val networks = detail?.networks
+        if (!networks.isNullOrBlank()) {
             AssistChip(
                 onClick = {},
-                label = { Text("🎬 $director") },
+                label = { Text("📺 $networks") },
             )
         }
     }
@@ -314,13 +318,47 @@ private fun ErrorBanner(
 
 // region Previews
 
+private val previewTvShow =
+    TvShowUiModel(
+        id = 1,
+        name = "Breaking Bad",
+        overview = "A high school chemistry teacher turned methamphetamine manufacturer.",
+        firstAirDate = "20 Jan 2008",
+        voteAverage = "9.5",
+        backdropUrl = null,
+        posterUrl = null,
+    )
+
+private val previewTvShowDetail =
+    TvShowDetailUiModel(
+        id = 1,
+        name = "Breaking Bad",
+        overview = "A high school chemistry teacher turned methamphetamine manufacturer.",
+        tagline = "Remember my name.",
+        firstAirDate = "20 Jan 2008",
+        lastAirDate = "29 Sep 2013",
+        yearsRange = "2008 – 2013",
+        voteAverage = "9.5",
+        voteCount = "15,000",
+        backdropUrl = null,
+        posterUrl = null,
+        seasonsLabel = "5 seasons · 62 episodes",
+        genres = "Drama, Crime",
+        networks = "AMC",
+        seasons =
+            listOf(
+                SeasonUiModel(1, "Season 1", "2008", "7 episodes", null),
+                SeasonUiModel(2, "Season 2", "2009", "13 episodes", null),
+            ),
+    )
+
 @PreviewLightDark
 @Composable
-private fun MovieDetailLoadingPreview() {
+private fun TvShowDetailLoadingPreview() {
     SmoovieTheme {
-        MovieDetailContent(
-            movie = previewMovieUiModels[0],
-            detailState = MovieDetailUiState.Loading,
+        TvShowDetailContent(
+            tvShow = previewTvShow,
+            detailState = TvShowDetailUiState.Loading,
             onBack = {},
             onRetry = {},
         )
@@ -329,11 +367,11 @@ private fun MovieDetailLoadingPreview() {
 
 @PreviewLightDark
 @Composable
-private fun MovieDetailSuccessPreview() {
+private fun TvShowDetailSuccessPreview() {
     SmoovieTheme {
-        MovieDetailContent(
-            movie = previewMovieUiModels[0],
-            detailState = MovieDetailUiState.Success(previewMovieDetailUiModel),
+        TvShowDetailContent(
+            tvShow = previewTvShow,
+            detailState = TvShowDetailUiState.Success(previewTvShowDetail),
             onBack = {},
             onRetry = {},
         )
@@ -342,11 +380,11 @@ private fun MovieDetailSuccessPreview() {
 
 @PreviewLightDark
 @Composable
-private fun MovieDetailErrorPreview() {
+private fun TvShowDetailErrorPreview() {
     SmoovieTheme {
-        MovieDetailContent(
-            movie = previewMovieUiModels[0],
-            detailState = MovieDetailUiState.Error(AppError.NetworkError),
+        TvShowDetailContent(
+            tvShow = previewTvShow,
+            detailState = TvShowDetailUiState.Error(AppError.NetworkError),
             onBack = {},
             onRetry = {},
         )

@@ -1,4 +1,4 @@
-package dev.odaridavid.smoovie.movies.components
+package dev.odaridavid.smoovie.theme
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
@@ -23,7 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.search_movies_hint

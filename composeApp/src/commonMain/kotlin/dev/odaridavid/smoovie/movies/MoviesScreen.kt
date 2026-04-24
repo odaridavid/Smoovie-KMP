@@ -36,12 +36,12 @@ import androidx.compose.ui.unit.dp
 import dev.odaridavid.smoovie.movies.components.CollapsedToolbar
 import dev.odaridavid.smoovie.movies.components.FeaturedMoviesPager
 import dev.odaridavid.smoovie.movies.components.GenreChips
-import dev.odaridavid.smoovie.movies.components.SearchToolbar
-import dev.odaridavid.smoovie.movies.components.ShimmerFeaturedSection
-import dev.odaridavid.smoovie.movies.components.ShimmerMovieList
+import dev.odaridavid.smoovie.theme.ShimmerFeaturedSection
+import dev.odaridavid.smoovie.theme.ShimmerList
 import dev.odaridavid.smoovie.movies.components.movieItems
 import dev.odaridavid.smoovie.theme.EmptyContent
 import dev.odaridavid.smoovie.theme.ErrorContent
+import dev.odaridavid.smoovie.theme.SearchToolbar
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.ui.SearchBackHandler
 import previewMovieUiModels
@@ -187,7 +187,7 @@ private fun MoviesContent(
                 Box(modifier = Modifier.fillMaxSize()) {
                     when (uiState) {
                         is MoviesUiState.Loading -> {
-                            ShimmerMovieList(
+                            ShimmerList(
                                 modifier = Modifier.fillMaxSize(),
                                 showHero = false,
                             )

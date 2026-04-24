@@ -29,13 +29,13 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import dev.odaridavid.smoovie.movies.components.CastSection
-import dev.odaridavid.smoovie.theme.HeroSection
 import dev.odaridavid.smoovie.movies.components.ReviewsSection
-import dev.odaridavid.smoovie.theme.ShimmerDetail
 import dev.odaridavid.smoovie.movies.components.TrailersSection
 import dev.odaridavid.smoovie.person.PersonSummaryUiModel
 import dev.odaridavid.smoovie.shows.components.SeasonsSection
 import dev.odaridavid.smoovie.shows.components.SimilarTvShowsSection
+import dev.odaridavid.smoovie.theme.HeroSection
+import dev.odaridavid.smoovie.theme.ShimmerDetail
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.utils.AppError
 import org.jetbrains.compose.resources.stringResource

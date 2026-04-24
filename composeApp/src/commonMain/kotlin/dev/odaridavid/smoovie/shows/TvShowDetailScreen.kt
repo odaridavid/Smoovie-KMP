@@ -34,6 +34,7 @@ import dev.odaridavid.smoovie.movies.components.TrailersSection
 import dev.odaridavid.smoovie.person.PersonSummaryUiModel
 import dev.odaridavid.smoovie.shows.components.SeasonsSection
 import dev.odaridavid.smoovie.shows.components.SimilarTvShowsSection
+import dev.odaridavid.smoovie.theme.ExpandableText
 import dev.odaridavid.smoovie.theme.HeroSection
 import dev.odaridavid.smoovie.theme.ShimmerDetail
 import dev.odaridavid.smoovie.theme.SmoovieTheme
@@ -210,7 +211,7 @@ private fun DetailBody(
 
         val overview = detail?.overview ?: tvShow.overview
         if (overview.isNotBlank()) {
-            Text(
+            ExpandableText(
                 text = overview,
                 style = MaterialTheme.typography.bodyMedium,
             )

@@ -35,6 +35,7 @@ import dev.odaridavid.smoovie.theme.ShimmerDetail
 import dev.odaridavid.smoovie.movies.components.SimilarMoviesSection
 import dev.odaridavid.smoovie.movies.components.TrailersSection
 import dev.odaridavid.smoovie.person.PersonSummaryUiModel
+import dev.odaridavid.smoovie.theme.ExpandableText
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.utils.AppError
 import org.jetbrains.compose.resources.stringResource
@@ -212,7 +213,7 @@ private fun DetailBody(
 
         val overview = detail?.overview ?: movie.overview
         if (overview.isNotBlank()) {
-            Text(
+            ExpandableText(
                 text = overview,
                 style = MaterialTheme.typography.bodyMedium,
             )

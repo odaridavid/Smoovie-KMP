@@ -31,6 +31,7 @@ import dev.odaridavid.smoovie.person.components.HeaderFrame
 import dev.odaridavid.smoovie.person.components.PersonPhoto
 import dev.odaridavid.smoovie.person.components.ShimmerPersonDetail
 import dev.odaridavid.smoovie.theme.ErrorContent
+import dev.odaridavid.smoovie.theme.ExpandableText
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.utils.AppError
 import org.jetbrains.compose.resources.stringResource
@@ -187,7 +188,7 @@ private fun DetailHeader(
             }
         }
         if (detail.biography.isNotBlank()) {
-            Text(
+            ExpandableText(
                 text = detail.biography,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.fillMaxWidth(),

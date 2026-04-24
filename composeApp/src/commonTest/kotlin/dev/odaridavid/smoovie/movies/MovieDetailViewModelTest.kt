@@ -6,6 +6,7 @@ import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import dev.odaridavid.smoovie.movies.data.Genre
 import dev.odaridavid.smoovie.movies.data.MovieDetail
 import dev.odaridavid.smoovie.movies.domain.GetMovieDetailUseCase
+import dev.odaridavid.smoovie.utils.AppError
 import dev.odaridavid.smoovie.watchlist.domain.ObserveIsInWatchlistUseCase
 import dev.odaridavid.smoovie.watchlist.domain.ToggleWatchlistUseCase
 import kotlinx.coroutines.Dispatchers
@@ -82,11 +83,11 @@ class MovieDetailViewModelTest {
             val state = viewModel.uiState.value
 
             assertIs<MovieDetailUiState.Error>(state)
-            assertEquals("Network error", state.message)
+            assertEquals(AppError.NetworkError, state.error)
         }
 
     @Test
-    fun `given exception has no message - when viewmodel is created - then emits fallback message`() =
+    fun `given untyped exception - when viewmodel is created - then emits network error`() =
         runTest {
             val repo = FakeMoviesRepository(error = Exception())
             val viewModel = buildViewModel(repo)
@@ -94,7 +95,7 @@ class MovieDetailViewModelTest {
             val state = viewModel.uiState.value
 
             assertIs<MovieDetailUiState.Error>(state)
-            assertEquals("Something went wrong", state.message)
+            assertEquals(AppError.NetworkError, state.error)
         }
 
     @Test

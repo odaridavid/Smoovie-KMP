@@ -11,6 +11,7 @@ import dev.odaridavid.smoovie.movies.domain.GetGenresUseCase
 import dev.odaridavid.smoovie.movies.domain.GetMoviesByGenreUseCase
 import dev.odaridavid.smoovie.movies.domain.GetPopularMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.SearchMoviesUseCase
+import dev.odaridavid.smoovie.utils.AppError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -79,18 +80,18 @@ class MoviesViewModelTest {
             val state = viewModel.state.value.uiState
 
             assertIs<MoviesUiState.Error>(state)
-            assertEquals("Network error", state.message)
+            assertEquals(AppError.NetworkError, state.error)
         }
 
     @Test
-    fun `given exception has no message - when loadMovies is called - then emits fallback message`() =
+    fun `given untyped exception - when loadMovies is called - then emits network error`() =
         runTest {
             val viewModel = buildViewModel(FakeMoviesRepository(error = Exception()))
 
             val state = viewModel.state.value.uiState
 
             assertIs<MoviesUiState.Error>(state)
-            assertEquals("Something went wrong", state.message)
+            assertEquals(AppError.NetworkError, state.error)
         }
 
     @Test
@@ -131,7 +132,7 @@ class MoviesViewModelTest {
             val state = viewModel.state.value.uiState
 
             assertIs<MoviesUiState.Error>(state)
-            assertEquals("Config error", state.message)
+            assertEquals(AppError.NetworkError, state.error)
         }
 
     @Test

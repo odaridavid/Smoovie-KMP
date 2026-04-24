@@ -6,6 +6,7 @@ import dev.odaridavid.smoovie.person.data.MovieCredits
 import dev.odaridavid.smoovie.person.data.PersonDetail
 import dev.odaridavid.smoovie.person.data.PersonMovieCredit
 import dev.odaridavid.smoovie.person.domain.GetPersonDetailUseCase
+import dev.odaridavid.smoovie.utils.AppError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -104,11 +105,11 @@ class PersonDetailViewModelTest {
             val state = viewModel.uiState.value
 
             assertIs<PersonDetailUiState.Error>(state)
-            assertEquals("Network error", state.message)
+            assertEquals(AppError.NetworkError, state.error)
         }
 
     @Test
-    fun `given exception has no message - when viewmodel is created - then emits fallback message`() =
+    fun `given untyped exception - when viewmodel is created - then emits network error`() =
         runTest {
             val repo = FakePersonRepository(error = Exception())
             val viewModel = buildViewModel(repo)
@@ -116,7 +117,7 @@ class PersonDetailViewModelTest {
             val state = viewModel.uiState.value
 
             assertIs<PersonDetailUiState.Error>(state)
-            assertEquals("Something went wrong", state.message)
+            assertEquals(AppError.NetworkError, state.error)
         }
 
     @Test

@@ -13,8 +13,10 @@ Targets Android and iOS with a shared Compose Multiplatform UI.
 - Movie detail screen with edge-to-edge backdrop, gradient scrims, tagline, cast, trailers,
   reviews, and a "More like this" section
 - Person detail screen with biography, birthday, place of birth, and filmography
-- Watchlist — tap the bookmark on any movie detail to save it locally; dedicated watchlist screen
-  reachable from the home toolbar
+- Watchlist — tap the bookmark on any movie detail to save it locally; browse saved movies from
+  the Watchlist tab in the bottom navigation
+- Bottom navigation with Movies / Shows / Watchlist tabs; state preserved across tab switches,
+  instant tab-to-tab transitions and sliding detail pushes
 - In-memory TTL caching for TMDB requests (1 hour) so navigating back and forth doesn't re-hit the
   network
 - Typed navigation via Jetpack Compose Navigation (KMP) with serializable routes
@@ -33,6 +35,7 @@ composeApp/src/
 │       ├── configuration/      # TMDB image config + URL builder
 │       ├── movies/             # Movie list, detail, search, featured pager, use cases
 │       ├── person/             # Person detail screen + filmography
+│       ├── shows/              # TV shows tab (in progress — see tv-shows-plan.md)
 │       ├── watchlist/          # Watchlist screen, repository, Room DAO + entity
 │       ├── storage/            # SmoovieDatabase (Room KMP) + platform DB builder
 │       ├── utils/              # TtlCache, currentTimeMillis (expect/actual)

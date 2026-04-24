@@ -1,0 +1,182 @@
+package dev.odaridavid.smoovie.shows
+
+import dev.odaridavid.smoovie.FakeConfigurationRepository
+import dev.odaridavid.smoovie.FakeTvShowsRepository
+import dev.odaridavid.smoovie.configuration.ConfigurationRepository
+import dev.odaridavid.smoovie.configuration.ConfigurationStore
+import dev.odaridavid.smoovie.configuration.LoadConfigurationUseCase
+import dev.odaridavid.smoovie.shows.data.TvGenre
+import dev.odaridavid.smoovie.shows.data.TvShow
+import dev.odaridavid.smoovie.shows.domain.GetPopularTvShowsUseCase
+import dev.odaridavid.smoovie.shows.domain.GetTvGenresUseCase
+import dev.odaridavid.smoovie.shows.domain.GetTvShowsByGenreUseCase
+import dev.odaridavid.smoovie.shows.domain.SearchTvShowsUseCase
+import dev.odaridavid.smoovie.utils.AppError
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class ShowsViewModelTest {
+    private val testDispatcher = UnconfinedTestDispatcher()
+
+    private val testShows =
+        listOf(
+            TvShow(id = 1, name = "Breaking Bad", overview = "Chemistry."),
+            TvShow(id = 2, name = "Stranger Things", overview = "Upside down."),
+        )
+
+    @BeforeTest
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
+    private fun buildViewModel(
+        repo: FakeTvShowsRepository,
+        configRepo: ConfigurationRepository = FakeConfigurationRepository(),
+        configStore: ConfigurationStore = ConfigurationStore(),
+    ): ShowsViewModel {
+        val mapper = TvShowUiMapper(configStore)
+        return ShowsViewModel(
+            getPopularTvShows = GetPopularTvShowsUseCase(repo, mapper),
+            searchTvShows = SearchTvShowsUseCase(repo, mapper),
+            getTvShowsByGenre = GetTvShowsByGenreUseCase(repo, mapper),
+            getTvGenres = GetTvGenresUseCase(repo),
+            loadConfiguration = LoadConfigurationUseCase(configRepo, configStore),
+        )
+    }
+
+    @Test
+    fun `given api returns shows - when viewmodel is created - then emits success`() =
+        runTest {
+            val viewModel = buildViewModel(FakeTvShowsRepository(tvShows = testShows))
+
+            val state = viewModel.state.value.uiState
+
+            assertIs<ShowsUiState.Success>(state)
+            assertEquals(2, state.tvShows.size)
+            assertEquals("Breaking Bad", state.tvShows[0].name)
+        }
+
+    @Test
+    fun `given api throws - when viewmodel is created - then emits network error`() =
+        runTest {
+            val viewModel = buildViewModel(FakeTvShowsRepository(error = Exception("Network")))
+
+            val state = viewModel.state.value.uiState
+
+            assertIs<ShowsUiState.Error>(state)
+            assertEquals(AppError.NetworkError, state.error)
+        }
+
+    @Test
+    fun `given api returns empty - when viewmodel is created - then emits empty state`() =
+        runTest {
+            val viewModel = buildViewModel(FakeTvShowsRepository(tvShows = emptyList()))
+
+            assertIs<ShowsUiState.Empty>(viewModel.state.value.uiState)
+        }
+
+    @Test
+    fun `given error - when retry is called - then emits success`() =
+        runTest {
+            val repo = FakeTvShowsRepository(error = Exception("Network"))
+            val viewModel = buildViewModel(repo)
+            assertIs<ShowsUiState.Error>(viewModel.state.value.uiState)
+
+            repo.error = null
+            repo.tvShows = testShows
+            viewModel.retry()
+
+            assertIs<ShowsUiState.Success>(viewModel.state.value.uiState)
+        }
+
+    @Test
+    fun `given genre selected - when onGenreSelected - then emits discover shows`() =
+        runTest {
+            val dramaShows = listOf(TvShow(id = 10, name = "The Wire", overview = "Baltimore."))
+            val repo = FakeTvShowsRepository(tvShows = testShows, discoverTvShows = dramaShows)
+            val viewModel = buildViewModel(repo)
+
+            viewModel.onGenreSelected(TvGenreUiModel(18, "Drama"))
+
+            val state = viewModel.state.value.uiState
+            assertIs<ShowsUiState.Success>(state)
+            assertEquals(1, state.tvShows.size)
+            assertEquals("The Wire", state.tvShows[0].name)
+        }
+
+    @Test
+    fun `given same genre already selected - when onGenreSelected - then shows are not reloaded`() =
+        runTest {
+            val genre = TvGenreUiModel(18, "Drama")
+            val dramaShows = listOf(TvShow(id = 10, name = "The Wire", overview = "Baltimore."))
+            val repo = FakeTvShowsRepository(tvShows = testShows, discoverTvShows = dramaShows)
+            val viewModel = buildViewModel(repo)
+            viewModel.onGenreSelected(genre)
+            val stateAfterFirst = viewModel.state.value.uiState
+
+            repo.discoverTvShows = listOf(TvShow(id = 11, name = "Different", overview = "X"))
+            viewModel.onGenreSelected(genre)
+
+            assertEquals(stateAfterFirst, viewModel.state.value.uiState)
+        }
+
+    @Test
+    fun `given genres api throws - when viewmodel is created - then shows still load`() =
+        runTest {
+            val repo = FakeTvShowsRepository(tvShows = testShows, genresError = Exception("genres failed"))
+            val viewModel = buildViewModel(repo)
+
+            assertIs<ShowsUiState.Success>(viewModel.state.value.uiState)
+            assertEquals(emptyList(), viewModel.state.value.genres)
+        }
+
+    @Test
+    fun `given genres available - when viewmodel is created - then genres state is populated`() =
+        runTest {
+            val genres = listOf(TvGenre(18, "Drama"), TvGenre(35, "Comedy"))
+            val repo = FakeTvShowsRepository(tvShows = testShows, genres = genres)
+            val viewModel = buildViewModel(repo)
+
+            assertEquals(2, viewModel.state.value.genres.size)
+            assertEquals("Drama", viewModel.state.value.genres[0].name)
+        }
+
+    @Test
+    fun `given success with more pages - when loadNextPage - then appends shows`() =
+        runTest {
+            val page2Shows =
+                listOf(
+                    TvShow(id = 3, name = "Succession", overview = "Media dynasty."),
+                )
+            val repo = FakeTvShowsRepository(tvShows = testShows, totalPages = 2)
+            val viewModel = buildViewModel(repo)
+            val firstPage = viewModel.state.value.uiState
+            assertIs<ShowsUiState.Success>(firstPage)
+            assertTrue(firstPage.hasMorePages)
+
+            repo.tvShows = page2Shows
+            viewModel.loadNextPage()
+
+            val state = viewModel.state.value.uiState
+            assertIs<ShowsUiState.Success>(state)
+            assertEquals(testShows.size + page2Shows.size, state.tvShows.size)
+            assertFalse(state.hasMorePages)
+        }
+}

@@ -34,6 +34,7 @@ internal fun SearchToolbar(
     query: String,
     onQueryChanged: (String) -> Unit,
     onClose: () -> Unit,
+    placeholder: String = stringResource(Res.string.search_movies_hint),
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -55,9 +56,7 @@ internal fun SearchToolbar(
             TextField(
                 value = query,
                 onValueChange = onQueryChanged,
-                placeholder = {
-                    Text(stringResource(Res.string.search_movies_hint))
-                },
+                placeholder = { Text(placeholder) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions =

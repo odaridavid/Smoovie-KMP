@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">Smoovie</string>
     <string name="search_movies_hint">Search movies</string>
+    <string name="search_shows_hint">Search shows</string>
     <string name="no_description_available">No description available</string>
     <string name="empty_no_movies_found">No movies found</string>
     <string name="unrated" translatable="false">—</string>

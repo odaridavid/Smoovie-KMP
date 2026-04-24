@@ -37,6 +37,7 @@ import dev.odaridavid.smoovie.movies.MoviesViewModel
 import dev.odaridavid.smoovie.person.PersonDetailScreen
 import dev.odaridavid.smoovie.person.PersonDetailViewModel
 import dev.odaridavid.smoovie.shows.ShowsScreen
+import dev.odaridavid.smoovie.shows.ShowsViewModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.watchlist.WatchlistScreen
 import dev.odaridavid.smoovie.watchlist.WatchlistViewModel
@@ -106,7 +107,8 @@ fun App() {
                         popEnterTransition = { if (initialState.destination.isTopLevelTab()) EnterTransition.None else null },
                         popExitTransition = { if (targetState.destination.isTopLevelTab()) ExitTransition.None else null },
                     ) {
-                        ShowsScreen()
+                        val viewModel: ShowsViewModel = koinViewModel()
+                        ShowsScreen(viewModel = viewModel)
                     }
 
                     composable<WatchlistRoute>(

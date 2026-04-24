@@ -19,6 +19,14 @@ import dev.odaridavid.smoovie.person.PersonDetailViewModel
 import dev.odaridavid.smoovie.person.data.PersonRepositoryImpl
 import dev.odaridavid.smoovie.person.domain.GetPersonDetailUseCase
 import dev.odaridavid.smoovie.person.domain.PersonRepository
+import dev.odaridavid.smoovie.shows.ShowsViewModel
+import dev.odaridavid.smoovie.shows.TvShowUiMapper
+import dev.odaridavid.smoovie.shows.data.TvShowsRepositoryImpl
+import dev.odaridavid.smoovie.shows.domain.GetPopularTvShowsUseCase
+import dev.odaridavid.smoovie.shows.domain.GetTvGenresUseCase
+import dev.odaridavid.smoovie.shows.domain.GetTvShowsByGenreUseCase
+import dev.odaridavid.smoovie.shows.domain.SearchTvShowsUseCase
+import dev.odaridavid.smoovie.shows.domain.TvShowsRepository
 import dev.odaridavid.smoovie.storage.DatabaseBuilderFactory
 import dev.odaridavid.smoovie.storage.SmoovieDatabase
 import dev.odaridavid.smoovie.watchlist.WatchlistViewModel
@@ -74,6 +82,7 @@ private val appModule =
         single<ConfigurationRepository> { ConfigurationRepositoryImpl(get()) }
         single<MoviesRepository> { MoviesRepositoryImpl(get()) }
         single<PersonRepository> { PersonRepositoryImpl(get()) }
+        single<TvShowsRepository> { TvShowsRepositoryImpl(get()) }
         single<SmoovieDatabase> {
             get<DatabaseBuilderFactory>()
                 .create()
@@ -85,6 +94,7 @@ private val appModule =
         single<WatchlistRepository> { WatchlistRepositoryImpl(get()) }
 
         single { MovieUiMapper(get()) }
+        single { TvShowUiMapper(get()) }
 
         single { LoadConfigurationUseCase(get(), get()) }
         single { GetPopularMoviesUseCase(get(), get()) }
@@ -92,6 +102,10 @@ private val appModule =
         single { GetMoviesByGenreUseCase(get(), get()) }
         single { GetGenresUseCase(get()) }
         single { GetMovieDetailUseCase(get(), get()) }
+        single { GetPopularTvShowsUseCase(get(), get()) }
+        single { SearchTvShowsUseCase(get(), get()) }
+        single { GetTvShowsByGenreUseCase(get(), get()) }
+        single { GetTvGenresUseCase(get()) }
         single { GetPersonDetailUseCase(get(), get()) }
         single { ObserveIsInWatchlistUseCase(get()) }
         single { ObserveWatchlistUseCase(get()) }
@@ -104,6 +118,15 @@ private val appModule =
                 searchMovies = get(),
                 getMoviesByGenre = get(),
                 getGenres = get(),
+                loadConfiguration = get(),
+            )
+        }
+        viewModel {
+            ShowsViewModel(
+                getPopularTvShows = get(),
+                searchTvShows = get(),
+                getTvShowsByGenre = get(),
+                getTvGenres = get(),
                 loadConfiguration = get(),
             )
         }

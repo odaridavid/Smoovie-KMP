@@ -1,10 +1,13 @@
 package dev.odaridavid.smoovie.shows
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,12 +39,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import dev.odaridavid.smoovie.theme.SearchToolbar
-import dev.odaridavid.smoovie.theme.ShimmerList
+import dev.odaridavid.smoovie.shows.components.FeaturedTvShowsPager
 import dev.odaridavid.smoovie.shows.components.TvGenreChips
 import dev.odaridavid.smoovie.shows.components.tvShowItems
 import dev.odaridavid.smoovie.theme.EmptyContent
 import dev.odaridavid.smoovie.theme.ErrorContent
+import dev.odaridavid.smoovie.theme.SearchToolbar
+import dev.odaridavid.smoovie.theme.ShimmerFeaturedSection
+import dev.odaridavid.smoovie.theme.ShimmerList
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.ui.SearchBackHandler
 import org.jetbrains.compose.resources.stringResource
@@ -50,6 +55,7 @@ import smoovie.composeapp.generated.resources.media_type_tv_shows
 import smoovie.composeapp.generated.resources.search_shows_hint
 
 private const val SLOW_ANIM_DURATION = 500
+private const val FEATURED_COUNT = 4
 
 private data class ShowActions(
     val onSearchQueryChanged: (String) -> Unit = {},
@@ -133,7 +139,7 @@ private fun ShowsContent(
                         },
                         placeholder = stringResource(Res.string.search_shows_hint),
                     )
-                } else {
+                } else if (state.featuredTvShows.isEmpty() && state.uiState !is ShowsUiState.Loading) {
                     CenterAlignedTopAppBar(
                         title = { Text(text = stringResource(Res.string.media_type_tv_shows)) },
                         actions = {
@@ -150,12 +156,41 @@ private fun ShowsContent(
         },
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
-            if (!isSearchActive && state.genres.isNotEmpty()) {
-                TvGenreChips(
-                    genres = state.genres,
-                    selectedGenre = state.selectedGenre,
-                    onGenreSelected = actions.onGenreSelected,
-                )
+            AnimatedVisibility(
+                visible =
+                    !isSearchActive &&
+                        (state.featuredTvShows.isNotEmpty() || state.uiState is ShowsUiState.Loading),
+                enter = expandVertically(tween(400)) + fadeIn(tween(400)),
+                exit = shrinkVertically(tween(350)) + fadeOut(tween(300)),
+            ) {
+                AnimatedContent(
+                    targetState = state.featuredTvShows.isNotEmpty(),
+                    transitionSpec = {
+                        fadeIn(tween(SLOW_ANIM_DURATION)) togetherWith fadeOut(tween(SLOW_ANIM_DURATION))
+                    },
+                    label = "shows_featured",
+                ) { hasFeatured ->
+                    if (hasFeatured) {
+                        Column {
+                            FeaturedTvShowsPager(
+                                tvShows = state.featuredTvShows.take(FEATURED_COUNT),
+                                onSearchClick = { isSearchActive = true },
+                                onTvShowClick = actions.onTvShowClick,
+                            )
+                            if (state.genres.isNotEmpty()) {
+                                TvGenreChips(
+                                    genres = state.genres,
+                                    selectedGenre = state.selectedGenre,
+                                    onGenreSelected = actions.onGenreSelected,
+                                )
+                            }
+                        }
+                    } else {
+                        ShimmerFeaturedSection(
+                            onSearchClick = { isSearchActive = true },
+                        )
+                    }
+                }
             }
             AnimatedContent(
                 targetState = state.uiState,
@@ -223,7 +258,7 @@ private val previewTvShows =
             id = 1,
             name = "Breaking Bad",
             overview = "A high school chemistry teacher turned methamphetamine manufacturer.",
-            firstAirDate = "20 Jan 2008",
+            firstAirDate = "15 Jul 2016",
             voteAverage = "9.5",
             backdropUrl = null,
             posterUrl = null,
@@ -260,6 +295,7 @@ private fun ShowsSuccessPreview() {
                     uiState = ShowsUiState.Success(previewTvShows),
                     genres = previewGenres,
                     selectedGenre = previewGenres[1],
+                    featuredTvShows = previewTvShows,
                 ),
             actions = ShowActions(),
         )

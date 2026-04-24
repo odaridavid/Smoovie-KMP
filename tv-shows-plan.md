@@ -189,7 +189,13 @@ running emulator.
 - [ ] **Person filmography TV credits** — `append_to_response=tv_credits` on `/person/{id}`,
       merge into filmography rail with a `TV` badge. Independent, can ship anytime after
       Phase 2.
-- [ ] **Featured pager with TV content** — trivial after Phase 2; toggle-aware data source.
+- [x] **Featured pager with TV content** — `shows/components/FeaturedTvShowsPager` mirrors
+      `FeaturedMoviesPager` (TV-typed). `ShowsScreenState.featuredTvShows` populated by
+      `ShowsViewModel.loadData()` from the first popular page (same pattern as movies).
+      `ShowsScreen` restructured to match `MoviesScreen`'s top-zone layout: pager at the top
+      (empty topBar), genre chips below the pager, list below; when no featured is loaded,
+      `CenterAlignedTopAppBar` renders in the topBar as before. `ShimmerFeaturedSection` from
+      `theme/` reused during loading. Genre switches keep featured stable (tracked by a test).
 - [ ] **`/search/multi` unified search** — optional during Phase 2 if mixed results feel
       better than per-tab search.
 

@@ -7,6 +7,7 @@ data class ShowsScreenState(
     val searchQuery: String = "",
     val genres: List<TvGenreUiModel> = emptyList(),
     val selectedGenre: TvGenreUiModel? = null,
+    val featuredTvShows: List<TvShowUiModel> = emptyList(),
 )
 
 sealed interface ShowsUiState {

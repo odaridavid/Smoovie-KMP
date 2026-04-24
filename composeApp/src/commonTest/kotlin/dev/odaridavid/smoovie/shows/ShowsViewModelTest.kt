@@ -159,6 +159,28 @@ class ShowsViewModelTest {
         }
 
     @Test
+    fun `given initial load - when viewmodel is created - then featured shows are populated`() =
+        runTest {
+            val viewModel = buildViewModel(FakeTvShowsRepository(tvShows = testShows))
+
+            assertEquals(testShows.size, viewModel.state.value.featuredTvShows.size)
+            assertEquals(testShows[0].id, viewModel.state.value.featuredTvShows[0].id)
+        }
+
+    @Test
+    fun `given featured populated - when genre selected - then featured stays`() =
+        runTest {
+            val dramaShows = listOf(TvShow(id = 10, name = "The Wire", overview = "Baltimore."))
+            val repo = FakeTvShowsRepository(tvShows = testShows, discoverTvShows = dramaShows)
+            val viewModel = buildViewModel(repo)
+            val featuredBefore = viewModel.state.value.featuredTvShows
+
+            viewModel.onGenreSelected(TvGenreUiModel(18, "Drama"))
+
+            assertEquals(featuredBefore, viewModel.state.value.featuredTvShows)
+        }
+
+    @Test
     fun `given success with more pages - when loadNextPage - then appends shows`() =
         runTest {
             val page2Shows =

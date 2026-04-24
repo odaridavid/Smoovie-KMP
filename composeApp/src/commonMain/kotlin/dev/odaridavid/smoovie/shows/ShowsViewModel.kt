@@ -115,7 +115,9 @@ class ShowsViewModel(
             try {
                 loadConfiguration()
                 loadGenresList()
-                _state.update { it.copy(uiState = processPage(fetchPage())) }
+                val uiState = processPage(fetchPage())
+                val featured = (uiState as? ShowsUiState.Success)?.tvShows ?: emptyList()
+                _state.update { it.copy(uiState = uiState, featuredTvShows = featured) }
             } catch (e: Exception) {
                 _state.update { it.copy(uiState = ShowsUiState.Error(e.toAppError())) }
             }

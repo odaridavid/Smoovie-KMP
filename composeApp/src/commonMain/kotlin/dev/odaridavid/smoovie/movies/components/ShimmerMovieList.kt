@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -45,7 +44,6 @@ import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.search_movies_hint
-import smoovie.composeapp.generated.resources.watchlist_open_content_description
 
 private const val SHIMMER_ITEM_COUNT = 5
 private val PAGER_SHIMMER_HEIGHT = 260.dp
@@ -54,7 +52,6 @@ private val ICON_SCRIM_COLOR = Color.Black.copy(alpha = 0.35f)
 @Composable
 internal fun ShimmerFeaturedSection(
     onSearchClick: () -> Unit,
-    onWatchlistClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val shimmerBrush = rememberShimmerBrush()
@@ -62,7 +59,6 @@ internal fun ShimmerFeaturedSection(
         ShimmerFeaturedHero(
             brush = shimmerBrush,
             onSearchClick = onSearchClick,
-            onWatchlistClick = onWatchlistClick,
         )
         ShimmerGenreChips(brush = shimmerBrush)
     }
@@ -99,7 +95,6 @@ internal fun ShimmerMovieList(
 private fun ShimmerFeaturedHero(
     brush: Brush,
     onSearchClick: () -> Unit,
-    onWatchlistClick: () -> Unit = {},
 ) {
     Box(
         modifier = Modifier
@@ -112,18 +107,7 @@ private fun ShimmerFeaturedHero(
                 .align(Alignment.TopEnd)
                 .windowInsetsPadding(WindowInsets.statusBars)
                 .padding(end = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            IconButton(
-                onClick = onWatchlistClick,
-                colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White),
-                modifier = Modifier.background(ICON_SCRIM_COLOR, CircleShape),
-            ) {
-                Icon(
-                    imageVector = Icons.Default.BookmarkBorder,
-                    contentDescription = stringResource(Res.string.watchlist_open_content_description),
-                )
-            }
             IconButton(
                 onClick = onSearchClick,
                 colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White),

@@ -19,7 +19,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
@@ -46,7 +45,6 @@ import org.jetbrains.compose.resources.stringResource
 import previewMovieUiModels
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.search_movies_hint
-import smoovie.composeapp.generated.resources.watchlist_open_content_description
 
 private val PAGER_HEIGHT = 260.dp
 private val ICON_SCRIM_COLOR = Color.Black.copy(alpha = 0.35f)
@@ -56,7 +54,6 @@ private val ICON_SCRIM_COLOR = Color.Black.copy(alpha = 0.35f)
 internal fun FeaturedMoviesPager(
     movies: List<MovieUiModel>,
     onSearchClick: () -> Unit,
-    onWatchlistClick: () -> Unit,
     onMovieClick: (MovieUiModel) -> Unit,
 ) {
     if (movies.isEmpty()) return
@@ -118,24 +115,13 @@ internal fun FeaturedMoviesPager(
                 ),
         )
 
-        // Top-right action row — watchlist + search, below status bar
+        // Top-right action row — search, below status bar
         Row(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .windowInsetsPadding(WindowInsets.statusBars)
                 .padding(end = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            IconButton(
-                onClick = onWatchlistClick,
-                colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White),
-                modifier = Modifier.background(ICON_SCRIM_COLOR, CircleShape),
-            ) {
-                Icon(
-                    imageVector = Icons.Default.BookmarkBorder,
-                    contentDescription = stringResource(Res.string.watchlist_open_content_description),
-                )
-            }
             IconButton(
                 onClick = onSearchClick,
                 colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White),
@@ -221,7 +207,6 @@ private fun FeaturedMoviesPagerPreview() {
         FeaturedMoviesPager(
             movies = previewMovieUiModels.take(4),
             onSearchClick = {},
-            onWatchlistClick = {},
             onMovieClick = {},
         )
     }

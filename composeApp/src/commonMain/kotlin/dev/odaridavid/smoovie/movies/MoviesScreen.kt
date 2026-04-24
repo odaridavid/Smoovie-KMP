@@ -55,14 +55,12 @@ private data class MovieActions(
     val onRetry: () -> Unit = {},
     val onLoadMore: () -> Unit = {},
     val onMovieClick: (MovieUiModel) -> Unit = {},
-    val onWatchlistClick: () -> Unit = {},
 )
 
 @Composable
 fun MoviesScreen(
     viewModel: MoviesViewModel,
     onMovieClick: (MovieUiModel) -> Unit,
-    onWatchlistClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     MoviesContent(
@@ -74,7 +72,6 @@ fun MoviesScreen(
                 onRetry = viewModel::retry,
                 onLoadMore = viewModel::loadNextPage,
                 onMovieClick = onMovieClick,
-                onWatchlistClick = onWatchlistClick,
             ),
     )
 }
@@ -137,7 +134,6 @@ private fun MoviesContent(
                     CollapsedToolbar(
                         visible = true,
                         onSearchClick = { isSearchActive = true },
-                        onWatchlistClick = actions.onWatchlistClick,
                     )
                 }
             }
@@ -163,7 +159,6 @@ private fun MoviesContent(
                             FeaturedMoviesPager(
                                 movies = state.featuredMovies.take(FEATURED_COUNT),
                                 onSearchClick = { isSearchActive = true },
-                                onWatchlistClick = actions.onWatchlistClick,
                                 onMovieClick = actions.onMovieClick,
                             )
                             if (state.genres.isNotEmpty()) {
@@ -177,7 +172,6 @@ private fun MoviesContent(
                     } else {
                         ShimmerFeaturedSection(
                             onSearchClick = { isSearchActive = true },
-                            onWatchlistClick = actions.onWatchlistClick,
                         )
                     }
                 }

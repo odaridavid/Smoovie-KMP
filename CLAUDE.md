@@ -29,7 +29,7 @@ composeApp/
     ├── commonMain/
     │   ├── composeResources/values/strings.xml
     │   └── kotlin/dev/odaridavid/smoovie/
-    │       ├── App.kt                    # NavHost with slide-horizontal route transitions
+    │       ├── App.kt                    # Scaffold + Material3 NavigationBar (Movies / Shows / Watchlist) wrapping NavHost; slide transitions for detail pushes, instant for tab-to-tab
     │       ├── Screen.kt                 # @Serializable nav routes + UI↔route converters
     │       ├── AppConfig.kt              # expect val tmdbApiKey + TMDB_BASE_URL const
     │       ├── KoinInitializer.kt        # appModule + initKoin { setup }
@@ -47,6 +47,7 @@ composeApp/
     │       │   ├── components/           # HeaderFrame, PersonPhoto, ShimmerPersonDetail
     │       │   ├── data/                 # PersonRepositoryImpl (Ktor + TtlCache), DTOs
     │       │   └── domain/               # PersonRepository interface + GetPersonDetailUseCase
+    │       ├── shows/                    # Placeholder TV-shows surface (tab destination); data/domain/components land here as Phases 2-3 of tv-shows-plan.md roll in
     │       ├── watchlist/
     │       │   ├── WatchlistScreen.kt / WatchlistViewModel.kt / WatchlistUiState.kt
     │       │   ├── data/                 # WatchlistDao, WatchlistMovieEntity, WatchlistRepositoryImpl
@@ -101,8 +102,11 @@ iosApp/                                   # Xcode project / Swift entry point
 
 - Jetpack Compose Navigation (KMP variant, `org.jetbrains.androidx.navigation:navigation-compose`).
 - Routes live in `Screen.kt` as top-level `@Serializable` types (`data object MoviesRoute`, `data class MovieDetailRoute(...)`, etc.) plus `toRoute()` / `toUiModel()` converters.
-- `App.kt` sets up a single `NavHost` with slide-horizontal enter/exit/pop transitions. Each `composable<Route>` block unpacks typed args with `entry.toRoute<Route>()`.
-- **Adding a new destination**: add a `@Serializable` route in `Screen.kt`, add a `composable<Route> { ... }` block in `App.kt`, wire up back/forward callbacks with `navController.navigate(...)` / `navController.navigateUp()`.
+- `App.kt` wraps the `NavHost` in a `Scaffold` with a Material3 `NavigationBar`. Three top-level tabs: **Movies**, **Shows**, **Watchlist**. The bar is shown only when the current destination satisfies `NavDestination.isTopLevelTab()` — hidden on detail pushes (`MovieDetailRoute`, `PersonDetailRoute`).
+- Tab clicks go through `NavHostController.navigateToTab(route)`, which uses the standard Material pattern: `popUpTo(startDestination) { saveState = true } + launchSingleTop + restoreState` so each tab preserves its scroll / filter / loaded-page state across switches.
+- **Transitions**: the `NavHost` defines slide-horizontal enter/exit/pop defaults for detail pushes. Each tab destination (`composable<MoviesRoute>`, `composable<ShowsRoute>`, `composable<WatchlistRoute>`) overrides all four transitions with `if (initialState.destination.isTopLevelTab()) EnterTransition.None else null` (and mirror for exit/pop), returning `null` to fall through to the NavHost default. Net effect: tab ↔ tab is instant, tab → detail slides, detail pop → tab slides back.
+- **Adding a new detail destination**: add a `@Serializable` route in `Screen.kt`, add a `composable<Route> { ... }` block in `App.kt` (no transition overrides — inherits the default slide), wire up back/forward with `navController.navigate(...)` / `navController.navigateUp()`.
+- **Adding a new top-level tab**: (1) add the `@Serializable data object` route, (2) add it to `isTopLevelTab()`, (3) add a `NavigationBarItem` in `AppBottomBar`, (4) add a `composable<Route>` block with the four tab-transition overrides matching the existing tabs. Tab destinations don't take an `onBack` — back-gesture pops the tab stack, not the tab itself.
 
 ### In-memory request cache
 

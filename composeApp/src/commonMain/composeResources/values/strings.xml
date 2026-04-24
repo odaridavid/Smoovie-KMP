@@ -31,7 +31,6 @@
     <string name="watchlist_empty">No saved movies yet</string>
     <string name="watchlist_add_content_description">Add to watchlist</string>
     <string name="watchlist_remove_content_description">Remove from watchlist</string>
-    <string name="watchlist_open_content_description">Open watchlist</string>
     <string name="media_type_movies">Movies</string>
     <string name="media_type_tv_shows">Shows</string>
     <string name="tv_shows_coming_soon">TV shows coming soon</string>

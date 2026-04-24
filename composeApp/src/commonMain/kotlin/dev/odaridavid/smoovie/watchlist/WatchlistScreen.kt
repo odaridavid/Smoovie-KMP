@@ -15,13 +15,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SwipeToDismissBox
@@ -47,7 +45,6 @@ import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import previewMovieUiModels
 import smoovie.composeapp.generated.resources.Res
-import smoovie.composeapp.generated.resources.navigate_back
 import smoovie.composeapp.generated.resources.watchlist_empty
 import smoovie.composeapp.generated.resources.watchlist_title
 import kotlin.math.roundToInt
@@ -55,13 +52,11 @@ import kotlin.math.roundToInt
 @Composable
 fun WatchlistScreen(
     viewModel: WatchlistViewModel,
-    onBack: () -> Unit,
     onMovieClick: (MovieUiModel) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     WatchlistContent(
         state = state,
-        onBack = onBack,
         onMovieClick = onMovieClick,
         onRemove = viewModel::remove,
     )
@@ -71,7 +66,6 @@ fun WatchlistScreen(
 @Composable
 internal fun WatchlistContent(
     state: WatchlistUiState,
-    onBack: () -> Unit,
     onMovieClick: (MovieUiModel) -> Unit,
     onRemove: (MovieUiModel) -> Unit = {},
 ) {
@@ -80,22 +74,12 @@ internal fun WatchlistContent(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text(text = stringResource(Res.string.watchlist_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(Res.string.navigate_back),
-                        )
-                    }
-                },
             )
         },
     ) { padding ->
         Box(modifier = Modifier.padding(padding).fillMaxSize()) {
             when (state) {
-                WatchlistUiState.Loading -> {
-                    Unit
-                }
+                WatchlistUiState.Loading -> Unit
 
                 WatchlistUiState.Empty -> {
                     EmptyContent(
@@ -176,7 +160,7 @@ internal fun WatchlistContent(
 @Composable
 private fun WatchlistEmptyPreview() {
     SmoovieTheme {
-        WatchlistContent(state = WatchlistUiState.Empty, onBack = {}, onMovieClick = {})
+        WatchlistContent(state = WatchlistUiState.Empty, onMovieClick = {})
     }
 }
 
@@ -186,7 +170,6 @@ private fun WatchlistLoadedPreview() {
     SmoovieTheme {
         WatchlistContent(
             state = WatchlistUiState.Loaded(previewMovieUiModels),
-            onBack = {},
             onMovieClick = {},
         )
     }

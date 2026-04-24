@@ -9,6 +9,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material3.Icon
@@ -45,6 +46,7 @@ import org.koin.core.parameter.parametersOf
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.media_type_movies
 import smoovie.composeapp.generated.resources.media_type_tv_shows
+import smoovie.composeapp.generated.resources.watchlist_title
 
 private const val TRANSITION_DURATION_MS = 500
 private val TransitionEasing = CubicBezierEasing(0.4f, 0.0f, 0.2f, 1.0f)
@@ -95,7 +97,6 @@ fun App() {
                         MoviesScreen(
                             viewModel = viewModel,
                             onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
-                            onWatchlistClick = { navController.navigate(WatchlistRoute) },
                         )
                     }
 
@@ -108,11 +109,15 @@ fun App() {
                         ShowsScreen()
                     }
 
-                    composable<WatchlistRoute> {
+                    composable<WatchlistRoute>(
+                        enterTransition = { if (initialState.destination.isTopLevelTab()) EnterTransition.None else null },
+                        exitTransition = { if (targetState.destination.isTopLevelTab()) ExitTransition.None else null },
+                        popEnterTransition = { if (initialState.destination.isTopLevelTab()) EnterTransition.None else null },
+                        popExitTransition = { if (targetState.destination.isTopLevelTab()) ExitTransition.None else null },
+                    ) {
                         val viewModel: WatchlistViewModel = koinViewModel()
                         WatchlistScreen(
                             viewModel = viewModel,
-                            onBack = { navController.navigateUp() },
                             onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
                         )
                     }
@@ -171,10 +176,17 @@ private fun AppBottomBar(
             icon = { Icon(Icons.Default.Tv, contentDescription = null) },
             label = { Text(stringResource(Res.string.media_type_tv_shows)) },
         )
+        NavigationBarItem(
+            selected = currentDestination.hasRoute<WatchlistRoute>(),
+            onClick = { onTabSelected(WatchlistRoute) },
+            icon = { Icon(Icons.Default.BookmarkBorder, contentDescription = null) },
+            label = { Text(stringResource(Res.string.watchlist_title)) },
+        )
     }
 }
 
-private fun NavDestination.isTopLevelTab(): Boolean = hasRoute<MoviesRoute>() || hasRoute<ShowsRoute>()
+private fun NavDestination.isTopLevelTab(): Boolean =
+    hasRoute<MoviesRoute>() || hasRoute<ShowsRoute>() || hasRoute<WatchlistRoute>()
 
 private fun NavHostController.navigateToTab(route: Any) {
     navigate(route) {

@@ -1,4 +1,4 @@
-package dev.odaridavid.smoovie.movies.components
+package dev.odaridavid.smoovie.theme
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -30,10 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
-import dev.odaridavid.smoovie.movies.MovieUiModel
-import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
-import previewMovieUiModels
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.navigate_back
 import smoovie.composeapp.generated.resources.watchlist_add_content_description
@@ -41,22 +38,25 @@ import smoovie.composeapp.generated.resources.watchlist_remove_content_descripti
 
 @Composable
 internal fun HeroSection(
-    movie: MovieUiModel,
+    backdropUrl: String?,
+    posterUrl: String?,
     onBack: () -> Unit,
     isInWatchlist: Boolean = false,
-    onToggleWatchlist: () -> Unit = {},
+    onToggleWatchlist: (() -> Unit)? = null,
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
         BackdropImage(
-            backdropUrl = movie.backdropUrl,
-            posterUrl = movie.posterUrl,
+            backdropUrl = backdropUrl,
+            posterUrl = posterUrl,
         )
 
         BackButtonScrim()
 
         BackButton(onBack)
 
-        WatchlistToggle(isInWatchlist = isInWatchlist, onToggle = onToggleWatchlist)
+        if (onToggleWatchlist != null) {
+            WatchlistToggle(isInWatchlist = isInWatchlist, onToggle = onToggleWatchlist)
+        }
     }
 }
 
@@ -187,8 +187,10 @@ private fun BackdropPlaceholder() {
 private fun HeroSectionPreview() {
     SmoovieTheme {
         HeroSection(
-            movie = previewMovieUiModels[0],
+            backdropUrl = null,
+            posterUrl = null,
             onBack = {},
+            onToggleWatchlist = {},
         )
     }
 }

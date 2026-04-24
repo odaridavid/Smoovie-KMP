@@ -25,12 +25,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import dev.odaridavid.smoovie.utils.AppError
 import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
-import dev.odaridavid.smoovie.utils.AppError
 import smoovie.composeapp.generated.resources.action_retry
 import smoovie.composeapp.generated.resources.error_movies_failed
 import smoovie.composeapp.generated.resources.error_network
@@ -108,8 +107,7 @@ internal fun ErrorContent(
     }
 }
 
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@PreviewLightDark
 @Composable
 private fun ErrorContentPreview() {
     SmoovieTheme {

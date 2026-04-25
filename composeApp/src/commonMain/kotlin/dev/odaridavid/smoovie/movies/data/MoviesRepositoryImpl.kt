@@ -60,7 +60,7 @@ class MoviesRepositoryImpl(
         detailCache.getOrFetch(movieId) {
             client
                 .get("${Path.MOVIE_DETAIL}/$movieId") {
-                    parameter(Parameter.APPEND_TO_RESPONSE, "credits,reviews,videos,recommendations,similar")
+                    parameter(Parameter.APPEND_TO_RESPONSE, "credits,reviews,videos,recommendations,similar,release_dates")
                 }.body()
         }
 

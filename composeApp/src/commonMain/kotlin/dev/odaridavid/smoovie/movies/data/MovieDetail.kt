@@ -21,6 +21,24 @@ data class MovieDetail(
     val videos: VideosResponse? = null,
     val recommendations: MoviesResponse? = null,
     val similar: MoviesResponse? = null,
+    @SerialName("release_dates") val releaseDates: ReleaseDatesResponse? = null,
+)
+
+@Serializable
+data class ReleaseDatesResponse(
+    val results: List<CountryReleaseDates> = emptyList(),
+)
+
+@Serializable
+data class CountryReleaseDates(
+    @SerialName("iso_3166_1") val countryCode: String,
+    @SerialName("release_dates") val releaseDates: List<ReleaseDate> = emptyList(),
+)
+
+@Serializable
+data class ReleaseDate(
+    val certification: String = "",
+    val type: Int = 0,
 )
 
 @Serializable

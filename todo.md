@@ -6,15 +6,12 @@
 
 ### TMDB endpoints already reachable with the current token
 
-- [ ] "Where to watch" section on movie detail — `GET /movie/{id}/watch/providers`, country-aware
-  streaming availability with deep-links (highest ROI idea per recent discussion)
 - [ ] Discover / filters screen — `GET /discover/movie` with `with_watch_providers`, runtime,
   year range, vote-average filters; replaces the simple genre chip row with a real filter sheet
 - [ ] Trending home feed — `GET /trending/movie/{day|week}` as a default rail above/instead of
   "popular"
 - [ ] Keyword tag chips on movie detail — `GET /movie/{id}/keywords` for tag-based discovery
   rails ("more heist movies", "more space opera")
-- [ ] Country-specific age rating chip (FSK for DE) on detail — `GET /movie/{id}/release_dates`
 
 ### External content sources
 

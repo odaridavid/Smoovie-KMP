@@ -16,6 +16,7 @@ data class MovieDetailUiModel(
     val runtime: String,
     val tagline: String,
     val genres: String,
+    val ageRating: String = "",
     val director: String = "",
     val cast: List<CastMemberUiModel> = emptyList(),
     val reviews: List<ReviewUiModel> = emptyList(),
@@ -74,6 +75,13 @@ internal fun MovieDetail.toDetailUiModel(
     runtime = runtime?.let { "${it / 60}h ${it % 60}m" } ?: "",
     tagline = tagline,
     genres = genres.joinToString { it.name },
+    ageRating = releaseDates?.results
+        ?.firstOrNull { it.countryCode == "DE" }
+        ?.releaseDates
+        ?.firstOrNull { it.type == THEATRICAL_RELEASE_TYPE && it.certification.isNotBlank() }
+        ?.certification
+        ?.let { "FSK $it" }
+        ?: "",
     director =
         credits
             ?.crew
@@ -174,3 +182,4 @@ private const val MAX_SIMILAR_DISPLAY = 5
 private const val DIRECTOR_JOB = "Director"
 private const val YOUTUBE_SITE = "YouTube"
 private const val TRAILER_TYPE = "Trailer"
+private const val THEATRICAL_RELEASE_TYPE = 3

@@ -276,6 +276,13 @@ private fun MetadataSection(
                 label = { Text(genres) },
             )
         }
+        val ageRating = detail?.ageRating
+        if (!ageRating.isNullOrBlank()) {
+            AssistChip(
+                onClick = {},
+                label = { Text(ageRating) },
+            )
+        }
         val director = detail?.director
         if (!director.isNullOrBlank()) {
             AssistChip(

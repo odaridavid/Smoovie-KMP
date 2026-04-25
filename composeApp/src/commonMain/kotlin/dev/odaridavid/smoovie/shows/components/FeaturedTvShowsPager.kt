@@ -135,11 +135,12 @@ internal fun FeaturedTvShowsPager(
             }
         }
 
+        // Pagination dots — bottom padding clears the 28dp sheet overlap from the screen
         Row(
             modifier =
                 Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 12.dp),
+                    .padding(bottom = 36.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

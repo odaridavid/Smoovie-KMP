@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,10 +17,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,17 +36,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import dev.odaridavid.smoovie.movies.components.CollapsedToolbar
 import dev.odaridavid.smoovie.movies.components.FeaturedMoviesPager
 import dev.odaridavid.smoovie.movies.components.GenreChips
-import dev.odaridavid.smoovie.theme.ShimmerFeaturedSection
-import dev.odaridavid.smoovie.theme.ShimmerList
 import dev.odaridavid.smoovie.movies.components.movieItems
 import dev.odaridavid.smoovie.theme.EmptyContent
 import dev.odaridavid.smoovie.theme.ErrorContent
 import dev.odaridavid.smoovie.theme.SearchToolbar
+import dev.odaridavid.smoovie.theme.ShimmerChipsRow
+import dev.odaridavid.smoovie.theme.ShimmerHero
+import dev.odaridavid.smoovie.theme.ShimmerList
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.ui.SearchBackHandler
 import dev.odaridavid.smoovie.ui.SetStatusBarIcons
@@ -50,6 +56,8 @@ import previewMovieUiModels
 
 private const val SLOW_ANIM_DURATION = 500
 private const val FEATURED_COUNT = 4
+private val SHEET_OVERLAP = 28.dp
+private val SheetShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
 
 private data class MovieActions(
     val onSearchQueryChanged: (String) -> Unit = {},
@@ -118,6 +126,8 @@ private fun MoviesContent(
         }
     }
 
+    val background = MaterialTheme.colorScheme.background
+
     Scaffold(
         contentWindowInsets = WindowInsets(0),
         topBar = {
@@ -149,11 +159,20 @@ private fun MoviesContent(
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
             AnimatedVisibility(
-                visible =
-                    !isSearchActive &&
-                        (state.featuredMovies.isNotEmpty() || state.uiState is MoviesUiState.Loading),
+                visible = heroVisible,
                 enter = expandVertically(tween(400)) + fadeIn(tween(400)),
                 exit = shrinkVertically(tween(350)) + fadeOut(tween(300)),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .layout { measurable, constraints ->
+                            val placeable = measurable.measure(constraints)
+                            val overlapPx = SHEET_OVERLAP.roundToPx()
+                            val reportedHeight = (placeable.height - overlapPx).coerceAtLeast(0)
+                            layout(placeable.width, reportedHeight) {
+                                placeable.place(0, 0)
+                            }
+                        },
             ) {
                 AnimatedContent(
                     targetState = state.featuredMovies.isNotEmpty(),
@@ -163,69 +182,76 @@ private fun MoviesContent(
                     label = "featured",
                 ) { hasFeatured ->
                     if (hasFeatured) {
-                        Column {
-                            FeaturedMoviesPager(
-                                movies = state.featuredMovies.take(FEATURED_COUNT),
-                                onSearchClick = { isSearchActive = true },
-                                onMovieClick = actions.onMovieClick,
-                            )
-                            if (state.genres.isNotEmpty()) {
-                                GenreChips(
-                                    genres = state.genres,
-                                    selectedGenre = state.selectedGenre,
-                                    onGenreSelected = actions.onGenreSelected,
-                                )
-                            }
-                        }
-                    } else {
-                        ShimmerFeaturedSection(
+                        FeaturedMoviesPager(
+                            movies = state.featuredMovies.take(FEATURED_COUNT),
                             onSearchClick = { isSearchActive = true },
+                            onMovieClick = actions.onMovieClick,
                         )
+                    } else {
+                        ShimmerHero(onSearchClick = { isSearchActive = true })
                     }
                 }
             }
-            AnimatedContent(
-                targetState = state.uiState,
-                transitionSpec = {
-                    fadeIn(tween(SLOW_ANIM_DURATION)) togetherWith fadeOut(tween(SLOW_ANIM_DURATION))
-                },
-                contentKey = { it::class },
-                modifier = Modifier.weight(1f),
-            ) { uiState ->
-                Box(modifier = Modifier.fillMaxSize()) {
-                    when (uiState) {
-                        is MoviesUiState.Loading -> {
-                            ShimmerList(
-                                modifier = Modifier.fillMaxSize(),
-                                showHero = false,
-                            )
-                        }
-
-                        is MoviesUiState.Empty -> {
-                            EmptyContent(modifier = Modifier.align(Alignment.Center))
-                        }
-
-                        is MoviesUiState.Error -> {
-                            ErrorContent(
-                                error = uiState.error,
-                                onRetry = actions.onRetry,
-                                modifier = Modifier.align(Alignment.Center),
-                            )
-                        }
-
-                        is MoviesUiState.Success -> {
-                            LazyColumn(
-                                state = listState,
-                                modifier = Modifier.fillMaxSize(),
-                                contentPadding = PaddingValues(bottom = 16.dp),
-                                verticalArrangement = Arrangement.spacedBy(12.dp),
-                            ) {
-                                movieItems(
-                                    movies = uiState.movies,
-                                    animatedIds = animatedIds,
-                                    isLoadingMore = uiState.isLoadingMore,
-                                    onMovieClick = actions.onMovieClick,
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .background(background, SheetShape)
+                        .padding(top = 12.dp),
+            ) {
+                when {
+                    state.uiState is MoviesUiState.Loading -> ShimmerChipsRow()
+                    state.genres.isNotEmpty() ->
+                        GenreChips(
+                            genres = state.genres,
+                            selectedGenre = state.selectedGenre,
+                            onGenreSelected = actions.onGenreSelected,
+                        )
+                }
+                AnimatedContent(
+                    targetState = state.uiState,
+                    transitionSpec = {
+                        fadeIn(tween(SLOW_ANIM_DURATION)) togetherWith fadeOut(tween(SLOW_ANIM_DURATION))
+                    },
+                    contentKey = { it::class },
+                    modifier = Modifier.weight(1f),
+                ) { uiState ->
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        when (uiState) {
+                            is MoviesUiState.Loading -> {
+                                ShimmerList(
+                                    modifier = Modifier.fillMaxSize(),
+                                    showHero = false,
                                 )
+                            }
+
+                            is MoviesUiState.Empty -> {
+                                EmptyContent(modifier = Modifier.align(Alignment.Center))
+                            }
+
+                            is MoviesUiState.Error -> {
+                                ErrorContent(
+                                    error = uiState.error,
+                                    onRetry = actions.onRetry,
+                                    modifier = Modifier.align(Alignment.Center),
+                                )
+                            }
+
+                            is MoviesUiState.Success -> {
+                                LazyColumn(
+                                    state = listState,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentPadding = PaddingValues(bottom = 16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                                ) {
+                                    movieItems(
+                                        movies = uiState.movies,
+                                        animatedIds = animatedIds,
+                                        isLoadingMore = uiState.isLoadingMore,
+                                        onMovieClick = actions.onMovieClick,
+                                    )
+                                }
                             }
                         }
                     }

@@ -64,6 +64,16 @@ internal fun ShimmerFeaturedSection(
 }
 
 @Composable
+internal fun ShimmerHero(onSearchClick: () -> Unit) {
+    ShimmerFeaturedHero(brush = rememberShimmerBrush(), onSearchClick = onSearchClick)
+}
+
+@Composable
+internal fun ShimmerChipsRow() {
+    ShimmerGenreChips(brush = rememberShimmerBrush())
+}
+
+@Composable
 internal fun ShimmerList(
     modifier: Modifier = Modifier,
     showHero: Boolean = true,
@@ -121,11 +131,12 @@ private fun ShimmerFeaturedHero(
                 )
             }
         }
+        // Pagination dots — bottom padding clears the 28dp sheet overlap from the screen
         Row(
             modifier =
                 Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 12.dp),
+                    .padding(bottom = 36.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

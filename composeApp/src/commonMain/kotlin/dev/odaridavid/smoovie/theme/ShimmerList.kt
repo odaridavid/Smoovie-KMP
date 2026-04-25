@@ -49,21 +49,6 @@ private val PAGER_SHIMMER_HEIGHT = 260.dp
 private val ICON_SCRIM_COLOR = Color.Black.copy(alpha = 0.35f)
 
 @Composable
-internal fun ShimmerFeaturedSection(
-    onSearchClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val shimmerBrush = rememberShimmerBrush()
-    Column(modifier = modifier) {
-        ShimmerFeaturedHero(
-            brush = shimmerBrush,
-            onSearchClick = onSearchClick,
-        )
-        ShimmerGenreChips(brush = shimmerBrush)
-    }
-}
-
-@Composable
 internal fun ShimmerHero(onSearchClick: () -> Unit) {
     ShimmerFeaturedHero(brush = rememberShimmerBrush(), onSearchClick = onSearchClick)
 }

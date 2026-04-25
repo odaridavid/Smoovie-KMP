@@ -1,7 +1,7 @@
 package dev.odaridavid.smoovie.watchlist
 
 import dev.odaridavid.smoovie.FakeWatchlistRepository
-import dev.odaridavid.smoovie.movies.MovieUiModel
+import dev.odaridavid.smoovie.watchlist.domain.MediaType
 import dev.odaridavid.smoovie.watchlist.domain.ObserveWatchlistUseCase
 import dev.odaridavid.smoovie.watchlist.domain.RemoveFromWatchlistUseCase
 import dev.odaridavid.smoovie.watchlist.domain.WatchlistEntry
@@ -17,12 +17,13 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WatchlistViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    private val entry =
+    private val movieEntry =
         WatchlistEntry(
             id = 1,
             title = "Interstellar",
@@ -31,17 +32,19 @@ class WatchlistViewModelTest {
             voteAverage = "8.6",
             backdropUrl = null,
             posterUrl = null,
+            mediaType = MediaType.MOVIE,
         )
 
-    private val movie =
-        MovieUiModel(
-            id = entry.id,
-            title = entry.title,
-            overview = entry.overview,
-            releaseDate = entry.releaseDate,
-            voteAverage = entry.voteAverage,
+    private val tvEntry =
+        WatchlistEntry(
+            id = 2,
+            title = "Breaking Bad",
+            overview = "Chemistry.",
+            releaseDate = "2008",
+            voteAverage = "9.5",
             backdropUrl = null,
             posterUrl = null,
+            mediaType = MediaType.TV,
         )
 
     @BeforeTest
@@ -70,44 +73,112 @@ class WatchlistViewModelTest {
         }
 
     @Test
-    fun `given repo with entries - when observed - then state is loaded with mapped movies`() =
+    fun `given repo with mixed entries - when observed - then state is loaded with mapped items`() =
         runTest {
             val repo = FakeWatchlistRepository()
-            repo.toggle(entry)
+            repo.toggle(movieEntry)
+            repo.toggle(tvEntry)
             val viewModel = buildViewModel(repo)
             backgroundScope.launch(testDispatcher) { viewModel.state.collect {} }
 
             val state = viewModel.state.value
             assertIs<WatchlistUiState.Loaded>(state)
-            assertEquals(1, state.movies.size)
-            assertEquals(entry.id, state.movies[0].id)
-            assertEquals(entry.title, state.movies[0].title)
+            assertEquals(WatchlistFilter.ALL, state.filter)
+            assertEquals(2, state.items.size)
+            assertTrue(state.items.any { it is WatchlistItemUiModel.Movie && it.movie.id == movieEntry.id })
+            assertTrue(state.items.any { it is WatchlistItemUiModel.TvShow && it.tvShow.id == tvEntry.id })
+        }
+
+    @Test
+    fun `given mixed entries - when filter set to movies - then only movie items remain`() =
+        runTest {
+            val repo = FakeWatchlistRepository()
+            repo.toggle(movieEntry)
+            repo.toggle(tvEntry)
+            val viewModel = buildViewModel(repo)
+            backgroundScope.launch(testDispatcher) { viewModel.state.collect {} }
+
+            viewModel.setFilter(WatchlistFilter.MOVIES)
+
+            val state = viewModel.state.value
+            assertIs<WatchlistUiState.Loaded>(state)
+            assertEquals(WatchlistFilter.MOVIES, state.filter)
+            assertEquals(1, state.items.size)
+            assertIs<WatchlistItemUiModel.Movie>(state.items.single())
+        }
+
+    @Test
+    fun `given mixed entries - when filter set to tv - then only tv items remain`() =
+        runTest {
+            val repo = FakeWatchlistRepository()
+            repo.toggle(movieEntry)
+            repo.toggle(tvEntry)
+            val viewModel = buildViewModel(repo)
+            backgroundScope.launch(testDispatcher) { viewModel.state.collect {} }
+
+            viewModel.setFilter(WatchlistFilter.TV_SHOWS)
+
+            val state = viewModel.state.value
+            assertIs<WatchlistUiState.Loaded>(state)
+            assertEquals(1, state.items.size)
+            assertIs<WatchlistItemUiModel.TvShow>(state.items.single())
+        }
+
+    @Test
+    fun `given only movies - when filter set to tv - then loaded with empty list`() =
+        runTest {
+            val repo = FakeWatchlistRepository()
+            repo.toggle(movieEntry)
+            val viewModel = buildViewModel(repo)
+            backgroundScope.launch(testDispatcher) { viewModel.state.collect {} }
+
+            viewModel.setFilter(WatchlistFilter.TV_SHOWS)
+
+            val state = viewModel.state.value
+            assertIs<WatchlistUiState.Loaded>(state)
+            assertEquals(WatchlistFilter.TV_SHOWS, state.filter)
+            assertTrue(state.items.isEmpty())
         }
 
     @Test
     fun `given loaded - when repo removes entry - then state falls back to empty`() =
         runTest {
             val repo = FakeWatchlistRepository()
-            repo.toggle(entry)
+            repo.toggle(movieEntry)
             val viewModel = buildViewModel(repo)
             backgroundScope.launch(testDispatcher) { viewModel.state.collect {} }
             assertIs<WatchlistUiState.Loaded>(viewModel.state.value)
 
-            repo.remove(entry.id)
+            repo.remove(movieEntry.id, movieEntry.mediaType)
 
             assertEquals(WatchlistUiState.Empty, viewModel.state.value)
         }
 
     @Test
-    fun `given loaded - when remove is called - then entry is removed from repo`() =
+    fun `given loaded movie - when remove called on movie item - then movie is removed from repo`() =
         runTest {
             val repo = FakeWatchlistRepository()
-            repo.toggle(entry)
+            repo.toggle(movieEntry)
             val viewModel = buildViewModel(repo)
             backgroundScope.launch(testDispatcher) { viewModel.state.collect {} }
-            assertIs<WatchlistUiState.Loaded>(viewModel.state.value)
+            val state = viewModel.state.value as WatchlistUiState.Loaded
+            val movieItem = state.items.single()
 
-            viewModel.remove(movie)
+            viewModel.remove(movieItem)
+
+            assertEquals(WatchlistUiState.Empty, viewModel.state.value)
+        }
+
+    @Test
+    fun `given loaded tv show - when remove called on tv item - then tv show is removed from repo`() =
+        runTest {
+            val repo = FakeWatchlistRepository()
+            repo.toggle(tvEntry)
+            val viewModel = buildViewModel(repo)
+            backgroundScope.launch(testDispatcher) { viewModel.state.collect {} }
+            val tvItem = (viewModel.state.value as WatchlistUiState.Loaded).items.single()
+
+            viewModel.remove(tvItem)
 
             assertEquals(WatchlistUiState.Empty, viewModel.state.value)
         }
@@ -120,10 +191,10 @@ class WatchlistViewModelTest {
             backgroundScope.launch(testDispatcher) { viewModel.state.collect {} }
             assertEquals(WatchlistUiState.Empty, viewModel.state.value)
 
-            repo.toggle(entry)
+            repo.toggle(movieEntry)
 
             val state = viewModel.state.value
             assertIs<WatchlistUiState.Loaded>(state)
-            assertEquals(entry.id, state.movies.single().id)
+            assertEquals(movieEntry.id, (state.items.single() as WatchlistItemUiModel.Movie).movie.id)
         }
 }

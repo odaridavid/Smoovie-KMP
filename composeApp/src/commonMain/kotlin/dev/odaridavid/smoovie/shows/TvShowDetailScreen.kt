@@ -59,11 +59,14 @@ fun TvShowDetailScreen(
     onSeasonClick: (SeasonUiModel) -> Unit = {},
 ) {
     val detailState by viewModel.uiState.collectAsState()
+    val isInWatchlist by viewModel.isInWatchlist.collectAsState()
     TvShowDetailContent(
         tvShow = tvShow,
         detailState = detailState,
+        isInWatchlist = isInWatchlist,
         onBack = onBack,
         onRetry = viewModel::loadTvShowDetail,
+        onToggleWatchlist = { viewModel.toggleWatchlist(tvShow) },
         onTvShowClick = onTvShowClick,
         onPersonClick = onPersonClick,
         onSeasonClick = onSeasonClick,
@@ -76,6 +79,8 @@ internal fun TvShowDetailContent(
     detailState: TvShowDetailUiState,
     onBack: () -> Unit,
     onRetry: () -> Unit,
+    isInWatchlist: Boolean = false,
+    onToggleWatchlist: () -> Unit = {},
     onTvShowClick: (TvShowUiModel) -> Unit = {},
     onPersonClick: (PersonSummaryUiModel) -> Unit = {},
     onSeasonClick: (SeasonUiModel) -> Unit = {},
@@ -111,6 +116,8 @@ internal fun TvShowDetailContent(
                 backdropUrl = tvShow.backdropUrl,
                 posterUrl = tvShow.posterUrl,
                 onBack = onBack,
+                isInWatchlist = isInWatchlist,
+                onToggleWatchlist = onToggleWatchlist,
             )
         }
         Column(

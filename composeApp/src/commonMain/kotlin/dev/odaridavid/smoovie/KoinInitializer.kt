@@ -33,6 +33,7 @@ import dev.odaridavid.smoovie.shows.domain.GetTvShowsByGenreUseCase
 import dev.odaridavid.smoovie.shows.domain.SearchTvShowsUseCase
 import dev.odaridavid.smoovie.shows.domain.TvShowsRepository
 import dev.odaridavid.smoovie.storage.DatabaseBuilderFactory
+import dev.odaridavid.smoovie.storage.MIGRATION_1_2
 import dev.odaridavid.smoovie.storage.SmoovieDatabase
 import dev.odaridavid.smoovie.watchlist.WatchlistViewModel
 import dev.odaridavid.smoovie.watchlist.data.WatchlistRepositoryImpl
@@ -91,6 +92,7 @@ private val appModule =
         single<SmoovieDatabase> {
             get<DatabaseBuilderFactory>()
                 .create()
+                .addMigrations(MIGRATION_1_2)
                 .setDriver(BundledSQLiteDriver())
                 .setQueryCoroutineContext(Dispatchers.Default)
                 .build()
@@ -142,6 +144,8 @@ private val appModule =
                 tvShowId = tvShowId,
                 presentLabel = presentLabel,
                 getTvShowDetail = get(),
+                observeIsInWatchlist = get(),
+                toggleWatchlistUseCase = get(),
             )
         }
         viewModel { (tvShowId: Int, seasonNumber: Int) ->

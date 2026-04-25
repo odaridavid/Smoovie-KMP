@@ -3,8 +3,9 @@ package dev.odaridavid.smoovie.movies
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.odaridavid.smoovie.movies.domain.GetMovieDetailUseCase
-import dev.odaridavid.smoovie.watchlist.domain.ObserveIsInWatchlistUseCase
 import dev.odaridavid.smoovie.utils.toAppError
+import dev.odaridavid.smoovie.watchlist.domain.MediaType
+import dev.odaridavid.smoovie.watchlist.domain.ObserveIsInWatchlistUseCase
 import dev.odaridavid.smoovie.watchlist.domain.ToggleWatchlistUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,7 +24,7 @@ class MovieDetailViewModel(
     val uiState: StateFlow<MovieDetailUiState> = _uiState.asStateFlow()
 
     val isInWatchlist: StateFlow<Boolean> =
-        observeIsInWatchlist(movieId)
+        observeIsInWatchlist(movieId, MediaType.MOVIE)
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(WATCHLIST_STATE_TIMEOUT_MS),

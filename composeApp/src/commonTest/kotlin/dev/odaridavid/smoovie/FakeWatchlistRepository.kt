@@ -1,5 +1,6 @@
 package dev.odaridavid.smoovie
 
+import dev.odaridavid.smoovie.watchlist.domain.MediaType
 import dev.odaridavid.smoovie.watchlist.domain.WatchlistEntry
 import dev.odaridavid.smoovie.watchlist.domain.WatchlistRepository
 import kotlinx.coroutines.flow.Flow
@@ -13,19 +14,30 @@ class FakeWatchlistRepository : WatchlistRepository {
 
     override fun observeAll(): Flow<List<WatchlistEntry>> = entries.asStateFlow()
 
-    override fun observeContains(movieId: Int): Flow<Boolean> = entries.asStateFlow().map { list -> list.any { it.id == movieId } }
+    override fun observeContains(
+        id: Int,
+        mediaType: MediaType,
+    ): Flow<Boolean> =
+        entries.asStateFlow().map { list ->
+            list.any { it.id == id && it.mediaType == mediaType }
+        }
 
     override suspend fun toggle(entry: WatchlistEntry) {
         entries.update { current ->
-            if (current.any { it.id == entry.id }) {
-                current.filterNot { it.id == entry.id }
+            if (current.any { it.id == entry.id && it.mediaType == entry.mediaType }) {
+                current.filterNot { it.id == entry.id && it.mediaType == entry.mediaType }
             } else {
                 current + entry
             }
         }
     }
 
-    override suspend fun remove(movieId: Int) {
-        entries.update { current -> current.filterNot { it.id == movieId } }
+    override suspend fun remove(
+        id: Int,
+        mediaType: MediaType,
+    ) {
+        entries.update { current ->
+            current.filterNot { it.id == id && it.mediaType == mediaType }
+        }
     }
 }

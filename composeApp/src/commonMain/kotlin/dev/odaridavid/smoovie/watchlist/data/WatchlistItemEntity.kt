@@ -1,11 +1,13 @@
 package dev.odaridavid.smoovie.watchlist.data
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
-@Entity(tableName = "watchlist_movies")
-internal data class WatchlistMovieEntity(
-    @PrimaryKey val id: Int,
+@Entity(
+    tableName = "watchlist_items",
+    primaryKeys = ["id", "mediaType"],
+)
+internal data class WatchlistItemEntity(
+    val id: Int,
     val title: String,
     val overview: String,
     val releaseDate: String,
@@ -13,4 +15,5 @@ internal data class WatchlistMovieEntity(
     val backdropUrl: String?,
     val posterUrl: String?,
     val addedAt: Long,
+    val mediaType: String,
 )

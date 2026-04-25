@@ -1,12 +1,15 @@
 package dev.odaridavid.smoovie.shows
 
 import dev.odaridavid.smoovie.FakeTvShowsRepository
+import dev.odaridavid.smoovie.FakeWatchlistRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import dev.odaridavid.smoovie.shows.data.Season
 import dev.odaridavid.smoovie.shows.data.TvGenre
 import dev.odaridavid.smoovie.shows.data.TvShowDetail
 import dev.odaridavid.smoovie.shows.domain.GetTvShowDetailUseCase
 import dev.odaridavid.smoovie.utils.AppError
+import dev.odaridavid.smoovie.watchlist.domain.ObserveIsInWatchlistUseCase
+import dev.odaridavid.smoovie.watchlist.domain.ToggleWatchlistUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -58,10 +61,13 @@ class TvShowDetailViewModelTest {
     private fun buildViewModel(
         repo: FakeTvShowsRepository,
         configStore: ConfigurationStore = ConfigurationStore(),
+        watchlistRepository: FakeWatchlistRepository = FakeWatchlistRepository(),
     ) = TvShowDetailViewModel(
         tvShowId = detail.id,
         presentLabel = "present",
         getTvShowDetail = GetTvShowDetailUseCase(repo, configStore),
+        observeIsInWatchlist = ObserveIsInWatchlistUseCase(watchlistRepository),
+        toggleWatchlistUseCase = ToggleWatchlistUseCase(watchlistRepository),
     )
 
     @Test

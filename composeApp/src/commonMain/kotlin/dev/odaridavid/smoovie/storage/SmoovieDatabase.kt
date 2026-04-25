@@ -5,9 +5,9 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import dev.odaridavid.smoovie.watchlist.data.WatchlistDao
-import dev.odaridavid.smoovie.watchlist.data.WatchlistMovieEntity
+import dev.odaridavid.smoovie.watchlist.data.WatchlistItemEntity
 
-@Database(entities = [WatchlistMovieEntity::class], version = 1, exportSchema = true)
+@Database(entities = [WatchlistItemEntity::class], version = 2, exportSchema = true)
 @ConstructedBy(SmoovieDatabaseConstructor::class)
 abstract class SmoovieDatabase : RoomDatabase() {
     internal abstract fun watchlistDao(): WatchlistDao

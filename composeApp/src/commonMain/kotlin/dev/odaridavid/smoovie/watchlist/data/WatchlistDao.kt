@@ -8,18 +8,27 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 internal interface WatchlistDao {
-    @Query("SELECT * FROM watchlist_movies ORDER BY addedAt DESC")
-    fun observeAll(): Flow<List<WatchlistMovieEntity>>
+    @Query("SELECT * FROM watchlist_items ORDER BY addedAt DESC")
+    fun observeAll(): Flow<List<WatchlistItemEntity>>
 
-    @Query("SELECT EXISTS(SELECT 1 FROM watchlist_movies WHERE id = :movieId)")
-    fun observeContains(movieId: Int): Flow<Boolean>
+    @Query("SELECT EXISTS(SELECT 1 FROM watchlist_items WHERE id = :id AND mediaType = :mediaType)")
+    fun observeContains(
+        id: Int,
+        mediaType: String,
+    ): Flow<Boolean>
 
-    @Query("SELECT EXISTS(SELECT 1 FROM watchlist_movies WHERE id = :movieId)")
-    suspend fun contains(movieId: Int): Boolean
+    @Query("SELECT EXISTS(SELECT 1 FROM watchlist_items WHERE id = :id AND mediaType = :mediaType)")
+    suspend fun contains(
+        id: Int,
+        mediaType: String,
+    ): Boolean
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(entry: WatchlistMovieEntity)
+    suspend fun insert(entry: WatchlistItemEntity)
 
-    @Query("DELETE FROM watchlist_movies WHERE id = :movieId")
-    suspend fun deleteById(movieId: Int)
+    @Query("DELETE FROM watchlist_items WHERE id = :id AND mediaType = :mediaType")
+    suspend fun deleteById(
+        id: Int,
+        mediaType: String,
+    )
 }

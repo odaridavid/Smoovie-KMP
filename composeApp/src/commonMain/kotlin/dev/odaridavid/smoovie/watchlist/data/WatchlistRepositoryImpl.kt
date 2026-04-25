@@ -1,6 +1,7 @@
 package dev.odaridavid.smoovie.watchlist.data
 
 import dev.odaridavid.smoovie.utils.currentTimeMillis
+import dev.odaridavid.smoovie.watchlist.domain.MediaType
 import dev.odaridavid.smoovie.watchlist.domain.WatchlistEntry
 import dev.odaridavid.smoovie.watchlist.domain.WatchlistRepository
 import kotlinx.coroutines.flow.Flow
@@ -12,22 +13,28 @@ internal class WatchlistRepositoryImpl(
 ) : WatchlistRepository {
     override fun observeAll(): Flow<List<WatchlistEntry>> = dao.observeAll().map { rows -> rows.map { it.toDomain() } }
 
-    override fun observeContains(movieId: Int): Flow<Boolean> = dao.observeContains(movieId)
+    override fun observeContains(
+        id: Int,
+        mediaType: MediaType,
+    ): Flow<Boolean> = dao.observeContains(id, mediaType.storageKey)
 
     override suspend fun toggle(entry: WatchlistEntry) {
-        if (dao.contains(entry.id)) {
-            dao.deleteById(entry.id)
+        if (dao.contains(entry.id, entry.mediaType.storageKey)) {
+            dao.deleteById(entry.id, entry.mediaType.storageKey)
         } else {
             dao.insert(entry.toEntity(addedAt = now()))
         }
     }
 
-    override suspend fun remove(movieId: Int) {
-        dao.deleteById(movieId)
+    override suspend fun remove(
+        id: Int,
+        mediaType: MediaType,
+    ) {
+        dao.deleteById(id, mediaType.storageKey)
     }
 }
 
-private fun WatchlistMovieEntity.toDomain() =
+private fun WatchlistItemEntity.toDomain() =
     WatchlistEntry(
         id = id,
         title = title,
@@ -36,10 +43,11 @@ private fun WatchlistMovieEntity.toDomain() =
         voteAverage = voteAverage,
         backdropUrl = backdropUrl,
         posterUrl = posterUrl,
+        mediaType = MediaType.fromStorageKey(mediaType),
     )
 
 private fun WatchlistEntry.toEntity(addedAt: Long) =
-    WatchlistMovieEntity(
+    WatchlistItemEntity(
         id = id,
         title = title,
         overview = overview,
@@ -48,4 +56,5 @@ private fun WatchlistEntry.toEntity(addedAt: Long) =
         backdropUrl = backdropUrl,
         posterUrl = posterUrl,
         addedAt = addedAt,
+        mediaType = mediaType.storageKey,
     )

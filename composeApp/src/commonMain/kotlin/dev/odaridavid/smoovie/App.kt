@@ -131,6 +131,7 @@ fun App() {
                         WatchlistScreen(
                             viewModel = viewModel,
                             onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
+                            onTvShowClick = { show -> navController.navigate(show.toRoute()) },
                         )
                     }
 

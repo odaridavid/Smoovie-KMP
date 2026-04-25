@@ -19,12 +19,14 @@ class ObserveIsInWatchlistUseCaseTest {
             voteAverage = "",
             backdropUrl = null,
             posterUrl = null,
+            mediaType = MediaType.MOVIE,
         )
 
     @Test
     fun `given movie not in watchlist - when invoked - then emits false`() =
         runTest {
-            val result = ObserveIsInWatchlistUseCase(FakeWatchlistRepository())(entry.id).first()
+            val result =
+                ObserveIsInWatchlistUseCase(FakeWatchlistRepository())(entry.id, MediaType.MOVIE).first()
 
             assertFalse(result)
         }
@@ -35,8 +37,19 @@ class ObserveIsInWatchlistUseCaseTest {
             val repo = FakeWatchlistRepository()
             repo.toggle(entry)
 
-            val result = ObserveIsInWatchlistUseCase(repo)(entry.id).first()
+            val result = ObserveIsInWatchlistUseCase(repo)(entry.id, MediaType.MOVIE).first()
 
             assertTrue(result)
+        }
+
+    @Test
+    fun `given movie in watchlist - when checking tv with same id - then emits false`() =
+        runTest {
+            val repo = FakeWatchlistRepository()
+            repo.toggle(entry)
+
+            val result = ObserveIsInWatchlistUseCase(repo)(entry.id, MediaType.TV).first()
+
+            assertFalse(result)
         }
 }

@@ -5,5 +5,8 @@ import kotlinx.coroutines.flow.Flow
 class ObserveIsInWatchlistUseCase(
     private val repository: WatchlistRepository,
 ) {
-    operator fun invoke(movieId: Int): Flow<Boolean> = repository.observeContains(movieId)
+    operator fun invoke(
+        id: Int,
+        mediaType: MediaType,
+    ): Flow<Boolean> = repository.observeContains(id, mediaType)
 }

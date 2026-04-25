@@ -36,7 +36,9 @@
     <string name="error_person_detail_failed">Failed to load person</string>
     <string name="person_known_for_format">Known for %1$s</string>
     <string name="watchlist_title">Watchlist</string>
-    <string name="watchlist_empty">No saved movies yet</string>
+    <string name="watchlist_empty">Your watchlist is empty</string>
+    <string name="watchlist_empty_filter">Nothing matches this filter</string>
+    <string name="watchlist_filter_all">All</string>
     <string name="watchlist_add_content_description">Add to watchlist</string>
     <string name="watchlist_remove_content_description">Remove from watchlist</string>
     <string name="media_type_movies">Movies</string>

@@ -26,60 +26,29 @@ Single Gradle module: `:composeApp`. Powered by the TMDB API.
 composeApp/
 ├── schemas/                              # Exported Room schemas — check in migrations
 └── src/
-    ├── commonMain/
-    │   ├── composeResources/values/strings.xml
-    │   └── kotlin/dev/odaridavid/smoovie/
-    │       ├── App.kt                    # Scaffold + Material3 NavigationBar (Movies / Shows / Watchlist) wrapping NavHost; slide transitions for detail pushes, instant for tab-to-tab
-    │       ├── Screen.kt                 # @Serializable nav routes + UI↔route converters
-    │       ├── AppConfig.kt              # expect val tmdbApiKey + TMDB_BASE_URL const
-    │       ├── KoinInitializer.kt        # appModule + initKoin { setup }
-    │       ├── PlatformModule.kt         # expect val platformModule: Module
-    │       ├── configuration/            # ConfigurationStore, ConfigurationRepository(Impl), LoadConfigurationUseCase, ImagesConfiguration (image base URL + size enums drive all poster/backdrop/profile URLs)
-    │       ├── movies/
-    │       │   ├── MoviesScreen.kt / MoviesViewModel.kt / MoviesUiState.kt (wraps MoviesUiState in a MoviesScreenState holding searchQuery, genres, featuredMovies)
-    │       │   ├── MovieDetailScreen.kt / MovieDetailViewModel.kt / MovieDetailUiState.kt / MovieDetailUiModel.kt
-    │       │   ├── MovieUiModel.kt / MovieUiMapper.kt
-    │       │   ├── components/           # HeroSection, FeaturedMoviesPager, CastSection, etc.
-    │       │   ├── data/                 # MoviesRepositoryImpl (Ktor + TtlCache), DTOs
-    │       │   └── domain/               # MoviesRepository interface + use cases
-    │       ├── person/
-    │       │   ├── PersonDetailScreen.kt / PersonDetailViewModel.kt / PersonDetailUiModel.kt
-    │       │   ├── components/           # HeaderFrame, PersonPhoto, ShimmerPersonDetail
-    │       │   ├── data/                 # PersonRepositoryImpl (Ktor + TtlCache), DTOs
-    │       │   └── domain/               # PersonRepository interface + GetPersonDetailUseCase
-    │       ├── shows/                    # Placeholder TV-shows surface (tab destination); data/domain/components land here as Phases 2-3 of tv-shows-plan.md roll in
-    │       ├── watchlist/
-    │       │   ├── WatchlistScreen.kt / WatchlistViewModel.kt / WatchlistUiState.kt
-    │       │   ├── data/                 # WatchlistDao, WatchlistMovieEntity, WatchlistRepositoryImpl
-    │       │   └── domain/               # WatchlistRepository, WatchlistEntry, ObserveWatchlist/ToggleWatchlist/ObserveIsInWatchlist use cases
-    │       ├── storage/                  # SmoovieDatabase (Room KMP), DatabaseBuilderFactory (expect)
-    │       ├── theme/                    # SmoovieTheme, ErrorContent, EmptyContent, Type.kt
-    │       ├── ui/                       # SearchBackHandler (expect)
-    │       └── utils/                    # TtlCache, currentTimeMillis (expect), PreviewData
-    ├── androidMain/kotlin/dev/odaridavid/smoovie/
-    │   ├── SmoovieApplication.kt         # initKoin { androidContext(this) }
-    │   ├── MainActivity.kt
-    │   ├── AppConfig.android.kt          # BuildConfig.TMDB_ACCESS_TOKEN
-    │   ├── PlatformModule.android.kt     # binds DatabaseBuilderFactory(context)
-    │   ├── ui/BackHandler.android.kt
-    │   ├── storage/DatabaseBuilder.android.kt
-    │   └── utils/CurrentTime.android.kt
-    ├── iosMain/kotlin/dev/odaridavid/smoovie/
-    │   ├── MainViewController.kt
-    │   ├── AppConfig.ios.kt              # reads from NSBundle (Info.plist)
-    │   ├── PlatformModule.ios.kt         # binds DatabaseBuilderFactory()
-    │   ├── ui/BackHandler.ios.kt
-    │   ├── storage/DatabaseBuilder.ios.kt
-    │   └── utils/CurrentTime.ios.kt
+    ├── commonMain/kotlin/dev/odaridavid/smoovie/
+    │   ├── App.kt, Screen.kt             # NavHost + Scaffold/NavigationBar; @Serializable routes
+    │   ├── AppConfig.kt                  # expect-actual platform config (e.g. tmdbApiKey)
+    │   ├── KoinInitializer.kt            # appModule wiring; initKoin { setup }
+    │   ├── PlatformModule.kt             # expect val platformModule: Module
+    │   ├── <feature>/                    # one package per feature (movies, shows, person, watchlist, configuration)
+    │   │   ├── <Feature>Screen.kt + <Feature>ViewModel.kt + <Feature>UiState.kt + UI models
+    │   │   ├── components/               # feature-local composables
+    │   │   ├── data/                     # <Feature>RepositoryImpl, DTOs (and DAO/Entity for watchlist)
+    │   │   └── domain/                   # repository interface + use cases
+    │   ├── storage/                      # Room database + migrations + expect DatabaseBuilderFactory
+    │   ├── theme/, ui/, utils/           # shared composables, expect helpers, TtlCache etc.
+    │   └── composeResources/values/strings.xml
+    ├── androidMain/                      # actuals: AppConfig, PlatformModule, BackHandler, DatabaseBuilder, CurrentTime + SmoovieApplication, MainActivity
+    ├── iosMain/                          # actuals (mirrors androidMain) + MainViewController
     └── commonTest/kotlin/dev/odaridavid/smoovie/
-        ├── Fake*Repository.kt            # shared fakes (Movies, Person, Watchlist, Configuration)
-        ├── configuration/ConfigurationStoreTest.kt
-        ├── movies/Movie*Test.kt / Movie*ViewModelTest.kt
-        ├── person/Person*Test.kt / Person*ViewModelTest.kt
-        └── utils/TtlCacheTest.kt
+        ├── Fake*Repository.kt            # shared test doubles at test-root
+        └── <feature>/                    # tests mirror commonMain feature layout
 
 iosApp/                                   # Xcode project / Swift entry point
 ```
+
+Each feature package is self-contained (UI + ViewModel + UiState + UI models + components + data + domain). Look inside the package you're touching to see the exact files; the structure is consistent across features, so once you've seen one (`movies/` is a good reference), the rest follow the same shape.
 
 ## Architecture
 
@@ -89,7 +58,7 @@ iosApp/                                   # Xcode project / Swift entry point
 - **ViewModel**: `androidx.lifecycle.ViewModel` from the multiplatform lifecycle artifact. State via `MutableStateFlow<*UiState>` exposed as `StateFlow`. VMs depend on **use cases**, not repositories.
 - **Domain**: Interface-only repositories plus `XxxUseCase` classes (`suspend operator fun invoke(...)`) in each feature's `domain/` package. Use cases may return UI models — `GetMovieDetailUseCase` returns `MovieDetailUiModel`, mapping inside via `ConfigurationStore` URL builders.
 - **Data**: `*RepositoryImpl` classes (Ktor-backed) in each feature's `data/` package. Network repos wrap their fetchers in `TtlCache` (1-hour TTL) so navigating back and forth doesn't re-hit TMDB.
-- **Storage**: `SmoovieDatabase` (Room KMP) lives in `storage/`. Feature-specific DAOs/entities live with their feature (e.g. `watchlist/data/WatchlistDao.kt`); the DB just references them. Add a new DAO by adding a new entity class to the `@Database(entities = [...])` list and an abstract accessor on `SmoovieDatabase`.
+- **Storage**: `SmoovieDatabase` (Room KMP) lives in `storage/`. Feature-specific DAOs/entities live with their feature (e.g. `watchlist/data/WatchlistDao.kt`); the DB just references them. Add a new DAO by adding a new entity class to the `@Database(entities = [...])` list and an abstract accessor on `SmoovieDatabase`. Migrations live in `storage/Migrations.kt` and are passed to the builder via `.addMigrations(...)` in `KoinInitializer`. When you bump `version`, write a migration (no `fallbackToDestructiveMigration` is configured) and Room KSP will export the new schema under `composeApp/schemas/.../<version>.json` — commit that file.
 
 ### DI
 

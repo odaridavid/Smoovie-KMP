@@ -18,6 +18,7 @@ class ObserveWatchlistUseCaseTest {
             voteAverage = "8.6",
             backdropUrl = "back.jpg",
             posterUrl = "poster.jpg",
+            mediaType = MediaType.MOVIE,
         )
 
     @Test
@@ -29,17 +30,13 @@ class ObserveWatchlistUseCaseTest {
         }
 
     @Test
-    fun `given repo with entries - when invoked - then maps entries to movie ui models`() =
+    fun `given repo with entries - when invoked - then emits entries unchanged`() =
         runTest {
             val repo = FakeWatchlistRepository()
             repo.toggle(entry)
 
             val result = ObserveWatchlistUseCase(repo)().first()
 
-            assertEquals(1, result.size)
-            assertEquals(entry.id, result[0].id)
-            assertEquals(entry.title, result[0].title)
-            assertEquals(entry.backdropUrl, result[0].backdropUrl)
-            assertEquals(entry.posterUrl, result[0].posterUrl)
+            assertEquals(listOf(entry), result)
         }
 }

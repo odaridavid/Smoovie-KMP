@@ -10,6 +10,7 @@ import dev.odaridavid.smoovie.movies.domain.MoviesRepository
 class FakeMoviesRepository(
     var movies: List<Movie> = emptyList(),
     var discoverMovies: List<Movie> = emptyList(),
+    var trendingMovies: List<Movie> = emptyList(),
     var movieDetail: MovieDetail? = null,
     var watchProviders: WatchProvidersResponse = WatchProvidersResponse(id = 0),
     var error: Exception? = null,
@@ -66,5 +67,10 @@ class FakeMoviesRepository(
     override suspend fun getWatchProviders(movieId: Int): WatchProvidersResponse {
         error?.let { throw it }
         return watchProviders
+    }
+
+    override suspend fun getTrendingMovies(): MoviesResponse {
+        error?.let { throw it }
+        return MoviesResponse(page = 1, results = trendingMovies, totalPages = 1, totalResults = trendingMovies.size)
     }
 }

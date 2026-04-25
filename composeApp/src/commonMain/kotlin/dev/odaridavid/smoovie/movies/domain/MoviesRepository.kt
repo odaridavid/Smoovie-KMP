@@ -23,4 +23,6 @@ interface MoviesRepository {
     suspend fun getMovieDetail(movieId: Int): MovieDetail
 
     suspend fun getWatchProviders(movieId: Int): WatchProvidersResponse
+
+    suspend fun getTrendingMovies(): MoviesResponse
 }

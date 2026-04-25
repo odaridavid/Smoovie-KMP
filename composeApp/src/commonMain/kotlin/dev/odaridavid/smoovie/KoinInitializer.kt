@@ -13,6 +13,7 @@ import dev.odaridavid.smoovie.movies.domain.GetGenresUseCase
 import dev.odaridavid.smoovie.movies.domain.GetMovieDetailUseCase
 import dev.odaridavid.smoovie.movies.domain.GetMoviesByGenreUseCase
 import dev.odaridavid.smoovie.movies.domain.GetPopularMoviesUseCase
+import dev.odaridavid.smoovie.movies.domain.GetTrendingMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.MoviesRepository
 import dev.odaridavid.smoovie.movies.domain.SearchMoviesUseCase
 import dev.odaridavid.smoovie.person.PersonDetailViewModel
@@ -109,6 +110,7 @@ private val appModule =
         single { GetMoviesByGenreUseCase(get(), get()) }
         single { GetGenresUseCase(get()) }
         single { GetMovieDetailUseCase(get(), get()) }
+        single { GetTrendingMoviesUseCase(get(), get()) }
         single { GetPopularTvShowsUseCase(get(), get()) }
         single { SearchTvShowsUseCase(get(), get()) }
         single { GetTvShowsByGenreUseCase(get(), get()) }
@@ -124,6 +126,7 @@ private val appModule =
         viewModel {
             MoviesViewModel(
                 getPopularMovies = get(),
+                getTrendingMovies = get(),
                 searchMovies = get(),
                 getMoviesByGenre = get(),
                 getGenres = get(),

@@ -10,6 +10,7 @@ import dev.odaridavid.smoovie.movies.data.Movie
 import dev.odaridavid.smoovie.movies.domain.GetGenresUseCase
 import dev.odaridavid.smoovie.movies.domain.GetMoviesByGenreUseCase
 import dev.odaridavid.smoovie.movies.domain.GetPopularMoviesUseCase
+import dev.odaridavid.smoovie.movies.domain.GetTrendingMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.SearchMoviesUseCase
 import dev.odaridavid.smoovie.utils.AppError
 import kotlinx.coroutines.Dispatchers
@@ -54,6 +55,7 @@ class MoviesViewModelTest {
         configStore: ConfigurationStore = ConfigurationStore(),
     ) = MoviesViewModel(
         getPopularMovies = GetPopularMoviesUseCase(repo, MovieUiMapper(configStore)),
+        getTrendingMovies = GetTrendingMoviesUseCase(repo, MovieUiMapper(configStore)),
         searchMovies = SearchMoviesUseCase(repo, MovieUiMapper(configStore)),
         getMoviesByGenre = GetMoviesByGenreUseCase(repo, MovieUiMapper(configStore)),
         getGenres = GetGenresUseCase(repo),

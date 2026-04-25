@@ -17,6 +17,7 @@ class MoviesRepositoryImpl(
     private val genresCache = TtlCache<Unit, List<Genre>>(CACHE_TTL_MS)
     private val detailCache = TtlCache<Int, MovieDetail>(CACHE_TTL_MS)
     private val watchProvidersCache = TtlCache<Int, WatchProvidersResponse>(CACHE_TTL_MS)
+    private val trendingCache = TtlCache<Unit, MoviesResponse>(CACHE_TTL_MS)
 
     override suspend fun getPopularMovies(page: Int): MoviesResponse =
         popularCache.getOrFetch(page) {
@@ -69,6 +70,11 @@ class MoviesRepositoryImpl(
             client.get("${Path.MOVIE_DETAIL}/$movieId/watch/providers").body()
         }
 
+    override suspend fun getTrendingMovies(): MoviesResponse =
+        trendingCache.getOrFetch(Unit) {
+            client.get(Path.TRENDING_MOVIES).body()
+        }
+
     private data class SearchKey(
         val query: String,
         val page: Int,
@@ -85,6 +91,7 @@ class MoviesRepositoryImpl(
         const val DISCOVER_MOVIES = "${TMDB_BASE_URL}/discover/movie"
         const val MOVIE_GENRES = "${TMDB_BASE_URL}/genre/movie/list"
         const val MOVIE_DETAIL = "${TMDB_BASE_URL}/movie"
+        const val TRENDING_MOVIES = "${TMDB_BASE_URL}/trending/movie/week"
     }
 
     private object Parameter {

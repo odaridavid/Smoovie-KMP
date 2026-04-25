@@ -6,9 +6,12 @@ import dev.odaridavid.smoovie.configuration.LoadConfigurationUseCase
 import dev.odaridavid.smoovie.movies.domain.GetGenresUseCase
 import dev.odaridavid.smoovie.movies.domain.GetMoviesByGenreUseCase
 import dev.odaridavid.smoovie.movies.domain.GetPopularMoviesUseCase
+import dev.odaridavid.smoovie.movies.domain.GetTrendingMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.MoviesPage
 import dev.odaridavid.smoovie.movies.domain.SearchMoviesUseCase
 import dev.odaridavid.smoovie.utils.toAppError
+import kotlinx.coroutines.async
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +26,7 @@ import kotlinx.coroutines.launch
 
 class MoviesViewModel(
     private val getPopularMovies: GetPopularMoviesUseCase,
+    private val getTrendingMovies: GetTrendingMoviesUseCase,
     private val searchMovies: SearchMoviesUseCase,
     private val getMoviesByGenre: GetMoviesByGenreUseCase,
     private val getGenres: GetGenresUseCase,
@@ -115,9 +119,14 @@ class MoviesViewModel(
             try {
                 loadConfiguration()
                 loadGenresList()
-                val uiState = processPage(fetchPage())
-                val featured = (uiState as? MoviesUiState.Success)?.movies ?: emptyList()
-                _state.update { it.copy(uiState = uiState, featuredMovies = featured) }
+                supervisorScope {
+                    val popularDeferred = async { fetchPage() }
+                    val trendingDeferred = async { runCatching { getTrendingMovies() }.getOrElse { emptyList() } }
+                    val uiState = processPage(popularDeferred.await())
+                    val trending = trendingDeferred.await()
+                    val featured = trending.ifEmpty { (uiState as? MoviesUiState.Success)?.movies.orEmpty() }
+                    _state.update { it.copy(uiState = uiState, featuredMovies = featured) }
+                }
             } catch (e: Exception) {
                 _state.update { it.copy(uiState = MoviesUiState.Error(e.toAppError())) }
             }

@@ -30,6 +30,18 @@ data class TvShowDetail(
     val reviews: ReviewsResponse? = null,
     val recommendations: TvShowsResponse? = null,
     val similar: TvShowsResponse? = null,
+    @SerialName("content_ratings") val contentRatings: ContentRatingsResponse? = null,
+)
+
+@Serializable
+data class ContentRatingsResponse(
+    val results: List<ContentRating> = emptyList(),
+)
+
+@Serializable
+data class ContentRating(
+    @SerialName("iso_3166_1") val countryCode: String,
+    val rating: String = "",
 )
 
 @Serializable

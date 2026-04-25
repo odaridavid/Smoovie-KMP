@@ -62,7 +62,7 @@ class TvShowsRepositoryImpl(
         detailCache.getOrFetch(tvShowId) {
             client
                 .get("${Path.TV_DETAIL}/$tvShowId") {
-                    parameter(Parameter.APPEND_TO_RESPONSE, "credits,reviews,videos,recommendations,similar")
+                    parameter(Parameter.APPEND_TO_RESPONSE, "credits,reviews,videos,recommendations,similar,content_ratings")
                 }.body()
         }
 

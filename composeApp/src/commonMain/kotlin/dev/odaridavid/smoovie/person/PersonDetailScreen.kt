@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,10 +25,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import dev.odaridavid.smoovie.movies.MovieUiModel
-import dev.odaridavid.smoovie.movies.components.MovieCard
 import dev.odaridavid.smoovie.person.components.HeaderFrame
+import dev.odaridavid.smoovie.person.components.MovieFilmographyRail
 import dev.odaridavid.smoovie.person.components.PersonPhoto
 import dev.odaridavid.smoovie.person.components.ShimmerPersonDetail
+import dev.odaridavid.smoovie.person.components.TvShowFilmographyRail
+import dev.odaridavid.smoovie.shows.TvShowUiModel
 import dev.odaridavid.smoovie.theme.ErrorContent
 import dev.odaridavid.smoovie.theme.ExpandableText
 import dev.odaridavid.smoovie.theme.SmoovieTheme
@@ -39,7 +40,8 @@ import previewPersonDetailUiModel
 import previewPersonSummaryUiModel
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.error_person_detail_failed
-import smoovie.composeapp.generated.resources.filmography_section_title
+import smoovie.composeapp.generated.resources.media_type_movies
+import smoovie.composeapp.generated.resources.media_type_tv_shows
 import smoovie.composeapp.generated.resources.person_known_for_format
 
 @Composable
@@ -48,6 +50,8 @@ fun PersonDetailScreen(
     person: PersonSummaryUiModel,
     onBack: () -> Unit,
     onMovieClick: (MovieUiModel) -> Unit,
+    onTvShowClick: (TvShowUiModel) -> Unit = {},
+    onViewAllFilmography: (PersonFilmographyMediaType) -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsState()
     PersonDetailContent(
@@ -56,6 +60,8 @@ fun PersonDetailScreen(
         onBack = onBack,
         onRetry = viewModel::loadPersonDetail,
         onMovieClick = onMovieClick,
+        onTvShowClick = onTvShowClick,
+        onViewAllFilmography = onViewAllFilmography,
     )
 }
 
@@ -66,6 +72,8 @@ internal fun PersonDetailContent(
     onBack: () -> Unit,
     onRetry: () -> Unit,
     onMovieClick: (MovieUiModel) -> Unit = {},
+    onTvShowClick: (TvShowUiModel) -> Unit = {},
+    onViewAllFilmography: (PersonFilmographyMediaType) -> Unit = {},
 ) {
     Column(
         modifier =
@@ -79,7 +87,7 @@ internal fun PersonDetailContent(
             }
 
             is PersonDetailUiState.Success -> {
-                SuccessContent(state, onBack, onMovieClick)
+                SuccessContent(state, onBack, onMovieClick, onTvShowClick, onViewAllFilmography)
             }
 
             is PersonDetailUiState.Error -> {
@@ -104,7 +112,11 @@ private fun SuccessContent(
     state: PersonDetailUiState.Success,
     onBack: () -> Unit,
     onMovieClick: (MovieUiModel) -> Unit,
+    onTvShowClick: (TvShowUiModel) -> Unit,
+    onViewAllFilmography: (PersonFilmographyMediaType) -> Unit,
 ) {
+    val moviesTitle = stringResource(Res.string.media_type_movies)
+    val showsTitle = stringResource(Res.string.media_type_tv_shows)
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding =
@@ -114,7 +126,7 @@ private fun SuccessContent(
                         .asPaddingValues()
                         .calculateBottomPadding() + 16.dp,
             ),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         item {
             DetailHeader(
@@ -122,21 +134,26 @@ private fun SuccessContent(
                 onBack = onBack,
             )
         }
-        if (state.personDetail.filmography.isNotEmpty()) {
+        if (state.personDetail.movieFilmography.isNotEmpty()) {
             item {
-                Text(
-                    text = stringResource(Res.string.filmography_section_title),
-                    style = MaterialTheme.typography.titleMedium,
+                MovieFilmographyRail(
+                    title = moviesTitle,
+                    items = state.personDetail.movieFilmography,
+                    onMovieClick = onMovieClick,
+                    onViewAll = { onViewAllFilmography(PersonFilmographyMediaType.MOVIE) },
                     modifier = Modifier.padding(horizontal = 16.dp),
                 )
             }
-            items(state.personDetail.filmography, key = { it.movie.id }) { entry ->
-                Box(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    MovieCard(
-                        movie = entry.movie,
-                        onClick = { onMovieClick(entry.movie) },
-                    )
-                }
+        }
+        if (state.personDetail.tvFilmography.isNotEmpty()) {
+            item {
+                TvShowFilmographyRail(
+                    title = showsTitle,
+                    items = state.personDetail.tvFilmography,
+                    onTvShowClick = onTvShowClick,
+                    onViewAll = { onViewAllFilmography(PersonFilmographyMediaType.TV) },
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
             }
         }
     }

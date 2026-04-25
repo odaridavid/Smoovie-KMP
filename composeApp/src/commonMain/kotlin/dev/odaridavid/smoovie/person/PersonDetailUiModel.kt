@@ -5,6 +5,8 @@ import dev.odaridavid.smoovie.movies.toDisplayRating
 import dev.odaridavid.smoovie.movies.toReadableDate
 import dev.odaridavid.smoovie.person.data.PersonDetail
 import dev.odaridavid.smoovie.person.data.PersonMovieCredit
+import dev.odaridavid.smoovie.person.data.PersonTvCredit
+import dev.odaridavid.smoovie.shows.TvShowUiModel
 
 data class PersonSummaryUiModel(
     val id: Int,
@@ -20,11 +22,17 @@ data class PersonDetailUiModel(
     val placeOfBirth: String,
     val knownForDepartment: String,
     val profileUrl: String?,
-    val filmography: List<PersonFilmographyItemUiModel> = emptyList(),
+    val movieFilmography: List<PersonMovieFilmographyItem> = emptyList(),
+    val tvFilmography: List<PersonTvFilmographyItem> = emptyList(),
 )
 
-data class PersonFilmographyItemUiModel(
+data class PersonMovieFilmographyItem(
     val movie: MovieUiModel,
+    val role: String,
+)
+
+data class PersonTvFilmographyItem(
+    val tvShow: TvShowUiModel,
     val role: String,
 )
 
@@ -32,6 +40,8 @@ internal fun PersonDetail.toDetailUiModel(
     profileUrl: String?,
     moviePosterUrlResolver: (String?) -> String? = { null },
     movieBackdropUrlResolver: (String?) -> String? = { null },
+    tvPosterUrlResolver: (String?) -> String? = { null },
+    tvBackdropUrlResolver: (String?) -> String? = { null },
 ) = PersonDetailUiModel(
     id = id,
     name = name,
@@ -40,27 +50,32 @@ internal fun PersonDetail.toDetailUiModel(
     placeOfBirth = placeOfBirth.orEmpty(),
     knownForDepartment = knownForDepartment,
     profileUrl = profileUrl,
-    filmography =
-        buildFilmography(
+    movieFilmography =
+        buildMovieFilmography(
             cast = movieCredits?.cast.orEmpty(),
             posterResolver = moviePosterUrlResolver,
             backdropResolver = movieBackdropUrlResolver,
         ),
+    tvFilmography =
+        buildTvFilmography(
+            cast = tvCredits?.cast.orEmpty(),
+            posterResolver = tvPosterUrlResolver,
+            backdropResolver = tvBackdropUrlResolver,
+        ),
 )
 
-private fun buildFilmography(
+private fun buildMovieFilmography(
     cast: List<PersonMovieCredit>,
     posterResolver: (String?) -> String?,
     backdropResolver: (String?) -> String?,
-): List<PersonFilmographyItemUiModel> {
+): List<PersonMovieFilmographyItem> {
     val seen = mutableSetOf<Int>()
     return cast
         .asSequence()
         .sortedByDescending { it.popularity }
         .filter { seen.add(it.id) }
-        .take(MAX_FILMOGRAPHY_DISPLAY)
         .map { credit ->
-            PersonFilmographyItemUiModel(
+            PersonMovieFilmographyItem(
                 movie =
                     MovieUiModel(
                         id = credit.id,
@@ -76,4 +91,29 @@ private fun buildFilmography(
         }.toList()
 }
 
-private const val MAX_FILMOGRAPHY_DISPLAY = 20
+private fun buildTvFilmography(
+    cast: List<PersonTvCredit>,
+    posterResolver: (String?) -> String?,
+    backdropResolver: (String?) -> String?,
+): List<PersonTvFilmographyItem> {
+    val seen = mutableSetOf<Int>()
+    return cast
+        .asSequence()
+        .sortedByDescending { it.popularity }
+        .filter { seen.add(it.id) }
+        .map { credit ->
+            PersonTvFilmographyItem(
+                tvShow =
+                    TvShowUiModel(
+                        id = credit.id,
+                        name = credit.name,
+                        overview = credit.overview,
+                        firstAirDate = credit.firstAirDate.toReadableDate(),
+                        voteAverage = credit.voteAverage.toDisplayRating(),
+                        backdropUrl = backdropResolver(credit.backdropPath),
+                        posterUrl = posterResolver(credit.posterPath),
+                    ),
+                role = credit.character,
+            )
+        }.toList()
+}

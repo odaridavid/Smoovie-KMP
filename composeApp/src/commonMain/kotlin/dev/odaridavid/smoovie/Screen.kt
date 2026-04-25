@@ -1,6 +1,7 @@
 package dev.odaridavid.smoovie
 
 import dev.odaridavid.smoovie.movies.MovieUiModel
+import dev.odaridavid.smoovie.person.PersonFilmographyMediaType
 import dev.odaridavid.smoovie.person.PersonSummaryUiModel
 import dev.odaridavid.smoovie.shows.TvShowUiModel
 import kotlinx.serialization.Serializable
@@ -30,6 +31,13 @@ internal data class PersonDetailRoute(
     val id: Int,
     val name: String,
     val profileUrl: String?,
+)
+
+@Serializable
+internal data class PersonFilmographyRoute(
+    val personId: Int,
+    val personName: String,
+    val mediaType: PersonFilmographyMediaType,
 )
 
 @Serializable

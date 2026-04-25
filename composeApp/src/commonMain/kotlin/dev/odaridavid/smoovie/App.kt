@@ -36,6 +36,8 @@ import dev.odaridavid.smoovie.movies.MoviesScreen
 import dev.odaridavid.smoovie.movies.MoviesViewModel
 import dev.odaridavid.smoovie.person.PersonDetailScreen
 import dev.odaridavid.smoovie.person.PersonDetailViewModel
+import dev.odaridavid.smoovie.person.PersonFilmographyScreen
+import dev.odaridavid.smoovie.person.PersonFilmographyViewModel
 import dev.odaridavid.smoovie.shows.SeasonDetailScreen
 import dev.odaridavid.smoovie.shows.SeasonDetailViewModel
 import dev.odaridavid.smoovie.shows.ShowsScreen
@@ -160,6 +162,33 @@ fun App() {
                             person = route.toUiModel(),
                             onBack = { navController.navigateUp() },
                             onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
+                            onTvShowClick = { show -> navController.navigate(show.toRoute()) },
+                            onViewAllFilmography = { mediaType ->
+                                navController.navigate(
+                                    PersonFilmographyRoute(
+                                        personId = route.id,
+                                        personName = route.name,
+                                        mediaType = mediaType,
+                                    ),
+                                )
+                            },
+                        )
+                    }
+
+                    composable<PersonFilmographyRoute> { entry ->
+                        val route: PersonFilmographyRoute = entry.toRoute()
+                        val viewModel: PersonFilmographyViewModel =
+                            koinViewModel(
+                                key = "person_filmography_${route.personId}_${route.mediaType.name}",
+                                parameters = { parametersOf(route.personId) },
+                            )
+                        PersonFilmographyScreen(
+                            viewModel = viewModel,
+                            personName = route.personName,
+                            mediaType = route.mediaType,
+                            onBack = { navController.navigateUp() },
+                            onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
+                            onTvShowClick = { show -> navController.navigate(show.toRoute()) },
                         )
                     }
 

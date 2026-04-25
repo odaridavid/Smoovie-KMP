@@ -5,6 +5,8 @@ import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import dev.odaridavid.smoovie.person.data.MovieCredits
 import dev.odaridavid.smoovie.person.data.PersonDetail
 import dev.odaridavid.smoovie.person.data.PersonMovieCredit
+import dev.odaridavid.smoovie.person.data.PersonTvCredit
+import dev.odaridavid.smoovie.person.data.TvCredits
 import dev.odaridavid.smoovie.person.domain.GetPersonDetailUseCase
 import dev.odaridavid.smoovie.utils.AppError
 import kotlinx.coroutines.Dispatchers
@@ -84,7 +86,7 @@ class PersonDetailViewModelTest {
         }
 
     @Test
-    fun `given person with cast credits - when viewmodel is created - then filmography is sorted by popularity`() =
+    fun `given person with cast credits - when viewmodel is created - then movie filmography is sorted by popularity`() =
         runTest {
             val repo = FakePersonRepository(personDetail = testPersonDetail)
             val viewModel = buildViewModel(repo)
@@ -92,8 +94,48 @@ class PersonDetailViewModelTest {
             val state = viewModel.uiState.value
 
             assertIs<PersonDetailUiState.Success>(state)
-            assertEquals(listOf(1, 2), state.personDetail.filmography.map { it.movie.id })
-            assertEquals("Cooper", state.personDetail.filmography.first().role)
+            assertEquals(listOf(1, 2), state.personDetail.movieFilmography.map { it.movie.id })
+            assertEquals("Cooper", state.personDetail.movieFilmography.first().role)
+            assertEquals(emptyList(), state.personDetail.tvFilmography)
+        }
+
+    @Test
+    fun `given person with tv credits - when viewmodel is created - then tv filmography is populated separately`() =
+        runTest {
+            val withTvCredits =
+                testPersonDetail.copy(
+                    tvCredits =
+                        TvCredits(
+                            cast =
+                                listOf(
+                                    tvCredit(id = 100, name = "True Detective", character = "Rust", popularity = 80.0),
+                                    tvCredit(id = 200, name = "Yellowstone", character = "Cameo", popularity = 5.0),
+                                ),
+                        ),
+                )
+            val repo = FakePersonRepository(personDetail = withTvCredits)
+            val viewModel = buildViewModel(repo)
+
+            val state = viewModel.uiState.value as PersonDetailUiState.Success
+            assertEquals(listOf(100, 200), state.personDetail.tvFilmography.map { it.tvShow.id })
+            assertEquals("True Detective", state.personDetail.tvFilmography.first().tvShow.name)
+            assertEquals("Rust", state.personDetail.tvFilmography.first().role)
+            assertEquals(listOf(1, 2), state.personDetail.movieFilmography.map { it.movie.id })
+        }
+
+    @Test
+    fun `given movie and tv credits with same id - when mapped - then both retained in their respective lists`() =
+        runTest {
+            val withColliding =
+                testPersonDetail.copy(
+                    tvCredits = TvCredits(cast = listOf(tvCredit(id = 1, name = "Show With Colliding ID", popularity = 10.0))),
+                )
+            val repo = FakePersonRepository(personDetail = withColliding)
+            val viewModel = buildViewModel(repo)
+
+            val state = viewModel.uiState.value as PersonDetailUiState.Success
+            assertEquals(true, state.personDetail.movieFilmography.any { it.movie.id == 1 })
+            assertEquals(true, state.personDetail.tvFilmography.any { it.tvShow.id == 1 })
         }
 
     @Test
@@ -168,5 +210,19 @@ class PersonDetailViewModelTest {
         popularity = popularity,
         releaseDate = "2023-01-01",
         voteAverage = 7.0,
+    )
+
+    private fun tvCredit(
+        id: Int,
+        name: String = "Show $id",
+        character: String = "",
+        popularity: Double = 10.0,
+    ) = PersonTvCredit(
+        id = id,
+        name = name,
+        character = character,
+        popularity = popularity,
+        firstAirDate = "2020-01-01",
+        voteAverage = 8.0,
     )
 }

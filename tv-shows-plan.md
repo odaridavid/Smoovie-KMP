@@ -186,9 +186,23 @@ running emulator.
 ## Deferred / parallel work
 - [ ] **Watchlist TV support** — Room migration: add `mediaType` column to
       `WatchlistMovieEntity`. Filter chip on watchlist screen. Can ship after Phase 3.
-- [ ] **Person filmography TV credits** — `append_to_response=tv_credits` on `/person/{id}`,
-      merge into filmography rail with a `TV` badge. Independent, can ship anytime after
-      Phase 2.
+- [x] **Person filmography TV credits** — `append_to_response=movie_credits,tv_credits` on
+      `/person/{id}`. `PersonDetail` DTO gained `tvCredits: TvCredits?` + `PersonTvCredit`.
+      `PersonDetailUiModel` exposes two parallel lists: `movieFilmography:
+      List<PersonMovieFilmographyItem>` and `tvFilmography: List<PersonTvFilmographyItem>`
+      (the earlier sealed-merge approach was rejected in favour of two separate rails).
+      `PersonDetailScreen` now renders **two horizontal poster rails** — Movies + TV Shows —
+      each capped at 6 with a "View all" button when more credits exist. Tapping "View all"
+      pushes a new `PersonFilmographyRoute(personId, personName, mediaType)` →
+      `PersonFilmographyScreen` (single screen branching on `PersonFilmographyMediaType`)
+      that shows the full vertical list with `MovieCard` for movies / `TvShowCard` + `TvBadge`
+      for TV. New `PersonFilmographyViewModel` shares the same `GetPersonDetailUseCase` so
+      `TtlCache` makes the second load a hit. Cap of 20 was removed since the View-All screen
+      shows the full list. Sibling `MovieFilmographyRail` + `TvShowFilmographyRail` composables
+      under `person/components/`, plus a shared `RailHeader` that conditionally renders the
+      "View all" `TextButton`. New string `action_view_all`. Tests updated
+      (`PersonDetailViewModelTest` + `PersonDetailUiModelTest`) for the two separate lists
+      with new cases for TV-only filmography and id-collision-doesn't-collide.
 - [x] **Featured pager with TV content** — `shows/components/FeaturedTvShowsPager` mirrors
       `FeaturedMoviesPager` (TV-typed). `ShowsScreenState.featuredTvShows` populated by
       `ShowsViewModel.loadData()` from the first popular page (same pattern as movies).

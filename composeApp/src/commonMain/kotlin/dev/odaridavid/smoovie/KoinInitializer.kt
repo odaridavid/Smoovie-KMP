@@ -16,6 +16,7 @@ import dev.odaridavid.smoovie.movies.domain.GetPopularMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.MoviesRepository
 import dev.odaridavid.smoovie.movies.domain.SearchMoviesUseCase
 import dev.odaridavid.smoovie.person.PersonDetailViewModel
+import dev.odaridavid.smoovie.person.PersonFilmographyViewModel
 import dev.odaridavid.smoovie.person.data.PersonRepositoryImpl
 import dev.odaridavid.smoovie.person.domain.GetPersonDetailUseCase
 import dev.odaridavid.smoovie.person.domain.PersonRepository
@@ -159,5 +160,6 @@ private val appModule =
             )
         }
         viewModel { (personId: Int) -> PersonDetailViewModel(personId, get()) }
+        viewModel { (personId: Int) -> PersonFilmographyViewModel(personId, get()) }
         viewModel { WatchlistViewModel(get(), get()) }
     }

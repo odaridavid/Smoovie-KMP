@@ -17,7 +17,7 @@ class PersonRepositoryImpl(
         detailCache.getOrFetch(personId) {
             client
                 .get("${Path.PERSON_DETAIL}/$personId") {
-                    parameter(Parameter.APPEND_TO_RESPONSE, "movie_credits")
+                    parameter(Parameter.APPEND_TO_RESPONSE, "movie_credits,tv_credits")
                 }.body()
         }
 

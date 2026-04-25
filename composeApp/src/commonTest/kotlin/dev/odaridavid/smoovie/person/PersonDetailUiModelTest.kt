@@ -3,6 +3,8 @@ package dev.odaridavid.smoovie.person
 import dev.odaridavid.smoovie.person.data.MovieCredits
 import dev.odaridavid.smoovie.person.data.PersonDetail
 import dev.odaridavid.smoovie.person.data.PersonMovieCredit
+import dev.odaridavid.smoovie.person.data.PersonTvCredit
+import dev.odaridavid.smoovie.person.data.TvCredits
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -35,16 +37,25 @@ class PersonDetailUiModelTest {
     }
 
     @Test
-    fun `given no movie credits - when mapped - then filmography is empty`() {
+    fun `given no movie credits - when mapped - then movie filmography is empty`() {
         val person = personDetail(movieCredits = null)
 
         val uiModel = person.toDetailUiModel(profileUrl = null)
 
-        assertEquals(emptyList(), uiModel.filmography)
+        assertEquals(emptyList(), uiModel.movieFilmography)
     }
 
     @Test
-    fun `given cast credits - when mapped - then filmography is sorted by popularity descending`() {
+    fun `given no tv credits - when mapped - then tv filmography is empty`() {
+        val person = personDetail(tvCredits = null)
+
+        val uiModel = person.toDetailUiModel(profileUrl = null)
+
+        assertEquals(emptyList(), uiModel.tvFilmography)
+    }
+
+    @Test
+    fun `given movie cast credits - when mapped - then movie filmography is sorted by popularity descending`() {
         val person =
             personDetail(
                 movieCredits =
@@ -60,7 +71,27 @@ class PersonDetailUiModelTest {
 
         val uiModel = person.toDetailUiModel(profileUrl = null)
 
-        assertEquals(listOf(2, 3, 1), uiModel.filmography.map { it.movie.id })
+        assertEquals(listOf(2, 3, 1), uiModel.movieFilmography.map { it.movie.id })
+    }
+
+    @Test
+    fun `given tv cast credits - when mapped - then tv filmography is sorted by popularity descending`() {
+        val person =
+            personDetail(
+                tvCredits =
+                    TvCredits(
+                        cast =
+                            listOf(
+                                tvCredit(id = 1, name = "Low", popularity = 5.0),
+                                tvCredit(id = 2, name = "High", popularity = 50.0),
+                                tvCredit(id = 3, name = "Mid", popularity = 20.0),
+                            ),
+                    ),
+            )
+
+        val uiModel = person.toDetailUiModel(profileUrl = null)
+
+        assertEquals(listOf(2, 3, 1), uiModel.tvFilmography.map { it.tvShow.id })
     }
 
     @Test
@@ -80,22 +111,22 @@ class PersonDetailUiModelTest {
 
         val uiModel = person.toDetailUiModel(profileUrl = null)
 
-        assertEquals(listOf(2, 1), uiModel.filmography.map { it.movie.id })
+        assertEquals(listOf(2, 1), uiModel.movieFilmography.map { it.movie.id })
     }
 
     @Test
-    fun `given more than twenty credits - when mapped - then filmography is capped at 20`() {
+    fun `given many credits - when mapped - then no cap is applied so view-all screen has full list`() {
         val person =
             personDetail(
                 movieCredits =
                     MovieCredits(
-                        cast = (1..25).map { credit(id = it, popularity = it.toDouble()) },
+                        cast = (1..50).map { credit(id = it, popularity = it.toDouble()) },
                     ),
             )
 
         val uiModel = person.toDetailUiModel(profileUrl = null)
 
-        assertEquals(20, uiModel.filmography.size)
+        assertEquals(50, uiModel.movieFilmography.size)
     }
 
     @Test
@@ -108,7 +139,7 @@ class PersonDetailUiModelTest {
 
         val uiModel = person.toDetailUiModel(profileUrl = null)
 
-        assertEquals("Cooper", uiModel.filmography.first().role)
+        assertEquals("Cooper", uiModel.movieFilmography.first().role)
     }
 
     @Test
@@ -127,7 +158,7 @@ class PersonDetailUiModelTest {
 
         assertEquals(
             "https://img.example/abc.jpg",
-            uiModel.filmography
+            uiModel.movieFilmography
                 .first()
                 .movie.posterUrl,
         )
@@ -137,6 +168,7 @@ class PersonDetailUiModelTest {
         biography: String = "",
         birthday: String? = null,
         movieCredits: MovieCredits? = null,
+        tvCredits: TvCredits? = null,
     ) = PersonDetail(
         id = 1,
         name = "Test Person",
@@ -147,6 +179,7 @@ class PersonDetailUiModelTest {
         profilePath = null,
         popularity = 10.0,
         movieCredits = movieCredits,
+        tvCredits = tvCredits,
     )
 
     private fun credit(
@@ -162,6 +195,20 @@ class PersonDetailUiModelTest {
         popularity = popularity,
         posterPath = posterPath,
         releaseDate = "2023-01-01",
+        voteAverage = 7.0,
+    )
+
+    private fun tvCredit(
+        id: Int,
+        name: String = "Show $id",
+        character: String = "",
+        popularity: Double = 10.0,
+    ) = PersonTvCredit(
+        id = id,
+        name = name,
+        character = character,
+        popularity = popularity,
+        firstAirDate = "2020-01-01",
         voteAverage = 7.0,
     )
 }

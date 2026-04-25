@@ -5,8 +5,10 @@ import dev.odaridavid.smoovie.movies.TrailerUiModel
 import dev.odaridavid.smoovie.movies.data.Movie
 import dev.odaridavid.smoovie.movies.toUiModel
 import dev.odaridavid.smoovie.person.PersonDetailUiModel
-import dev.odaridavid.smoovie.person.PersonFilmographyItemUiModel
+import dev.odaridavid.smoovie.person.PersonMovieFilmographyItem
 import dev.odaridavid.smoovie.person.PersonSummaryUiModel
+import dev.odaridavid.smoovie.person.PersonTvFilmographyItem
+import dev.odaridavid.smoovie.shows.TvShowUiModel
 
 internal val previewMovies =
     listOf(
@@ -133,13 +135,29 @@ internal val previewPersonDetailUiModel =
         placeOfBirth = "Uvalde, Texas, USA",
         knownForDepartment = "Acting",
         profileUrl = null,
-        filmography =
+        movieFilmography =
             previewMovieUiModels.take(3).mapIndexed { index, movie ->
-                PersonFilmographyItemUiModel(
+                PersonMovieFilmographyItem(
                     movie = movie,
-                    role = listOf("Cooper", "Rust Cohle", "Ron Woodroof").getOrElse(index) { "" },
+                    role = listOf("Cooper", "Ron Woodroof", "Rick Peck").getOrElse(index) { "" },
                 )
             },
+        tvFilmography =
+            listOf(
+                PersonTvFilmographyItem(
+                    tvShow =
+                        TvShowUiModel(
+                            id = 1438,
+                            name = "True Detective",
+                            overview = "An anthology crime drama.",
+                            firstAirDate = "12 Jan 2014",
+                            voteAverage = "8.4",
+                            backdropUrl = null,
+                            posterUrl = null,
+                        ),
+                    role = "Rust Cohle",
+                ),
+            ),
     )
 
 internal val previewMovieDetailUiModel =

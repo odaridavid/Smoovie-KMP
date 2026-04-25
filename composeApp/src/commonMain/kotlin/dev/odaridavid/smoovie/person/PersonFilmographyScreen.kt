@@ -1,5 +1,6 @@
 package dev.odaridavid.smoovie.person
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -30,6 +31,7 @@ import dev.odaridavid.smoovie.person.components.TvBadge
 import dev.odaridavid.smoovie.shows.TvShowUiModel
 import dev.odaridavid.smoovie.shows.components.TvShowCard
 import dev.odaridavid.smoovie.theme.ErrorContent
+import dev.odaridavid.smoovie.ui.SetStatusBarIcons
 import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.error_person_detail_failed
@@ -69,6 +71,7 @@ internal fun PersonFilmographyContent(
     onMovieClick: (MovieUiModel) -> Unit = {},
     onTvShowClick: (TvShowUiModel) -> Unit = {},
 ) {
+    SetStatusBarIcons(useDarkIcons = !isSystemInDarkTheme())
     val sectionTitle =
         stringResource(
             when (mediaType) {

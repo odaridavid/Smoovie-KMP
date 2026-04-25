@@ -38,6 +38,7 @@ import dev.odaridavid.smoovie.theme.ExpandableText
 import dev.odaridavid.smoovie.theme.HeroSection
 import dev.odaridavid.smoovie.theme.ShimmerDetail
 import dev.odaridavid.smoovie.theme.SmoovieTheme
+import dev.odaridavid.smoovie.ui.SetStatusBarIcons
 import dev.odaridavid.smoovie.utils.AppError
 import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
@@ -79,6 +80,8 @@ internal fun TvShowDetailContent(
     onPersonClick: (PersonSummaryUiModel) -> Unit = {},
     onSeasonClick: (SeasonUiModel) -> Unit = {},
 ) {
+    SetStatusBarIcons(useDarkIcons = false)
+
     val background = MaterialTheme.colorScheme.background
     val sheetShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
     val sheetOverlap = 28.dp

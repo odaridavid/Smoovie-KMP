@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +50,7 @@ import dev.odaridavid.smoovie.theme.ShimmerFeaturedSection
 import dev.odaridavid.smoovie.theme.ShimmerList
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.ui.SearchBackHandler
+import dev.odaridavid.smoovie.ui.SetStatusBarIcons
 import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.media_type_tv_shows
@@ -95,6 +97,12 @@ private fun ShowsContent(
         isSearchActive = false
         actions.onSearchQueryChanged("")
     }
+
+    val heroVisible =
+        !isSearchActive &&
+            (state.featuredTvShows.isNotEmpty() || state.uiState is ShowsUiState.Loading)
+    SetStatusBarIcons(useDarkIcons = !isSystemInDarkTheme() && !heroVisible)
+
     val listState = rememberLazyListState()
     val animatedIds = remember { mutableSetOf<Int>() }
 

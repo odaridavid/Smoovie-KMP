@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import dev.odaridavid.smoovie.theme.ErrorContent
 import dev.odaridavid.smoovie.theme.SearchToolbar
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.ui.SearchBackHandler
+import dev.odaridavid.smoovie.ui.SetStatusBarIcons
 import previewMovieUiModels
 
 private const val SLOW_ANIM_DURATION = 500
@@ -87,6 +89,12 @@ private fun MoviesContent(
         isSearchActive = false
         actions.onSearchQueryChanged("")
     }
+
+    val heroVisible =
+        !isSearchActive &&
+            (state.featuredMovies.isNotEmpty() || state.uiState is MoviesUiState.Loading)
+    SetStatusBarIcons(useDarkIcons = !isSystemInDarkTheme() && !heroVisible)
+
     val listState = rememberLazyListState()
     val animatedIds = remember { mutableSetOf<Int>() }
 

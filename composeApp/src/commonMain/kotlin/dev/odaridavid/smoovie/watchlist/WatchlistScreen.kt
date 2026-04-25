@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -41,6 +42,7 @@ import dev.odaridavid.smoovie.movies.MovieUiModel
 import dev.odaridavid.smoovie.movies.components.MovieCard
 import dev.odaridavid.smoovie.theme.EmptyContent
 import dev.odaridavid.smoovie.theme.SmoovieTheme
+import dev.odaridavid.smoovie.ui.SetStatusBarIcons
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import previewMovieUiModels
@@ -69,6 +71,7 @@ internal fun WatchlistContent(
     onMovieClick: (MovieUiModel) -> Unit,
     onRemove: (MovieUiModel) -> Unit = {},
 ) {
+    SetStatusBarIcons(useDarkIcons = !isSystemInDarkTheme())
     Scaffold(
         contentWindowInsets = WindowInsets(0),
         topBar = {

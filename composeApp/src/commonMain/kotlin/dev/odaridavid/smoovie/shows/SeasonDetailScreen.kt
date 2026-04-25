@@ -1,5 +1,6 @@
 package dev.odaridavid.smoovie.shows
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import dev.odaridavid.smoovie.shows.components.EpisodeItem
 import dev.odaridavid.smoovie.theme.ErrorContent
 import dev.odaridavid.smoovie.theme.ExpandableText
 import dev.odaridavid.smoovie.theme.SmoovieTheme
+import dev.odaridavid.smoovie.ui.SetStatusBarIcons
 import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.error_season_detail_failed
@@ -60,6 +62,7 @@ internal fun SeasonDetailContent(
     onBack: () -> Unit,
     onRetry: () -> Unit,
 ) {
+    SetStatusBarIcons(useDarkIcons = !isSystemInDarkTheme())
     Scaffold(
         contentWindowInsets = WindowInsets(0),
         topBar = {

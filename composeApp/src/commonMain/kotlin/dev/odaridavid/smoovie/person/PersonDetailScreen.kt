@@ -1,6 +1,7 @@
 package dev.odaridavid.smoovie.person
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import dev.odaridavid.smoovie.shows.TvShowUiModel
 import dev.odaridavid.smoovie.theme.ErrorContent
 import dev.odaridavid.smoovie.theme.ExpandableText
 import dev.odaridavid.smoovie.theme.SmoovieTheme
+import dev.odaridavid.smoovie.ui.SetStatusBarIcons
 import dev.odaridavid.smoovie.utils.AppError
 import org.jetbrains.compose.resources.stringResource
 import previewPersonDetailUiModel
@@ -75,6 +77,7 @@ internal fun PersonDetailContent(
     onTvShowClick: (TvShowUiModel) -> Unit = {},
     onViewAllFilmography: (PersonFilmographyMediaType) -> Unit = {},
 ) {
+    SetStatusBarIcons(useDarkIcons = !isSystemInDarkTheme())
     Column(
         modifier =
             Modifier

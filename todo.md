@@ -2,7 +2,6 @@
 
 ## Features
 
-- [ ] Add tv shows (TMDB's `/tv/*` endpoints mirror `/movie/*` — no new API key needed)
 - [ ] Auth login/logout
 
 ### TMDB endpoints already reachable with the current token

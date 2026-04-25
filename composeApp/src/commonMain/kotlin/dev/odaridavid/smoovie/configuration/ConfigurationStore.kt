@@ -21,4 +21,7 @@ class ConfigurationStore {
         path: String?,
         size: ProfileSize = ProfileSize.MEDIUM,
     ): String? = path?.let { "${imagesConfiguration?.secureBaseUrl}${size.apiValue}$it" }
+
+    fun logoUrl(path: String?): String? =
+        path?.let { "${imagesConfiguration?.secureBaseUrl}w92$it" }
 }

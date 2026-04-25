@@ -1,6 +1,7 @@
 package dev.odaridavid.smoovie.shows.data
 
 import dev.odaridavid.smoovie.TMDB_BASE_URL
+import dev.odaridavid.smoovie.movies.data.WatchProvidersResponse
 import dev.odaridavid.smoovie.shows.domain.TvShowsRepository
 import dev.odaridavid.smoovie.utils.TtlCache
 import io.ktor.client.HttpClient
@@ -17,6 +18,7 @@ class TvShowsRepositoryImpl(
     private val genresCache = TtlCache<Unit, List<TvGenre>>(CACHE_TTL_MS)
     private val detailCache = TtlCache<Int, TvShowDetail>(CACHE_TTL_MS)
     private val seasonDetailCache = TtlCache<SeasonKey, SeasonDetail>(CACHE_TTL_MS)
+    private val watchProvidersCache = TtlCache<Int, WatchProvidersResponse>(CACHE_TTL_MS)
 
     override suspend fun getPopularTvShows(page: Int): TvShowsResponse =
         popularCache.getOrFetch(page) {
@@ -70,6 +72,11 @@ class TvShowsRepositoryImpl(
     ): SeasonDetail =
         seasonDetailCache.getOrFetch(SeasonKey(tvShowId, seasonNumber)) {
             client.get("${Path.TV_DETAIL}/$tvShowId/season/$seasonNumber").body()
+        }
+
+    override suspend fun getWatchProviders(tvShowId: Int): WatchProvidersResponse =
+        watchProvidersCache.getOrFetch(tvShowId) {
+            client.get("${Path.TV_DETAIL}/$tvShowId/watch/providers").body()
         }
 
     private data class SearchKey(

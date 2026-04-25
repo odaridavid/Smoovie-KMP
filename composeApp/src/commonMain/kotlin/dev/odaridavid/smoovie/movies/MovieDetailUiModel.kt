@@ -21,6 +21,9 @@ data class MovieDetailUiModel(
     val reviews: List<ReviewUiModel> = emptyList(),
     val trailers: List<TrailerUiModel> = emptyList(),
     val similar: List<MovieUiModel> = emptyList(),
+    val streamingProviders: List<WatchProviderUiModel> = emptyList(),
+    val rentBuyProviders: List<WatchProviderUiModel> = emptyList(),
+    val watchProvidersLink: String? = null,
 )
 
 data class CastMemberUiModel(
@@ -45,12 +48,20 @@ data class TrailerUiModel(
     val thumbnailUrl: String,
 )
 
+data class WatchProviderUiModel(
+    val name: String,
+    val logoUrl: String?,
+)
+
 internal fun MovieDetail.toDetailUiModel(
     backdropUrl: String?,
     posterUrl: String?,
     profileUrlResolver: (String?) -> String? = { null },
     movieBackdropUrlResolver: (String?) -> String? = { null },
     moviePosterUrlResolver: (String?) -> String? = { null },
+    streamingProviders: List<WatchProviderUiModel> = emptyList(),
+    rentBuyProviders: List<WatchProviderUiModel> = emptyList(),
+    watchProvidersLink: String? = null,
 ) = MovieDetailUiModel(
     id = id,
     title = title,
@@ -123,6 +134,9 @@ internal fun MovieDetail.toDetailUiModel(
             backdropResolver = movieBackdropUrlResolver,
             posterResolver = moviePosterUrlResolver,
         ),
+    streamingProviders = streamingProviders,
+    rentBuyProviders = rentBuyProviders,
+    watchProvidersLink = watchProvidersLink,
 )
 
 private fun buildSimilarRail(

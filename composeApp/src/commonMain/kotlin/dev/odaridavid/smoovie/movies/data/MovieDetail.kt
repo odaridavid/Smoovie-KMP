@@ -90,3 +90,25 @@ data class Video(
     val type: String = "",
     val official: Boolean = false,
 )
+
+@Serializable
+data class WatchProvidersResponse(
+    val id: Int,
+    @SerialName("results") val results: Map<String, WatchProviderRegion> = emptyMap(),
+)
+
+@Serializable
+data class WatchProviderRegion(
+    val link: String? = null,
+    @SerialName("flatrate") val flatrate: List<WatchProvider> = emptyList(),
+    val rent: List<WatchProvider> = emptyList(),
+    val buy: List<WatchProvider> = emptyList(),
+)
+
+@Serializable
+data class WatchProvider(
+    @SerialName("provider_id") val providerId: Int,
+    @SerialName("provider_name") val providerName: String,
+    @SerialName("logo_path") val logoPath: String? = null,
+    @SerialName("display_priority") val displayPriority: Int = 0,
+)

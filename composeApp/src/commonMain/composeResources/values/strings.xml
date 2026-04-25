@@ -32,6 +32,10 @@
     <string name="trailers_play_content_description">Play trailer</string>
     <string name="movies_section_title">Movies</string>
     <string name="similar_section_title">More Like This</string>
+    <string name="where_to_watch_section_title">Where to Watch</string>
+    <string name="where_to_watch_stream_label">Stream</string>
+    <string name="where_to_watch_rent_buy_label">Rent / Buy</string>
+    <string name="where_to_watch_provider_logo_description">%1$s logo</string>
     <string name="filmography_section_title">Filmography</string>
     <string name="error_person_detail_failed">Failed to load person</string>
     <string name="person_known_for_format">Known for %1$s</string>

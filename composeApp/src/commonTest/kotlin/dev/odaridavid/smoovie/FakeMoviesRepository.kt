@@ -4,12 +4,14 @@ import dev.odaridavid.smoovie.movies.data.Genre
 import dev.odaridavid.smoovie.movies.data.Movie
 import dev.odaridavid.smoovie.movies.data.MovieDetail
 import dev.odaridavid.smoovie.movies.data.MoviesResponse
+import dev.odaridavid.smoovie.movies.data.WatchProvidersResponse
 import dev.odaridavid.smoovie.movies.domain.MoviesRepository
 
 class FakeMoviesRepository(
     var movies: List<Movie> = emptyList(),
     var discoverMovies: List<Movie> = emptyList(),
     var movieDetail: MovieDetail? = null,
+    var watchProviders: WatchProvidersResponse = WatchProvidersResponse(id = 0),
     var error: Exception? = null,
     var genresError: Exception? = null,
     var totalPages: Int = 1,
@@ -59,5 +61,10 @@ class FakeMoviesRepository(
     override suspend fun getMovieDetail(movieId: Int): MovieDetail {
         error?.let { throw it }
         return movieDetail ?: error("No movie detail configured")
+    }
+
+    override suspend fun getWatchProviders(movieId: Int): WatchProvidersResponse {
+        error?.let { throw it }
+        return watchProviders
     }
 }

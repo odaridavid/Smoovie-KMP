@@ -3,6 +3,7 @@ package dev.odaridavid.smoovie.movies.domain
 import dev.odaridavid.smoovie.movies.data.Genre
 import dev.odaridavid.smoovie.movies.data.MovieDetail
 import dev.odaridavid.smoovie.movies.data.MoviesResponse
+import dev.odaridavid.smoovie.movies.data.WatchProvidersResponse
 
 interface MoviesRepository {
     suspend fun getPopularMovies(page: Int = 1): MoviesResponse
@@ -20,4 +21,6 @@ interface MoviesRepository {
     suspend fun getGenres(): List<Genre>
 
     suspend fun getMovieDetail(movieId: Int): MovieDetail
+
+    suspend fun getWatchProviders(movieId: Int): WatchProvidersResponse
 }

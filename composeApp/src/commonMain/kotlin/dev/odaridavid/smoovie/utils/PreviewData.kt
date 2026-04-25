@@ -2,6 +2,7 @@ import dev.odaridavid.smoovie.movies.CastMemberUiModel
 import dev.odaridavid.smoovie.movies.MovieDetailUiModel
 import dev.odaridavid.smoovie.movies.ReviewUiModel
 import dev.odaridavid.smoovie.movies.TrailerUiModel
+import dev.odaridavid.smoovie.movies.WatchProviderUiModel
 import dev.odaridavid.smoovie.movies.data.Movie
 import dev.odaridavid.smoovie.movies.toUiModel
 import dev.odaridavid.smoovie.person.PersonDetailUiModel
@@ -116,6 +117,14 @@ internal val previewTrailers =
 
 internal val previewSimilarMovies = previewMovieUiModels.take(5)
 
+internal val previewWatchProviders =
+    listOf(
+        WatchProviderUiModel(name = "Netflix", logoUrl = null),
+        WatchProviderUiModel(name = "Amazon Prime Video", logoUrl = null),
+        WatchProviderUiModel(name = "Disney+", logoUrl = null),
+        WatchProviderUiModel(name = "Apple TV+", logoUrl = null),
+    )
+
 internal val previewPersonSummaryUiModel =
     PersonSummaryUiModel(
         id = 1,
@@ -180,4 +189,6 @@ internal val previewMovieDetailUiModel =
         reviews = previewReviews,
         trailers = previewTrailers,
         similar = previewSimilarMovies,
+        streamingProviders = previewWatchProviders,
+        rentBuyProviders = previewWatchProviders.take(2),
     )

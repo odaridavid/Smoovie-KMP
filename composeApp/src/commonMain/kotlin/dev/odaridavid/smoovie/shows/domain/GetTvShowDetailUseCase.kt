@@ -2,8 +2,11 @@ package dev.odaridavid.smoovie.shows.domain
 
 import dev.odaridavid.smoovie.configuration.BackdropSize
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
+import dev.odaridavid.smoovie.movies.WatchProviderUiModel
 import dev.odaridavid.smoovie.shows.TvShowDetailUiModel
 import dev.odaridavid.smoovie.shows.toDetailUiModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
 class GetTvShowDetailUseCase(
     private val repository: TvShowsRepository,
@@ -13,7 +16,27 @@ class GetTvShowDetailUseCase(
         tvShowId: Int,
         presentLabel: String,
     ): TvShowDetailUiModel =
-        repository.getTvShowDetail(tvShowId).let { detail ->
+        coroutineScope {
+            val detailDeferred = async { repository.getTvShowDetail(tvShowId) }
+            val providersDeferred = async { runCatching { repository.getWatchProviders(tvShowId) }.getOrNull() }
+
+            val detail = detailDeferred.await()
+            val providersResponse = providersDeferred.await()
+
+            val regionData = providersResponse?.results?.let { it["DE"] ?: it["US"] ?: it.values.firstOrNull() }
+
+            fun mapProviders(providers: List<dev.odaridavid.smoovie.movies.data.WatchProvider>) =
+                providers.sortedBy { it.displayPriority }
+                    .map { WatchProviderUiModel(name = it.providerName, logoUrl = configurationStore.logoUrl(it.logoPath)) }
+
+            val streamingProviders = mapProviders(regionData?.flatrate.orEmpty())
+            val streamingNames = streamingProviders.map { it.name }.toSet()
+            val rentBuyProviders = mapProviders(
+                (regionData?.rent.orEmpty() + regionData?.buy.orEmpty())
+                    .distinctBy { it.providerId }
+                    .filter { it.providerName !in streamingNames },
+            )
+
             detail.toDetailUiModel(
                 backdropUrl = configurationStore.backdropUrl(detail.backdropPath, BackdropSize.LARGE),
                 posterUrl = configurationStore.posterUrl(detail.posterPath),
@@ -22,6 +45,9 @@ class GetTvShowDetailUseCase(
                 similarBackdropResolver = { configurationStore.backdropUrl(it) },
                 similarPosterResolver = { configurationStore.posterUrl(it) },
                 presentLabel = presentLabel,
+                streamingProviders = streamingProviders,
+                rentBuyProviders = rentBuyProviders,
+                watchProvidersLink = regionData?.link,
             )
         }
 }

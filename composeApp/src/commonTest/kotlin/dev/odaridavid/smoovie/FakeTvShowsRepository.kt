@@ -1,5 +1,6 @@
 package dev.odaridavid.smoovie
 
+import dev.odaridavid.smoovie.movies.data.WatchProvidersResponse
 import dev.odaridavid.smoovie.shows.data.SeasonDetail
 import dev.odaridavid.smoovie.shows.data.TvGenre
 import dev.odaridavid.smoovie.shows.data.TvShow
@@ -12,6 +13,7 @@ class FakeTvShowsRepository(
     var discoverTvShows: List<TvShow> = emptyList(),
     var tvShowDetail: TvShowDetail? = null,
     var seasonDetail: SeasonDetail? = null,
+    var watchProviders: WatchProvidersResponse = WatchProvidersResponse(id = 0),
     var error: Exception? = null,
     var genresError: Exception? = null,
     var totalPages: Int = 1,
@@ -69,5 +71,10 @@ class FakeTvShowsRepository(
     ): SeasonDetail {
         error?.let { throw it }
         return seasonDetail ?: error("No season detail configured")
+    }
+
+    override suspend fun getWatchProviders(tvShowId: Int): WatchProvidersResponse {
+        error?.let { throw it }
+        return watchProviders
     }
 }

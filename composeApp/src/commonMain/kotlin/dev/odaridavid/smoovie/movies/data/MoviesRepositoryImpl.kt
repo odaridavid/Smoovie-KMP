@@ -16,6 +16,7 @@ class MoviesRepositoryImpl(
     private val genreDiscoverCache = TtlCache<GenreKey, MoviesResponse>(CACHE_TTL_MS)
     private val genresCache = TtlCache<Unit, List<Genre>>(CACHE_TTL_MS)
     private val detailCache = TtlCache<Int, MovieDetail>(CACHE_TTL_MS)
+    private val watchProvidersCache = TtlCache<Int, WatchProvidersResponse>(CACHE_TTL_MS)
 
     override suspend fun getPopularMovies(page: Int): MoviesResponse =
         popularCache.getOrFetch(page) {
@@ -61,6 +62,11 @@ class MoviesRepositoryImpl(
                 .get("${Path.MOVIE_DETAIL}/$movieId") {
                     parameter(Parameter.APPEND_TO_RESPONSE, "credits,reviews,videos,recommendations,similar")
                 }.body()
+        }
+
+    override suspend fun getWatchProviders(movieId: Int): WatchProvidersResponse =
+        watchProvidersCache.getOrFetch(movieId) {
+            client.get("${Path.MOVIE_DETAIL}/$movieId/watch/providers").body()
         }
 
     private data class SearchKey(

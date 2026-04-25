@@ -3,6 +3,7 @@ package dev.odaridavid.smoovie.shows
 import dev.odaridavid.smoovie.movies.CastMemberUiModel
 import dev.odaridavid.smoovie.movies.ReviewUiModel
 import dev.odaridavid.smoovie.movies.TrailerUiModel
+import dev.odaridavid.smoovie.movies.WatchProviderUiModel
 import dev.odaridavid.smoovie.movies.data.Video
 import dev.odaridavid.smoovie.movies.toDisplayRating
 import dev.odaridavid.smoovie.movies.toReadableDate
@@ -29,6 +30,9 @@ data class TvShowDetailUiModel(
     val reviews: List<ReviewUiModel> = emptyList(),
     val trailers: List<TrailerUiModel> = emptyList(),
     val similar: List<TvShowUiModel> = emptyList(),
+    val streamingProviders: List<WatchProviderUiModel> = emptyList(),
+    val rentBuyProviders: List<WatchProviderUiModel> = emptyList(),
+    val watchProvidersLink: String? = null,
 )
 
 data class SeasonUiModel(
@@ -48,6 +52,9 @@ internal fun TvShowDetail.toDetailUiModel(
     similarBackdropResolver: (String?) -> String? = { null },
     similarPosterResolver: (String?) -> String? = { null },
     presentLabel: String,
+    streamingProviders: List<WatchProviderUiModel> = emptyList(),
+    rentBuyProviders: List<WatchProviderUiModel> = emptyList(),
+    watchProvidersLink: String? = null,
 ) = TvShowDetailUiModel(
     id = id,
     name = name,
@@ -131,6 +138,9 @@ internal fun TvShowDetail.toDetailUiModel(
             backdropResolver = similarBackdropResolver,
             posterResolver = similarPosterResolver,
         ),
+    streamingProviders = streamingProviders,
+    rentBuyProviders = rentBuyProviders,
+    watchProvidersLink = watchProvidersLink,
 )
 
 private fun buildSimilarRail(

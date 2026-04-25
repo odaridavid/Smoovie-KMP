@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import dev.odaridavid.smoovie.movies.components.CastSection
 import dev.odaridavid.smoovie.movies.components.ReviewsSection
 import dev.odaridavid.smoovie.movies.components.TrailersSection
+import dev.odaridavid.smoovie.movies.components.WhereToWatchSection
 import dev.odaridavid.smoovie.person.PersonSummaryUiModel
 import dev.odaridavid.smoovie.shows.components.SeasonsSection
 import dev.odaridavid.smoovie.shows.components.SimilarTvShowsSection
@@ -146,6 +147,14 @@ internal fun TvShowDetailContent(
                             cast = detail.cast,
                             modifier = Modifier.padding(horizontal = 16.dp),
                             onPersonClick = onPersonClick,
+                        )
+                    }
+                    if (detail.streamingProviders.isNotEmpty() || detail.rentBuyProviders.isNotEmpty()) {
+                        WhereToWatchSection(
+                            streamingProviders = detail.streamingProviders,
+                            rentBuyProviders = detail.rentBuyProviders,
+                            link = detail.watchProvidersLink,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                         )
                     }
                     if (detail.seasons.isNotEmpty()) {

@@ -1,14 +1,14 @@
 package dev.odaridavid.smoovie.movies
 
-import dev.odaridavid.smoovie.movies.data.AuthorDetails
 import dev.odaridavid.smoovie.movies.data.Genre
 import dev.odaridavid.smoovie.movies.data.Movie
 import dev.odaridavid.smoovie.movies.data.MovieDetail
 import dev.odaridavid.smoovie.movies.data.MoviesResponse
-import dev.odaridavid.smoovie.movies.data.Review
-import dev.odaridavid.smoovie.movies.data.ReviewsResponse
-import dev.odaridavid.smoovie.movies.data.Video
-import dev.odaridavid.smoovie.movies.data.VideosResponse
+import dev.odaridavid.smoovie.shared.data.AuthorDetails
+import dev.odaridavid.smoovie.shared.data.Review
+import dev.odaridavid.smoovie.shared.data.ReviewsResponse
+import dev.odaridavid.smoovie.shared.data.Video
+import dev.odaridavid.smoovie.shared.data.VideosResponse
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

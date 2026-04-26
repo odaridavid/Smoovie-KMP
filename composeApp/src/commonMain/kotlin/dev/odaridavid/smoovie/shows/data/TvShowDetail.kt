@@ -1,9 +1,9 @@
 package dev.odaridavid.smoovie.shows.data
 
-import dev.odaridavid.smoovie.movies.data.Credits
-import dev.odaridavid.smoovie.movies.data.Keyword
-import dev.odaridavid.smoovie.movies.data.ReviewsResponse
-import dev.odaridavid.smoovie.movies.data.VideosResponse
+import dev.odaridavid.smoovie.shared.data.Credits
+import dev.odaridavid.smoovie.shared.data.Keyword
+import dev.odaridavid.smoovie.shared.data.ReviewsResponse
+import dev.odaridavid.smoovie.shared.data.VideosResponse
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

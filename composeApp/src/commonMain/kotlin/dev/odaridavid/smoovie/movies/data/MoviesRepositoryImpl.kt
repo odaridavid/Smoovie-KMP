@@ -2,6 +2,7 @@ package dev.odaridavid.smoovie.movies.data
 
 import dev.odaridavid.smoovie.TMDB_BASE_URL
 import dev.odaridavid.smoovie.movies.domain.MoviesRepository
+import dev.odaridavid.smoovie.shared.data.WatchProvidersResponse
 import dev.odaridavid.smoovie.utils.TtlCache
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body

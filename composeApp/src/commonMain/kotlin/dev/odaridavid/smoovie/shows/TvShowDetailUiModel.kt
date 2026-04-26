@@ -1,14 +1,14 @@
 package dev.odaridavid.smoovie.shows
 
-import dev.odaridavid.smoovie.movies.CastMemberUiModel
-import dev.odaridavid.smoovie.movies.ReviewUiModel
-import dev.odaridavid.smoovie.movies.TrailerUiModel
-import dev.odaridavid.smoovie.movies.WatchProviderUiModel
-import dev.odaridavid.smoovie.movies.data.Video
-import dev.odaridavid.smoovie.movies.toDisplayRating
-import dev.odaridavid.smoovie.movies.toReadableDate
+import dev.odaridavid.smoovie.shared.CastMemberUiModel
+import dev.odaridavid.smoovie.shared.ReviewUiModel
+import dev.odaridavid.smoovie.shared.TrailerUiModel
+import dev.odaridavid.smoovie.shared.WatchProviderUiModel
+import dev.odaridavid.smoovie.shared.data.Video
 import dev.odaridavid.smoovie.shows.data.TvShow
 import dev.odaridavid.smoovie.shows.data.TvShowDetail
+import dev.odaridavid.smoovie.utils.toDisplayRating
+import dev.odaridavid.smoovie.utils.toReadableDate
 
 data class TvShowDetailUiModel(
     val id: Int,
@@ -74,7 +74,8 @@ internal fun TvShowDetail.toDetailUiModel(
     genres = genres.joinToString { it.name },
     networks = networks.joinToString { it.name },
     ageRating =
-        contentRatings?.results
+        contentRatings
+            ?.results
             ?.firstOrNull { it.countryCode == "DE" }
             ?.rating
             ?.takeIf { it.isNotBlank() }

@@ -1,6 +1,6 @@
 package dev.odaridavid.smoovie
 
-import dev.odaridavid.smoovie.movies.data.WatchProvidersResponse
+import dev.odaridavid.smoovie.shared.data.WatchProvidersResponse
 import dev.odaridavid.smoovie.shows.data.SeasonDetail
 import dev.odaridavid.smoovie.shows.data.TvGenre
 import dev.odaridavid.smoovie.shows.data.TvKeywordsResponse

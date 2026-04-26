@@ -5,7 +5,7 @@ import dev.odaridavid.smoovie.movies.data.KeywordsResponse
 import dev.odaridavid.smoovie.movies.data.Movie
 import dev.odaridavid.smoovie.movies.data.MovieDetail
 import dev.odaridavid.smoovie.movies.data.MoviesResponse
-import dev.odaridavid.smoovie.movies.data.WatchProvidersResponse
+import dev.odaridavid.smoovie.shared.data.WatchProvidersResponse
 import dev.odaridavid.smoovie.movies.domain.MoviesRepository
 
 class FakeMoviesRepository(

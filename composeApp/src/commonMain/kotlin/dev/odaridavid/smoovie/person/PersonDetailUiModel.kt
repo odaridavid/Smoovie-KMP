@@ -1,8 +1,8 @@
 package dev.odaridavid.smoovie.person
 
 import dev.odaridavid.smoovie.movies.MovieUiModel
-import dev.odaridavid.smoovie.movies.toDisplayRating
-import dev.odaridavid.smoovie.movies.toReadableDate
+import dev.odaridavid.smoovie.utils.toDisplayRating
+import dev.odaridavid.smoovie.utils.toReadableDate
 import dev.odaridavid.smoovie.person.data.PersonDetail
 import dev.odaridavid.smoovie.person.data.PersonMovieCredit
 import dev.odaridavid.smoovie.person.data.PersonTvCredit

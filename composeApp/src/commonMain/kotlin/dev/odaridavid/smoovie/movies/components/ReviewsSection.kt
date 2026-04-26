@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import dev.odaridavid.smoovie.movies.ReviewUiModel
+import dev.odaridavid.smoovie.shared.ReviewUiModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.utils.previewReviews
 import org.jetbrains.compose.resources.stringResource

@@ -1,10 +1,10 @@
 package dev.odaridavid.smoovie.utils
 
-import dev.odaridavid.smoovie.movies.CastMemberUiModel
 import dev.odaridavid.smoovie.movies.MovieDetailUiModel
-import dev.odaridavid.smoovie.movies.ReviewUiModel
-import dev.odaridavid.smoovie.movies.TrailerUiModel
-import dev.odaridavid.smoovie.movies.WatchProviderUiModel
+import dev.odaridavid.smoovie.shared.CastMemberUiModel
+import dev.odaridavid.smoovie.shared.ReviewUiModel
+import dev.odaridavid.smoovie.shared.TrailerUiModel
+import dev.odaridavid.smoovie.shared.WatchProviderUiModel
 import dev.odaridavid.smoovie.movies.data.Movie
 import dev.odaridavid.smoovie.movies.toUiModel
 import dev.odaridavid.smoovie.person.PersonDetailUiModel

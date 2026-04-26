@@ -4,7 +4,7 @@ import dev.odaridavid.smoovie.movies.data.Genre
 import dev.odaridavid.smoovie.movies.data.KeywordsResponse
 import dev.odaridavid.smoovie.movies.data.MovieDetail
 import dev.odaridavid.smoovie.movies.data.MoviesResponse
-import dev.odaridavid.smoovie.movies.data.WatchProvidersResponse
+import dev.odaridavid.smoovie.shared.data.WatchProvidersResponse
 
 interface MoviesRepository {
     suspend fun getPopularMovies(page: Int = 1): MoviesResponse

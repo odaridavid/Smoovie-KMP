@@ -3,10 +3,10 @@ package dev.odaridavid.smoovie.movies.domain
 import dev.odaridavid.smoovie.configuration.BackdropSize
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import dev.odaridavid.smoovie.movies.MovieDetailUiModel
-import dev.odaridavid.smoovie.movies.WatchProviderUiModel
-import dev.odaridavid.smoovie.movies.data.WatchProvider
-import dev.odaridavid.smoovie.movies.data.WatchProviderRegion
-import dev.odaridavid.smoovie.movies.data.WatchProvidersResponse
+import dev.odaridavid.smoovie.shared.WatchProviderUiModel
+import dev.odaridavid.smoovie.shared.data.WatchProvider
+import dev.odaridavid.smoovie.shared.data.WatchProviderRegion
+import dev.odaridavid.smoovie.shared.data.WatchProvidersResponse
 import dev.odaridavid.smoovie.movies.toDetailUiModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope

@@ -2,7 +2,13 @@ package dev.odaridavid.smoovie.movies
 
 import dev.odaridavid.smoovie.movies.data.Movie
 import dev.odaridavid.smoovie.movies.data.MovieDetail
-import dev.odaridavid.smoovie.movies.data.Video
+import dev.odaridavid.smoovie.shared.CastMemberUiModel
+import dev.odaridavid.smoovie.shared.ReviewUiModel
+import dev.odaridavid.smoovie.shared.TrailerUiModel
+import dev.odaridavid.smoovie.shared.WatchProviderUiModel
+import dev.odaridavid.smoovie.shared.data.Video
+import dev.odaridavid.smoovie.utils.toDisplayRating
+import dev.odaridavid.smoovie.utils.toReadableDate
 
 data class MovieDetailUiModel(
     val id: Int,
@@ -26,33 +32,6 @@ data class MovieDetailUiModel(
     val rentBuyProviders: List<WatchProviderUiModel> = emptyList(),
     val watchProvidersLink: String? = null,
     val keywords: List<String> = emptyList(),
-)
-
-data class CastMemberUiModel(
-    val id: Int,
-    val name: String,
-    val character: String,
-    val profileUrl: String?,
-)
-
-data class ReviewUiModel(
-    val id: String,
-    val author: String,
-    val date: String,
-    val rating: String,
-    val content: String,
-)
-
-data class TrailerUiModel(
-    val id: String,
-    val name: String,
-    val videoKey: String,
-    val thumbnailUrl: String,
-)
-
-data class WatchProviderUiModel(
-    val name: String,
-    val logoUrl: String?,
 )
 
 internal fun MovieDetail.toDetailUiModel(

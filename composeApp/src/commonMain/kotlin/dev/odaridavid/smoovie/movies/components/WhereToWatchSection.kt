@@ -23,7 +23,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
-import dev.odaridavid.smoovie.movies.WatchProviderUiModel
+import dev.odaridavid.smoovie.shared.WatchProviderUiModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.utils.previewWatchProviders
 import org.jetbrains.compose.resources.stringResource

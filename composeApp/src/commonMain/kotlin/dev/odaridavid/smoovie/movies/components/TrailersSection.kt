@@ -31,7 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
-import dev.odaridavid.smoovie.movies.TrailerUiModel
+import dev.odaridavid.smoovie.shared.TrailerUiModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.utils.previewTrailers
 import org.jetbrains.compose.resources.stringResource

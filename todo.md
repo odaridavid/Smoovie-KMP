@@ -9,8 +9,6 @@
 
 - [ ] Discover / filters screen — `GET /discover/movie` with `with_watch_providers`, runtime,
   year range, vote-average filters; replaces the simple genre chip row with a real filter sheet
-- [ ] Keyword tag chips on movie detail — `GET /movie/{id}/keywords` for tag-based discovery
-  rails ("more heist movies", "more space opera")
 
 ### External content sources
 
@@ -59,7 +57,6 @@
 - [ ] AI and app actions
 - [ ] Create app icon and improve splash screen
 - [ ] Multimodules
-- [ ] Codecov
 - [ ] Observability
 - [ ] Update readme before going public with it
 -

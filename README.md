@@ -137,6 +137,18 @@ Open `/iosApp` in Xcode and run, or use the run configuration in Android Studio 
 ./gradlew :composeApp:ktlintFormat   # auto-fix
 ```
 
+### Pre-commit hook
+
+A `hooks/pre-commit` script runs `ktlintCheck` before every commit and blocks it if there are
+violations. Activate it once after cloning:
+
+```shell
+git config core.hooksPath hooks
+```
+
+If the hook blocks a commit, run `./gradlew :composeApp:ktlintFormat` to auto-fix, re-stage the
+changes, then commit again.
+
 ---
 
 |          Android                                 |         iOS                                  |

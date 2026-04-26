@@ -19,9 +19,11 @@ class GetMovieDetailUseCase(
         coroutineScope {
             val detailDeferred = async { repository.getMovieDetail(movieId) }
             val providersDeferred = async { runCatching { repository.getWatchProviders(movieId) }.getOrNull() }
+            val keywordsDeferred = async { runCatching { repository.getMovieKeywords(movieId) }.getOrNull() }
 
             val detail = detailDeferred.await()
             val regionData = resolveRegionData(providersDeferred.await())
+            val keywords = keywordsDeferred.await()?.keywords?.take(MAX_KEYWORDS)?.map { it.name } ?: emptyList()
 
             val streamingProviders = mapProviders(regionData?.flatrate.orEmpty())
             val streamingIds = streamingProviders.map { it.name }.toSet()
@@ -41,8 +43,13 @@ class GetMovieDetailUseCase(
                 streamingProviders = streamingProviders,
                 rentBuyProviders = rentBuyProviders,
                 watchProvidersLink = regionData?.link,
+                keywords = keywords,
             )
         }
+
+    private companion object {
+        const val MAX_KEYWORDS = 3
+    }
 
     private fun resolveRegionData(response: WatchProvidersResponse?): WatchProviderRegion? =
         response?.results?.let { it["DE"] ?: it["US"] ?: it.values.firstOrNull() }

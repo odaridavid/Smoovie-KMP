@@ -1,6 +1,7 @@
 package dev.odaridavid.smoovie
 
 import dev.odaridavid.smoovie.movies.data.Genre
+import dev.odaridavid.smoovie.movies.data.KeywordsResponse
 import dev.odaridavid.smoovie.movies.data.Movie
 import dev.odaridavid.smoovie.movies.data.MovieDetail
 import dev.odaridavid.smoovie.movies.data.MoviesResponse
@@ -13,6 +14,7 @@ class FakeMoviesRepository(
     var trendingMovies: List<Movie> = emptyList(),
     var movieDetail: MovieDetail? = null,
     var watchProviders: WatchProvidersResponse = WatchProvidersResponse(id = 0),
+    var keywords: KeywordsResponse = KeywordsResponse(id = 0),
     var error: Exception? = null,
     var genresError: Exception? = null,
     var totalPages: Int = 1,
@@ -67,6 +69,11 @@ class FakeMoviesRepository(
     override suspend fun getWatchProviders(movieId: Int): WatchProvidersResponse {
         error?.let { throw it }
         return watchProviders
+    }
+
+    override suspend fun getMovieKeywords(movieId: Int): KeywordsResponse {
+        error?.let { throw it }
+        return keywords
     }
 
     override suspend fun getTrendingMovies(): MoviesResponse {

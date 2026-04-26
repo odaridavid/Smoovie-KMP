@@ -110,6 +110,18 @@ data class Video(
 )
 
 @Serializable
+data class KeywordsResponse(
+    val id: Int,
+    val keywords: List<Keyword> = emptyList(),
+)
+
+@Serializable
+data class Keyword(
+    val id: Int,
+    val name: String,
+)
+
+@Serializable
 data class WatchProvidersResponse(
     val id: Int,
     @SerialName("results") val results: Map<String, WatchProviderRegion> = emptyMap(),

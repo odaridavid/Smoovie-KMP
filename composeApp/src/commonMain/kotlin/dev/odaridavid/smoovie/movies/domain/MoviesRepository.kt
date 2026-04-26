@@ -1,6 +1,7 @@
 package dev.odaridavid.smoovie.movies.domain
 
 import dev.odaridavid.smoovie.movies.data.Genre
+import dev.odaridavid.smoovie.movies.data.KeywordsResponse
 import dev.odaridavid.smoovie.movies.data.MovieDetail
 import dev.odaridavid.smoovie.movies.data.MoviesResponse
 import dev.odaridavid.smoovie.movies.data.WatchProvidersResponse
@@ -23,6 +24,8 @@ interface MoviesRepository {
     suspend fun getMovieDetail(movieId: Int): MovieDetail
 
     suspend fun getWatchProviders(movieId: Int): WatchProvidersResponse
+
+    suspend fun getMovieKeywords(movieId: Int): KeywordsResponse
 
     suspend fun getTrendingMovies(): MoviesResponse
 }

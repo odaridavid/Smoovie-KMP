@@ -25,6 +25,7 @@ data class MovieDetailUiModel(
     val streamingProviders: List<WatchProviderUiModel> = emptyList(),
     val rentBuyProviders: List<WatchProviderUiModel> = emptyList(),
     val watchProvidersLink: String? = null,
+    val keywords: List<String> = emptyList(),
 )
 
 data class CastMemberUiModel(
@@ -63,6 +64,7 @@ internal fun MovieDetail.toDetailUiModel(
     streamingProviders: List<WatchProviderUiModel> = emptyList(),
     rentBuyProviders: List<WatchProviderUiModel> = emptyList(),
     watchProvidersLink: String? = null,
+    keywords: List<String> = emptyList(),
 ) = MovieDetailUiModel(
     id = id,
     title = title,
@@ -147,6 +149,7 @@ internal fun MovieDetail.toDetailUiModel(
     streamingProviders = streamingProviders,
     rentBuyProviders = rentBuyProviders,
     watchProvidersLink = watchProvidersLink,
+    keywords = keywords,
 )
 
 private fun buildSimilarRail(

@@ -1,8 +1,8 @@
 package dev.odaridavid.smoovie.shows
 
+import dev.odaridavid.smoovie.shows.data.TvShow
 import dev.odaridavid.smoovie.utils.toDisplayRating
 import dev.odaridavid.smoovie.utils.toReadableDate
-import dev.odaridavid.smoovie.shows.data.TvShow
 
 data class TvGenreUiModel(
     val id: Int,

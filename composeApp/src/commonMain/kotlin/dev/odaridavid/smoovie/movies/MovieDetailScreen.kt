@@ -236,7 +236,6 @@ private fun DetailBody(
     }
 }
 
-
 @Composable
 private fun MetadataSection(
     movie: MovieUiModel,

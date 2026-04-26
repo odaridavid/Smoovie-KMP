@@ -31,4 +31,3 @@ internal fun Movie.toUiModel(
     backdropUrl = backdropUrl,
     posterUrl = posterUrl,
 )
-

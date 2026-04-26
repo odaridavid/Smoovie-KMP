@@ -30,12 +30,14 @@ class GetTvShowDetailUseCaseTest {
                             id = 1,
                             results =
                                 mapOf(
-                                    "DE" to WatchProviderRegion(
-                                        flatrate = listOf(WatchProvider(providerId = 1, providerName = "Netflix", displayPriority = 1)),
-                                    ),
-                                    "US" to WatchProviderRegion(
-                                        flatrate = listOf(WatchProvider(providerId = 2, providerName = "HBO", displayPriority = 1)),
-                                    ),
+                                    "DE" to
+                                        WatchProviderRegion(
+                                            flatrate = listOf(WatchProvider(providerId = 1, providerName = "Netflix", displayPriority = 1)),
+                                        ),
+                                    "US" to
+                                        WatchProviderRegion(
+                                            flatrate = listOf(WatchProvider(providerId = 2, providerName = "HBO", displayPriority = 1)),
+                                        ),
                                 ),
                         ),
                 )
@@ -57,9 +59,10 @@ class GetTvShowDetailUseCaseTest {
                             id = 1,
                             results =
                                 mapOf(
-                                    "US" to WatchProviderRegion(
-                                        flatrate = listOf(WatchProvider(providerId = 2, providerName = "HBO Max", displayPriority = 1)),
-                                    ),
+                                    "US" to
+                                        WatchProviderRegion(
+                                            flatrate = listOf(WatchProvider(providerId = 2, providerName = "HBO Max", displayPriority = 1)),
+                                        ),
                                 ),
                         ),
                 )
@@ -81,9 +84,10 @@ class GetTvShowDetailUseCaseTest {
                             id = 1,
                             results =
                                 mapOf(
-                                    "FR" to WatchProviderRegion(
-                                        flatrate = listOf(WatchProvider(providerId = 3, providerName = "Canal+", displayPriority = 1)),
-                                    ),
+                                    "FR" to
+                                        WatchProviderRegion(
+                                            flatrate = listOf(WatchProvider(providerId = 3, providerName = "Canal+", displayPriority = 1)),
+                                        ),
                                 ),
                         ),
                 )
@@ -109,8 +113,7 @@ class GetTvShowDetailUseCaseTest {
             val delegate = FakeTvShowsRepository(tvShowDetail = baseDetail)
             val repo =
                 object : TvShowsRepository by delegate {
-                    override suspend fun getWatchProviders(tvShowId: Int): WatchProvidersResponse =
-                        throw RuntimeException("network error")
+                    override suspend fun getWatchProviders(tvShowId: Int): WatchProvidersResponse = throw RuntimeException("network error")
                 }
 
             val result = GetTvShowDetailUseCase(repo, ConfigurationStore()).invoke(1, presentLabel = "Present")
@@ -125,8 +128,7 @@ class GetTvShowDetailUseCaseTest {
             val delegate = FakeTvShowsRepository(tvShowDetail = baseDetail)
             val repo =
                 object : TvShowsRepository by delegate {
-                    override suspend fun getKeywords(tvShowId: Int): TvKeywordsResponse =
-                        throw RuntimeException("network error")
+                    override suspend fun getKeywords(tvShowId: Int): TvKeywordsResponse = throw RuntimeException("network error")
                 }
 
             val result = GetTvShowDetailUseCase(repo, ConfigurationStore()).invoke(1, presentLabel = "Present")
@@ -191,10 +193,11 @@ class GetTvShowDetailUseCaseTest {
                             id = 1,
                             results =
                                 mapOf(
-                                    "DE" to WatchProviderRegion(
-                                        flatrate = listOf(netflix),
-                                        rent = listOf(netflix),
-                                    ),
+                                    "DE" to
+                                        WatchProviderRegion(
+                                            flatrate = listOf(netflix),
+                                            rent = listOf(netflix),
+                                        ),
                                 ),
                         ),
                 )
@@ -217,10 +220,11 @@ class GetTvShowDetailUseCaseTest {
                             id = 1,
                             results =
                                 mapOf(
-                                    "DE" to WatchProviderRegion(
-                                        rent = listOf(amazon),
-                                        buy = listOf(amazon),
-                                    ),
+                                    "DE" to
+                                        WatchProviderRegion(
+                                            rent = listOf(amazon),
+                                            buy = listOf(amazon),
+                                        ),
                                 ),
                         ),
                 )
@@ -242,13 +246,14 @@ class GetTvShowDetailUseCaseTest {
                             id = 1,
                             results =
                                 mapOf(
-                                    "DE" to WatchProviderRegion(
-                                        flatrate =
-                                            listOf(
-                                                WatchProvider(providerId = 2, providerName = "Disney+", displayPriority = 2),
-                                                WatchProvider(providerId = 1, providerName = "Netflix", displayPriority = 1),
-                                            ),
-                                    ),
+                                    "DE" to
+                                        WatchProviderRegion(
+                                            flatrate =
+                                                listOf(
+                                                    WatchProvider(providerId = 2, providerName = "Disney+", displayPriority = 2),
+                                                    WatchProvider(providerId = 1, providerName = "Netflix", displayPriority = 1),
+                                                ),
+                                        ),
                                 ),
                         ),
                 )

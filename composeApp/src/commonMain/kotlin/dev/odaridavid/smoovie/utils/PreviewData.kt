@@ -1,16 +1,16 @@
 package dev.odaridavid.smoovie.utils
 
 import dev.odaridavid.smoovie.movies.MovieDetailUiModel
-import dev.odaridavid.smoovie.shared.CastMemberUiModel
-import dev.odaridavid.smoovie.shared.ReviewUiModel
-import dev.odaridavid.smoovie.shared.TrailerUiModel
-import dev.odaridavid.smoovie.shared.WatchProviderUiModel
 import dev.odaridavid.smoovie.movies.data.Movie
 import dev.odaridavid.smoovie.movies.toUiModel
 import dev.odaridavid.smoovie.person.PersonDetailUiModel
 import dev.odaridavid.smoovie.person.PersonMovieFilmographyItem
 import dev.odaridavid.smoovie.person.PersonSummaryUiModel
 import dev.odaridavid.smoovie.person.PersonTvFilmographyItem
+import dev.odaridavid.smoovie.shared.CastMemberUiModel
+import dev.odaridavid.smoovie.shared.ReviewUiModel
+import dev.odaridavid.smoovie.shared.TrailerUiModel
+import dev.odaridavid.smoovie.shared.WatchProviderUiModel
 import dev.odaridavid.smoovie.shows.TvShowUiModel
 
 internal val previewMovies =

@@ -46,8 +46,6 @@ kover {
                 // Pure UI composables and data models
                 classes(
                     "*Screen*",
-                    "*UiModel*",
-                    "*UiState*",
                     "*.components.*",
                     "*.theme.*",
                     "*.ui.*",

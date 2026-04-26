@@ -10,11 +10,50 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidxRoom)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.kover)
 }
 
 ktlint {
     filter {
         exclude { entry -> entry.file.path.contains("/build/") }
+    }
+}
+
+kover {
+    reports {
+        filters {
+            excludes {
+                // Generated Room / KSP code
+                packages("*.generated.*", "smoovie.composeapp.generated.*")
+                annotatedBy(
+                    "androidx.room.Database",
+                    "androidx.room.Dao",
+                    // Compose UI functions have no testable logic
+                    "androidx.compose.runtime.Composable",
+                    "androidx.compose.ui.tooling.preview.Preview",
+                    "androidx.compose.ui.tooling.preview.PreviewLightDark",
+                )
+                // Entry points and DI wiring — no logic to cover
+                classes(
+                    "*.App*",
+                    "*.Screen*",
+                    "*.KoinInitializer*",
+                    "*.PlatformModule*",
+                    "*.SmoovieApplication*",
+                    "*.MainActivity*",
+                    "*.MainViewController*",
+                )
+                // Pure UI composables and data models
+                classes(
+                    "*Screen*",
+                    "*UiModel*",
+                    "*UiState*",
+                    "*.components.*",
+                    "*.theme.*",
+                    "*.ui.*",
+                )
+            }
+        }
     }
 }
 

@@ -18,6 +18,8 @@ Single Gradle module: `:composeApp`. Powered by the TMDB API.
 ./gradlew :composeApp:linkDebugFrameworkIosArm64             # iOS device framework
 ./gradlew :composeApp:ktlintCheck                            # lint check (runs in CI)
 ./gradlew :composeApp:ktlintFormat                           # auto-fix style violations
+./gradlew :composeApp:koverHtmlReportDebug                   # HTML coverage report → build/reports/kover/htmlDebug/
+./gradlew :composeApp:koverXmlReportDebug                    # XML coverage report (runs in CI)
 ```
 
 `:composeApp:allTests` sometimes fails at `linkDebugTestIosSimulatorArm64` with a local `xcrun` error 72 — treat that as an environment issue, not a code failure. Fall back to `testDebugUnitTest` + `compileKotlinIosSimulatorArm64` to confirm KMP correctness.
@@ -165,3 +167,4 @@ The movies screen's retry button calls `MoviesViewModel.retry()`, which runs the
 | Coil 3                             | Image loading                                                     |
 | KSP                                | Room annotation processing                                        |
 | ktlint-gradle                      | Code style enforcement (wraps ktlint 1.x)                         |
+| Kover                              | Code coverage reports (HTML + XML)                                |

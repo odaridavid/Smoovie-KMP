@@ -19,7 +19,7 @@ Single Gradle module: `:composeApp`. Powered by the TMDB API.
 ./gradlew :composeApp:ktlintCheck                            # lint check (runs in CI)
 ./gradlew :composeApp:ktlintFormat                           # auto-fix style violations
 ./gradlew :composeApp:koverHtmlReportDebug                   # HTML coverage report → build/reports/kover/htmlDebug/
-./gradlew :composeApp:koverXmlReportDebug                    # XML coverage report (runs in CI)
+./gradlew :composeApp:koverXmlReportDebug                    # XML coverage report → build/reports/kover/reportDebug.xml (runs in CI)
 ```
 
 `:composeApp:allTests` sometimes fails at `linkDebugTestIosSimulatorArm64` with a local `xcrun` error 72 — treat that as an environment issue, not a code failure. Fall back to `testDebugUnitTest` + `compileKotlinIosSimulatorArm64` to confirm KMP correctness.

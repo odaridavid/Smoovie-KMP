@@ -43,15 +43,12 @@ jobs:
       - name: Compile iOS (common + iOS targets)
         run: ./gradlew :composeApp:compileKotlinIosSimulatorArm64
 
-      - name: Run unit tests
-        run: ./gradlew :composeApp:testDebugUnitTest
-
-      - name: Generate coverage report
+      - name: Run unit tests and generate coverage report
         run: ./gradlew :composeApp:koverXmlReportDebug
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: composeApp/build/reports/kover/xmlDebug/report.xml
+          files: composeApp/build/reports/kover/reportDebug.xml
           fail_ci_if_error: true

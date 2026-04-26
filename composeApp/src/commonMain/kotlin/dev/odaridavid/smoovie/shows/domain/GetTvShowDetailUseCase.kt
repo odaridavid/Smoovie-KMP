@@ -3,6 +3,9 @@ package dev.odaridavid.smoovie.shows.domain
 import dev.odaridavid.smoovie.configuration.BackdropSize
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import dev.odaridavid.smoovie.movies.WatchProviderUiModel
+import dev.odaridavid.smoovie.movies.data.WatchProvider
+import dev.odaridavid.smoovie.movies.data.WatchProviderRegion
+import dev.odaridavid.smoovie.movies.data.WatchProvidersResponse
 import dev.odaridavid.smoovie.shows.TvShowDetailUiModel
 import dev.odaridavid.smoovie.shows.toDetailUiModel
 import kotlinx.coroutines.async
@@ -21,21 +24,16 @@ class GetTvShowDetailUseCase(
             val providersDeferred = async { runCatching { repository.getWatchProviders(tvShowId) }.getOrNull() }
 
             val detail = detailDeferred.await()
-            val providersResponse = providersDeferred.await()
-
-            val regionData = providersResponse?.results?.let { it["DE"] ?: it["US"] ?: it.values.firstOrNull() }
-
-            fun mapProviders(providers: List<dev.odaridavid.smoovie.movies.data.WatchProvider>) =
-                providers.sortedBy { it.displayPriority }
-                    .map { WatchProviderUiModel(name = it.providerName, logoUrl = configurationStore.logoUrl(it.logoPath)) }
+            val regionData = resolveRegionData(providersDeferred.await())
 
             val streamingProviders = mapProviders(regionData?.flatrate.orEmpty())
             val streamingNames = streamingProviders.map { it.name }.toSet()
-            val rentBuyProviders = mapProviders(
-                (regionData?.rent.orEmpty() + regionData?.buy.orEmpty())
-                    .distinctBy { it.providerId }
-                    .filter { it.providerName !in streamingNames },
-            )
+            val rentBuyProviders =
+                mapProviders(
+                    (regionData?.rent.orEmpty() + regionData?.buy.orEmpty())
+                        .distinctBy { it.providerId }
+                        .filter { it.providerName !in streamingNames },
+                )
 
             detail.toDetailUiModel(
                 backdropUrl = configurationStore.backdropUrl(detail.backdropPath, BackdropSize.LARGE),
@@ -50,4 +48,12 @@ class GetTvShowDetailUseCase(
                 watchProvidersLink = regionData?.link,
             )
         }
+
+    private fun resolveRegionData(response: WatchProvidersResponse?): WatchProviderRegion? =
+        response?.results?.let { it["DE"] ?: it["US"] ?: it.values.firstOrNull() }
+
+    private fun mapProviders(providers: List<WatchProvider>): List<WatchProviderUiModel> =
+        providers
+            .sortedBy { it.displayPriority }
+            .map { WatchProviderUiModel(name = it.providerName, logoUrl = configurationStore.logoUrl(it.logoPath)) }
 }

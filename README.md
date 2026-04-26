@@ -1,6 +1,8 @@
 # Smoovie
 
 [![codecov](https://codecov.io/github/odaridavid/Smoovie-KMP/graph/badge.svg?token=xqRlC1xr7q)](https://codecov.io/github/odaridavid/Smoovie-KMP)
+![Android](https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white)
+![iOS](https://img.shields.io/badge/iOS-000000?logo=apple)
 
 A Kotlin Multiplatform app for browsing and exploring movies, powered by
 the [TMDB API](https://www.themoviedb.org/).

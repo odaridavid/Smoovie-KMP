@@ -71,12 +71,13 @@ internal fun TvShowDetail.toDetailUiModel(
     seasonsLabel = formatSeasonsLabel(numberOfSeasons, numberOfEpisodes),
     genres = genres.joinToString { it.name },
     networks = networks.joinToString { it.name },
-    ageRating = contentRatings?.results
-        ?.firstOrNull { it.countryCode == "DE" }
-        ?.rating
-        ?.takeIf { it.isNotBlank() }
-        ?.let { if (it.startsWith("FSK")) it else "FSK $it" }
-        ?: "",
+    ageRating =
+        contentRatings?.results
+            ?.firstOrNull { it.countryCode == "DE" }
+            ?.rating
+            ?.takeIf { it.isNotBlank() }
+            ?.let { if (it.startsWith("FSK")) it else "FSK $it" }
+            ?: "",
     seasons =
         seasons
             .filter { it.seasonNumber > 0 }

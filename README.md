@@ -10,11 +10,11 @@ Targets Android and iOS with a shared Compose Multiplatform UI.
 - Featured movies hero pager with auto-scroll and shared-element transitions into the detail screen
 - Genre filtering via chip row
 - Search movies with debounced input
-- Movie detail screen with edge-to-edge backdrop, gradient scrims, tagline, cast, trailers,
-  reviews, and a "More like this" section
-- Person detail screen with biography, birthday, place of birth, and filmography
-- Watchlist — tap the bookmark on any movie detail to save it locally; browse saved movies from
-  the Watchlist tab in the bottom navigation
+- Movie and TV show detail screens with edge-to-edge backdrop, cast, trailers, reviews, seasons,
+  where to watch (streaming + rent/buy via JustWatch), FSK age rating, and a "More like this" section
+- Person detail screen with biography, birthday, place of birth, and movie + TV filmography
+- Watchlist — tap the bookmark on any movie or TV show detail to save it locally; browse saved
+  titles from the Watchlist tab in the bottom navigation
 - Bottom navigation with Movies / Shows / Watchlist tabs; state preserved across tab switches,
   instant tab-to-tab transitions and sliding detail pushes
 - In-memory TTL caching for TMDB requests (1 hour) so navigating back and forth doesn't re-hit the
@@ -100,6 +100,7 @@ build time, where Kotlin reads it via `NSBundle`.
 | [Koin](https://insert-koin.io)                                                            | Multiplatform dependency injection           |
 | [Coil 3](https://coil-kt.github.io/coil/)                                                 | Image loading (backdrops, posters, profiles) |
 | [KSP](https://github.com/google/ksp)                                                      | Room annotation processing                   |
+| [ktlint-gradle](https://github.com/JLLeitschuh/ktlint-gradle)                            | Code style enforcement                       |
 
 ## Build and Run
 
@@ -123,6 +124,13 @@ Open `/iosApp` in Xcode and run, or use the run configuration in Android Studio 
 
 ```shell
 ./gradlew :composeApp:allTests
+```
+
+### Lint
+
+```shell
+./gradlew :composeApp:ktlintCheck    # check (what CI runs)
+./gradlew :composeApp:ktlintFormat   # auto-fix
 ```
 
 ---

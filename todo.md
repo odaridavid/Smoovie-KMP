@@ -63,4 +63,4 @@
 - [ ] Observability
 - [ ] Update readme before going public with it
 - [ ] Code quality and git hooks
-- 
+-

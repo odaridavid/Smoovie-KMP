@@ -42,13 +42,13 @@ class PersonDetailViewModelTest {
                                 id = 1,
                                 title = "Interstellar",
                                 character = "Cooper",
-                                popularity = 50.0
+                                popularity = 50.0,
                             ),
                             credit(
                                 id = 2,
                                 title = "Dallas Buyers Club",
                                 character = "Ron",
-                                popularity = 30.0
+                                popularity = 30.0,
                             ),
                         ),
                 ),

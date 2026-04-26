@@ -9,6 +9,13 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidxRoom)
+    alias(libs.plugins.ktlint)
+}
+
+ktlint {
+    filter {
+        exclude { entry -> entry.file.path.contains("/build/") }
+    }
 }
 
 room {

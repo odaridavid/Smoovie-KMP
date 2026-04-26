@@ -13,7 +13,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class MovieDetailUiModelTest {
-
     @Test
     fun `given movie detail with runtime - when mapped - then runtime is formatted as hours and minutes`() {
         val detail = movieDetail(runtime = 169)
@@ -121,10 +120,11 @@ class MovieDetailUiModelTest {
                                     id = "r1",
                                     author = "",
                                     content = "Content",
-                                    authorDetails = AuthorDetails(
-                                        username = "fallback_user",
-                                        rating = 8.0
-                                    ),
+                                    authorDetails =
+                                        AuthorDetails(
+                                            username = "fallback_user",
+                                            rating = 8.0,
+                                        ),
                                 ),
                             ),
                     ),
@@ -328,11 +328,12 @@ class MovieDetailUiModelTest {
                 recommendations = moviesResponse(listOf(movie(id = 2, posterPath = "/abc.jpg"))),
             )
 
-        val uiModel = detail.toDetailUiModel(
-            backdropUrl = null,
-            posterUrl = null,
-            moviePosterUrlResolver = { path -> path?.let { "https://img.example/$it" } },
-        )
+        val uiModel =
+            detail.toDetailUiModel(
+                backdropUrl = null,
+                posterUrl = null,
+                moviePosterUrlResolver = { path -> path?.let { "https://img.example/$it" } },
+            )
 
         assertEquals("https://img.example//abc.jpg", uiModel.similar.first().posterUrl)
     }
@@ -341,10 +342,11 @@ class MovieDetailUiModelTest {
     fun `given backdrop and poster urls - when mapped - then urls are set`() {
         val detail = movieDetail()
 
-        val uiModel = detail.toDetailUiModel(
-            backdropUrl = "https://example.com/backdrop.jpg",
-            posterUrl = "https://example.com/poster.jpg",
-        )
+        val uiModel =
+            detail.toDetailUiModel(
+                backdropUrl = "https://example.com/backdrop.jpg",
+                posterUrl = "https://example.com/poster.jpg",
+            )
 
         assertEquals("https://example.com/backdrop.jpg", uiModel.backdropUrl)
         assertEquals("https://example.com/poster.jpg", uiModel.posterUrl)

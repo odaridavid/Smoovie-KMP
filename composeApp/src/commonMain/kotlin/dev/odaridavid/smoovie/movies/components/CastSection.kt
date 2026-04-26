@@ -29,8 +29,8 @@ import coil3.compose.SubcomposeAsyncImage
 import dev.odaridavid.smoovie.movies.CastMemberUiModel
 import dev.odaridavid.smoovie.person.PersonSummaryUiModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
-import org.jetbrains.compose.resources.stringResource
 import dev.odaridavid.smoovie.utils.previewCast
+import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.cast_section_title
 

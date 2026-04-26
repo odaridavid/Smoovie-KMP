@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import dev.odaridavid.smoovie.movies.TrailerUiModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
-import org.jetbrains.compose.resources.stringResource
 import dev.odaridavid.smoovie.utils.previewTrailers
+import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.trailers_play_content_description
 import smoovie.composeapp.generated.resources.trailers_section_title

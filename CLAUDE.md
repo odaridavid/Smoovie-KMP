@@ -16,6 +16,8 @@ Single Gradle module: `:composeApp`. Powered by the TMDB API.
 ./gradlew :composeApp:allTests                               # all targets (iOS link may fail locally with xcrun 72)
 ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64    # iOS simulator framework
 ./gradlew :composeApp:linkDebugFrameworkIosArm64             # iOS device framework
+./gradlew :composeApp:ktlintCheck                            # lint check (runs in CI)
+./gradlew :composeApp:ktlintFormat                           # auto-fix style violations
 ```
 
 `:composeApp:allTests` sometimes fails at `linkDebugTestIosSimulatorArm64` with a local `xcrun` error 72 — treat that as an environment issue, not a code failure. Fall back to `testDebugUnitTest` + `compileKotlinIosSimulatorArm64` to confirm KMP correctness.
@@ -108,8 +110,17 @@ Use the **API Read Access Token** (Bearer token) from TMDB settings, not the v3 
 
 ## Conventions
 
-### No wildcard imports
-Ktlint enforces specific imports. Always import individual symbols.
+### Code style (ktlint)
+`jlleitschuh/ktlint-gradle 12.1.2` is applied to `:composeApp`. Configuration lives in `.editorconfig` at the repo root. Key rules:
+
+- No wildcard imports — always import individual symbols
+- Max line length: 140
+- `@Composable` functions are exempt from the lowercase function-naming rule
+- The `filename` rule is disabled — KMP expect/actual files use platform suffixes (e.g. `DatabaseBuilder.android.kt`) that would otherwise conflict
+- `MainViewController.kt` carries `@Suppress("ktlint:standard:function-naming")` because Swift must call it by its PascalCase name
+- Generated sources under `build/` are excluded from linting
+
+Run `ktlintFormat` before committing to auto-fix formatting; `ktlintCheck` is what CI enforces.
 
 ### String resources
 UI strings live in `composeApp/src/commonMain/composeResources/values/strings.xml`. Use `stringResource(Res.string.key_name)` at call sites. Mark brand names / non-translatable strings with `translatable="false"`.
@@ -119,7 +130,7 @@ Default to none. Let well-named identifiers do the talking. Add a single-line co
 
 ### Previews
 - `@PreviewLightDark` (preferred) on stateless `*Content` composables, which are `internal` so previews in the same module can reach them. A handful of older files (`theme/EmptyContent.kt`, `theme/ErrorContent.kt`) still use `@Preview` + `@Preview(uiMode = UI_MODE_NIGHT_YES)` — prefer `@PreviewLightDark` for new code.
-- Preview functions are `private` in PascalCase — ignore ktlint naming warnings on these.
+- Preview functions are `private` in PascalCase — the Composable naming exemption in `.editorconfig` covers these.
 - Shared preview data fixtures live in `utils/PreviewData.kt`.
 
 ### Test naming
@@ -153,3 +164,4 @@ The movies screen's retry button calls `MoviesViewModel.retry()`, which runs the
 | Koin                               | Multiplatform DI                                                  |
 | Coil 3                             | Image loading                                                     |
 | KSP                                | Room annotation processing                                        |
+| ktlint-gradle                      | Code style enforcement (wraps ktlint 1.x)                         |

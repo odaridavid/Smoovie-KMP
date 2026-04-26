@@ -265,8 +265,7 @@ private fun AppBottomBar(
     }
 }
 
-private fun NavDestination.isTopLevelTab(): Boolean =
-    hasRoute<MoviesRoute>() || hasRoute<ShowsRoute>() || hasRoute<WatchlistRoute>()
+private fun NavDestination.isTopLevelTab(): Boolean = hasRoute<MoviesRoute>() || hasRoute<ShowsRoute>() || hasRoute<WatchlistRoute>()
 
 private fun NavHostController.navigateToTab(route: Any) {
     navigate(route) {

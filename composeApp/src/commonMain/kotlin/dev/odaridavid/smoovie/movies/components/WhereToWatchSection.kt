@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import dev.odaridavid.smoovie.movies.WatchProviderUiModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
-import org.jetbrains.compose.resources.stringResource
 import dev.odaridavid.smoovie.utils.previewWatchProviders
+import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.action_view_all
 import smoovie.composeapp.generated.resources.where_to_watch_provider_logo_description

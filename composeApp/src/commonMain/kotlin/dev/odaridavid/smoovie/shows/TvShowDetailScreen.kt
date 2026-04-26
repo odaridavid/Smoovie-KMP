@@ -25,7 +25,6 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import dev.odaridavid.smoovie.theme.MetadataRow
 import dev.odaridavid.smoovie.movies.components.CastSection
 import dev.odaridavid.smoovie.movies.components.ReviewsSection
 import dev.odaridavid.smoovie.movies.components.TrailersSection
@@ -35,6 +34,7 @@ import dev.odaridavid.smoovie.shows.components.SeasonsSection
 import dev.odaridavid.smoovie.shows.components.SimilarTvShowsSection
 import dev.odaridavid.smoovie.theme.ExpandableText
 import dev.odaridavid.smoovie.theme.HeroSection
+import dev.odaridavid.smoovie.theme.MetadataRow
 import dev.odaridavid.smoovie.theme.ShimmerDetail
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.ui.SetStatusBarIcons
@@ -245,10 +245,13 @@ private fun MetadataSection(
     tvShow: TvShowUiModel,
     detail: TvShowDetailUiModel? = null,
 ) {
-    val rating = if (tvShow.voteAverage.isNotBlank()) {
-        val voteCount = detail?.voteCount
-        if (!voteCount.isNullOrBlank()) "★ ${tvShow.voteAverage} ($voteCount)" else "★ ${tvShow.voteAverage}"
-    } else null
+    val rating =
+        if (tvShow.voteAverage.isNotBlank()) {
+            val voteCount = detail?.voteCount
+            if (!voteCount.isNullOrBlank()) "★ ${tvShow.voteAverage} ($voteCount)" else "★ ${tvShow.voteAverage}"
+        } else {
+            null
+        }
     val years = detail?.yearsRange?.takeIf { it.isNotBlank() } ?: tvShow.firstAirDate.takeIf { it.isNotBlank() }
     MetadataRow(
         rating,

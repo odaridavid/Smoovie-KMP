@@ -34,6 +34,9 @@ jobs:
           key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml') }}
           restore-keys: konan-${{ runner.os }}-
 
+      - name: Lint (ktlint)
+        run: ./gradlew :composeApp:ktlintCheck
+
       - name: Compile Android
         run: ./gradlew :composeApp:compileDebugKotlinAndroid
 

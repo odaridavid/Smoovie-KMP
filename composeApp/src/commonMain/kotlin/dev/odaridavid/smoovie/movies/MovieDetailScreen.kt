@@ -25,22 +25,22 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import dev.odaridavid.smoovie.theme.MetadataRow
 import dev.odaridavid.smoovie.movies.components.CastSection
-import dev.odaridavid.smoovie.movies.components.WhereToWatchSection
-import dev.odaridavid.smoovie.theme.HeroSection
 import dev.odaridavid.smoovie.movies.components.ReviewsSection
-import dev.odaridavid.smoovie.theme.ShimmerDetail
 import dev.odaridavid.smoovie.movies.components.SimilarMoviesSection
 import dev.odaridavid.smoovie.movies.components.TrailersSection
+import dev.odaridavid.smoovie.movies.components.WhereToWatchSection
 import dev.odaridavid.smoovie.person.PersonSummaryUiModel
 import dev.odaridavid.smoovie.theme.ExpandableText
+import dev.odaridavid.smoovie.theme.HeroSection
+import dev.odaridavid.smoovie.theme.MetadataRow
+import dev.odaridavid.smoovie.theme.ShimmerDetail
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.ui.SetStatusBarIcons
 import dev.odaridavid.smoovie.utils.AppError
-import org.jetbrains.compose.resources.stringResource
 import dev.odaridavid.smoovie.utils.previewMovieDetailUiModel
 import dev.odaridavid.smoovie.utils.previewMovieUiModels
+import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.action_retry
 import smoovie.composeapp.generated.resources.error_network
@@ -236,10 +236,13 @@ private fun MetadataSection(
     movie: MovieUiModel,
     detail: MovieDetailUiModel? = null,
 ) {
-    val rating = if (movie.voteAverage.isNotBlank()) {
-        val voteCount = detail?.voteCount
-        if (!voteCount.isNullOrBlank()) "★ ${movie.voteAverage} ($voteCount)" else "★ ${movie.voteAverage}"
-    } else null
+    val rating =
+        if (movie.voteAverage.isNotBlank()) {
+            val voteCount = detail?.voteCount
+            if (!voteCount.isNullOrBlank()) "★ ${movie.voteAverage} ($voteCount)" else "★ ${movie.voteAverage}"
+        } else {
+            null
+        }
     MetadataRow(
         rating,
         detail?.runtime,

@@ -38,9 +38,9 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import dev.odaridavid.smoovie.movies.MovieUiModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
+import dev.odaridavid.smoovie.utils.previewMovieUiModels
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
-import dev.odaridavid.smoovie.utils.previewMovieUiModels
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.no_description_available
 import smoovie.composeapp.generated.resources.release_date_tba

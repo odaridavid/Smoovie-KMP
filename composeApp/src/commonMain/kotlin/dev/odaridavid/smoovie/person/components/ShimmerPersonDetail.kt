@@ -19,8 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import dev.odaridavid.smoovie.theme.rememberShimmerBrush
 import dev.odaridavid.smoovie.theme.SmoovieTheme
+import dev.odaridavid.smoovie.theme.rememberShimmerBrush
 
 private val PHOTO_SIZE = 160.dp
 private const val SHIMMER_FILMOGRAPHY_COUNT = 3

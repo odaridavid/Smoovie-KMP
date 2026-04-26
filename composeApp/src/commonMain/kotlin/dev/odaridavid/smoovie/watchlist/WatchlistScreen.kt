@@ -51,10 +51,10 @@ import dev.odaridavid.smoovie.shows.components.TvShowCard
 import dev.odaridavid.smoovie.theme.EmptyContent
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.ui.SetStatusBarIcons
+import dev.odaridavid.smoovie.utils.previewMovieUiModels
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import dev.odaridavid.smoovie.utils.previewMovieUiModels
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.media_type_movies
 import smoovie.composeapp.generated.resources.media_type_tv_shows

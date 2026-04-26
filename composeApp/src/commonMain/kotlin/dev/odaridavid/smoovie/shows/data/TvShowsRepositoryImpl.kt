@@ -19,6 +19,7 @@ class TvShowsRepositoryImpl(
     private val detailCache = TtlCache<Int, TvShowDetail>(CACHE_TTL_MS)
     private val seasonDetailCache = TtlCache<SeasonKey, SeasonDetail>(CACHE_TTL_MS)
     private val watchProvidersCache = TtlCache<Int, WatchProvidersResponse>(CACHE_TTL_MS)
+    private val keywordsCache = TtlCache<Int, TvKeywordsResponse>(CACHE_TTL_MS)
 
     override suspend fun getPopularTvShows(page: Int): TvShowsResponse =
         popularCache.getOrFetch(page) {
@@ -77,6 +78,11 @@ class TvShowsRepositoryImpl(
     override suspend fun getWatchProviders(tvShowId: Int): WatchProvidersResponse =
         watchProvidersCache.getOrFetch(tvShowId) {
             client.get("${Path.TV_DETAIL}/$tvShowId/watch/providers").body()
+        }
+
+    override suspend fun getKeywords(tvShowId: Int): TvKeywordsResponse =
+        keywordsCache.getOrFetch(tvShowId) {
+            client.get("${Path.TV_DETAIL}/$tvShowId/keywords").body()
         }
 
     private data class SearchKey(

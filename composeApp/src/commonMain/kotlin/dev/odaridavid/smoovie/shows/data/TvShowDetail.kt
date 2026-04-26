@@ -1,6 +1,7 @@
 package dev.odaridavid.smoovie.shows.data
 
 import dev.odaridavid.smoovie.movies.data.Credits
+import dev.odaridavid.smoovie.movies.data.Keyword
 import dev.odaridavid.smoovie.movies.data.ReviewsResponse
 import dev.odaridavid.smoovie.movies.data.VideosResponse
 import kotlinx.serialization.SerialName
@@ -50,6 +51,12 @@ data class Network(
     val name: String,
     @SerialName("logo_path") val logoPath: String? = null,
     @SerialName("origin_country") val originCountry: String = "",
+)
+
+@Serializable
+data class TvKeywordsResponse(
+    val id: Int,
+    val results: List<Keyword> = emptyList(),
 )
 
 @Serializable

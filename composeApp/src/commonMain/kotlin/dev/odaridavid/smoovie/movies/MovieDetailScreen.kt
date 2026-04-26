@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +14,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,6 +33,7 @@ import dev.odaridavid.smoovie.movies.components.WhereToWatchSection
 import dev.odaridavid.smoovie.person.PersonSummaryUiModel
 import dev.odaridavid.smoovie.theme.ExpandableText
 import dev.odaridavid.smoovie.theme.HeroSection
+import dev.odaridavid.smoovie.theme.KeywordChips
 import dev.odaridavid.smoovie.theme.MetadataRow
 import dev.odaridavid.smoovie.theme.ShimmerDetail
 import dev.odaridavid.smoovie.theme.SmoovieTheme
@@ -222,7 +221,7 @@ private fun DetailBody(
         MetadataSection(movie = movie, detail = detail)
 
         if (!detail?.keywords.isNullOrEmpty()) {
-            KeywordChips(keywords = detail!!.keywords)
+            KeywordChips(keywords = detail.keywords)
         }
 
         extraContent?.invoke()
@@ -237,24 +236,6 @@ private fun DetailBody(
     }
 }
 
-@Composable
-private fun KeywordChips(keywords: List<String>) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        keywords.forEach { keyword ->
-            Surface(
-                shape = RoundedCornerShape(50),
-                color = MaterialTheme.colorScheme.secondaryContainer,
-            ) {
-                Text(
-                    text = keyword,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                )
-            }
-        }
-    }
-}
 
 @Composable
 private fun MetadataSection(

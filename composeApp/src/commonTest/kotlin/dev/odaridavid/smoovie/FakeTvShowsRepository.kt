@@ -3,6 +3,7 @@ package dev.odaridavid.smoovie
 import dev.odaridavid.smoovie.movies.data.WatchProvidersResponse
 import dev.odaridavid.smoovie.shows.data.SeasonDetail
 import dev.odaridavid.smoovie.shows.data.TvGenre
+import dev.odaridavid.smoovie.shows.data.TvKeywordsResponse
 import dev.odaridavid.smoovie.shows.data.TvShow
 import dev.odaridavid.smoovie.shows.data.TvShowDetail
 import dev.odaridavid.smoovie.shows.data.TvShowsResponse
@@ -14,6 +15,7 @@ class FakeTvShowsRepository(
     var tvShowDetail: TvShowDetail? = null,
     var seasonDetail: SeasonDetail? = null,
     var watchProviders: WatchProvidersResponse = WatchProvidersResponse(id = 0),
+    var keywords: TvKeywordsResponse = TvKeywordsResponse(id = 0),
     var error: Exception? = null,
     var genresError: Exception? = null,
     var totalPages: Int = 1,
@@ -76,5 +78,10 @@ class FakeTvShowsRepository(
     override suspend fun getWatchProviders(tvShowId: Int): WatchProvidersResponse {
         error?.let { throw it }
         return watchProviders
+    }
+
+    override suspend fun getKeywords(tvShowId: Int): TvKeywordsResponse {
+        error?.let { throw it }
+        return keywords
     }
 }

@@ -3,6 +3,7 @@ package dev.odaridavid.smoovie.shows.domain
 import dev.odaridavid.smoovie.movies.data.WatchProvidersResponse
 import dev.odaridavid.smoovie.shows.data.SeasonDetail
 import dev.odaridavid.smoovie.shows.data.TvGenre
+import dev.odaridavid.smoovie.shows.data.TvKeywordsResponse
 import dev.odaridavid.smoovie.shows.data.TvShowDetail
 import dev.odaridavid.smoovie.shows.data.TvShowsResponse
 
@@ -29,4 +30,6 @@ interface TvShowsRepository {
     ): SeasonDetail
 
     suspend fun getWatchProviders(tvShowId: Int): WatchProvidersResponse
+
+    suspend fun getKeywords(tvShowId: Int): TvKeywordsResponse
 }

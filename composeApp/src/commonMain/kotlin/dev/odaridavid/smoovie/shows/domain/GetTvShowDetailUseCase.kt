@@ -22,9 +22,11 @@ class GetTvShowDetailUseCase(
         coroutineScope {
             val detailDeferred = async { repository.getTvShowDetail(tvShowId) }
             val providersDeferred = async { runCatching { repository.getWatchProviders(tvShowId) }.getOrNull() }
+            val keywordsDeferred = async { runCatching { repository.getKeywords(tvShowId) }.getOrNull() }
 
             val detail = detailDeferred.await()
             val regionData = resolveRegionData(providersDeferred.await())
+            val keywords = keywordsDeferred.await()?.results?.take(MAX_KEYWORDS)?.map { it.name } ?: emptyList()
 
             val streamingProviders = mapProviders(regionData?.flatrate.orEmpty())
             val streamingNames = streamingProviders.map { it.name }.toSet()
@@ -46,8 +48,13 @@ class GetTvShowDetailUseCase(
                 streamingProviders = streamingProviders,
                 rentBuyProviders = rentBuyProviders,
                 watchProvidersLink = regionData?.link,
+                keywords = keywords,
             )
         }
+
+    private companion object {
+        const val MAX_KEYWORDS = 3
+    }
 
     private fun resolveRegionData(response: WatchProvidersResponse?): WatchProviderRegion? =
         response?.results?.let { it["DE"] ?: it["US"] ?: it.values.firstOrNull() }

@@ -34,6 +34,7 @@ import dev.odaridavid.smoovie.shows.components.SeasonsSection
 import dev.odaridavid.smoovie.shows.components.SimilarTvShowsSection
 import dev.odaridavid.smoovie.theme.ExpandableText
 import dev.odaridavid.smoovie.theme.HeroSection
+import dev.odaridavid.smoovie.theme.KeywordChips
 import dev.odaridavid.smoovie.theme.MetadataRow
 import dev.odaridavid.smoovie.theme.ShimmerDetail
 import dev.odaridavid.smoovie.theme.SmoovieTheme
@@ -227,6 +228,10 @@ private fun DetailBody(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         MetadataSection(tvShow = tvShow, detail = detail)
+
+        if (!detail?.keywords.isNullOrEmpty()) {
+            KeywordChips(keywords = detail.keywords)
+        }
 
         extraContent?.invoke()
 

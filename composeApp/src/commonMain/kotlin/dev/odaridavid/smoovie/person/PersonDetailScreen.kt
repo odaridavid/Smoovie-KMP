@@ -5,8 +5,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,6 +31,7 @@ import dev.odaridavid.smoovie.person.components.TvShowFilmographyRail
 import dev.odaridavid.smoovie.shows.TvShowUiModel
 import dev.odaridavid.smoovie.theme.ErrorContent
 import dev.odaridavid.smoovie.theme.ExpandableText
+import dev.odaridavid.smoovie.theme.MetadataRow
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.ui.SetStatusBarIcons
 import dev.odaridavid.smoovie.utils.AppError
@@ -176,7 +174,6 @@ private fun SummaryHeader(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun DetailHeader(
     detail: PersonDetailUiModel,
@@ -188,25 +185,12 @@ private fun DetailHeader(
             text = detail.name,
             style = MaterialTheme.typography.headlineSmall,
         )
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            if (detail.knownForDepartment.isNotBlank()) {
-                AssistChip(
-                    onClick = {},
-                    label = {
-                        Text(stringResource(Res.string.person_known_for_format, detail.knownForDepartment))
-                    },
-                )
-            }
-            if (detail.birthday.isNotBlank()) {
-                AssistChip(onClick = {}, label = { Text(detail.birthday) })
-            }
-            if (detail.placeOfBirth.isNotBlank()) {
-                AssistChip(onClick = {}, label = { Text(detail.placeOfBirth) })
-            }
-        }
+        MetadataRow(
+            detail.knownForDepartment.takeIf { it.isNotBlank() }
+                ?.let { stringResource(Res.string.person_known_for_format, it) },
+            detail.birthday.takeIf { it.isNotBlank() },
+            detail.placeOfBirth.takeIf { it.isNotBlank() },
+        )
         if (detail.biography.isNotBlank()) {
             ExpandableText(
                 text = detail.biography,

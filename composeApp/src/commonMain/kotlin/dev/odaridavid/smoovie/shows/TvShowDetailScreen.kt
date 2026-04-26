@@ -4,8 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -28,6 +25,7 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import dev.odaridavid.smoovie.theme.MetadataRow
 import dev.odaridavid.smoovie.movies.components.CastSection
 import dev.odaridavid.smoovie.movies.components.ReviewsSection
 import dev.odaridavid.smoovie.movies.components.TrailersSection
@@ -242,70 +240,24 @@ private fun DetailBody(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun MetadataSection(
     tvShow: TvShowUiModel,
     detail: TvShowDetailUiModel? = null,
 ) {
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        if (tvShow.voteAverage.isNotBlank()) {
-            val voteCount = detail?.voteCount
-            val ratingLabel =
-                if (!voteCount.isNullOrBlank()) {
-                    "★ ${tvShow.voteAverage} ($voteCount)"
-                } else {
-                    "★ ${tvShow.voteAverage}"
-                }
-            AssistChip(
-                onClick = {},
-                label = { Text(ratingLabel) },
-            )
-        }
-        val yearsRange = detail?.yearsRange
-        if (!yearsRange.isNullOrBlank()) {
-            AssistChip(
-                onClick = {},
-                label = { Text(yearsRange) },
-            )
-        } else if (tvShow.firstAirDate.isNotBlank()) {
-            AssistChip(
-                onClick = {},
-                label = { Text(tvShow.firstAirDate) },
-            )
-        }
-        val seasonsLabel = detail?.seasonsLabel
-        if (!seasonsLabel.isNullOrBlank()) {
-            AssistChip(
-                onClick = {},
-                label = { Text(seasonsLabel) },
-            )
-        }
-        val genres = detail?.genres
-        if (!genres.isNullOrBlank()) {
-            AssistChip(
-                onClick = {},
-                label = { Text(genres) },
-            )
-        }
-        val ageRating = detail?.ageRating
-        if (!ageRating.isNullOrBlank()) {
-            AssistChip(
-                onClick = {},
-                label = { Text(ageRating) },
-            )
-        }
-        val networks = detail?.networks
-        if (!networks.isNullOrBlank()) {
-            AssistChip(
-                onClick = {},
-                label = { Text("📺 $networks") },
-            )
-        }
-    }
+    val rating = if (tvShow.voteAverage.isNotBlank()) {
+        val voteCount = detail?.voteCount
+        if (!voteCount.isNullOrBlank()) "★ ${tvShow.voteAverage} ($voteCount)" else "★ ${tvShow.voteAverage}"
+    } else null
+    val years = detail?.yearsRange?.takeIf { it.isNotBlank() } ?: tvShow.firstAirDate.takeIf { it.isNotBlank() }
+    MetadataRow(
+        rating,
+        years,
+        detail?.seasonsLabel,
+        detail?.genres,
+        detail?.ageRating,
+        detail?.networks?.takeIf { it.isNotBlank() }?.let { "📺 $it" },
+    )
 }
 
 @Composable

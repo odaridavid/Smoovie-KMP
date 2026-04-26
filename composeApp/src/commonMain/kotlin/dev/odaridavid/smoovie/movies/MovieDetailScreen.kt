@@ -4,8 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -28,6 +25,7 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import dev.odaridavid.smoovie.theme.MetadataRow
 import dev.odaridavid.smoovie.movies.components.CastSection
 import dev.odaridavid.smoovie.movies.components.WhereToWatchSection
 import dev.odaridavid.smoovie.theme.HeroSection
@@ -233,64 +231,23 @@ private fun DetailBody(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun MetadataSection(
     movie: MovieUiModel,
     detail: MovieDetailUiModel? = null,
 ) {
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        if (movie.voteAverage.isNotBlank()) {
-            val voteCount = detail?.voteCount
-            val ratingLabel =
-                if (!voteCount.isNullOrBlank()) {
-                    "★ ${movie.voteAverage} ($voteCount)"
-                } else {
-                    "★ ${movie.voteAverage}"
-                }
-            AssistChip(
-                onClick = {},
-                label = { Text(ratingLabel) },
-            )
-        }
-        val runtime = detail?.runtime
-        if (!runtime.isNullOrBlank()) {
-            AssistChip(
-                onClick = {},
-                label = { Text(runtime) },
-            )
-        }
-        if (movie.releaseDate.isNotBlank()) {
-            AssistChip(
-                onClick = {},
-                label = { Text(movie.releaseDate) },
-            )
-        }
-        val genres = detail?.genres
-        if (!genres.isNullOrBlank()) {
-            AssistChip(
-                onClick = {},
-                label = { Text(genres) },
-            )
-        }
-        val ageRating = detail?.ageRating
-        if (!ageRating.isNullOrBlank()) {
-            AssistChip(
-                onClick = {},
-                label = { Text(ageRating) },
-            )
-        }
-        val director = detail?.director
-        if (!director.isNullOrBlank()) {
-            AssistChip(
-                onClick = {},
-                label = { Text("🎬 $director") },
-            )
-        }
-    }
+    val rating = if (movie.voteAverage.isNotBlank()) {
+        val voteCount = detail?.voteCount
+        if (!voteCount.isNullOrBlank()) "★ ${movie.voteAverage} ($voteCount)" else "★ ${movie.voteAverage}"
+    } else null
+    MetadataRow(
+        rating,
+        detail?.runtime,
+        movie.releaseDate.takeIf { it.isNotBlank() },
+        detail?.genres,
+        detail?.ageRating,
+        detail?.director?.takeIf { it.isNotBlank() }?.let { "🎬 $it" },
+    )
 }
 
 @Composable

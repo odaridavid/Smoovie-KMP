@@ -58,4 +58,7 @@
 - [ ] Add github ci/cd
 - [ ] AI and app actions
 - [ ] Create app icon and improve splash screen
-- 
+- [ ] Dependabot
+- [ ] Multimodules
+- [ ] Codecov
+- [ ] Observability

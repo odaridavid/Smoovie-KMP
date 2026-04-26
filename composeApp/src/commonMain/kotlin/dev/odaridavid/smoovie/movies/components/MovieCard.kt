@@ -40,7 +40,7 @@ import dev.odaridavid.smoovie.movies.MovieUiModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
-import previewMovieUiModels
+import dev.odaridavid.smoovie.utils.previewMovieUiModels
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.no_description_available
 import smoovie.composeapp.generated.resources.release_date_tba

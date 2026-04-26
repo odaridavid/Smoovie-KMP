@@ -217,13 +217,17 @@ private fun ShowsContent(
                         .padding(top = 12.dp),
             ) {
                 when {
-                    state.uiState is ShowsUiState.Loading -> ShimmerChipsRow()
-                    state.genres.isNotEmpty() ->
+                    state.uiState is ShowsUiState.Loading -> {
+                        ShimmerChipsRow()
+                    }
+
+                    state.genres.isNotEmpty() -> {
                         TvGenreChips(
                             genres = state.genres,
                             selectedGenre = state.selectedGenre,
                             onGenreSelected = actions.onGenreSelected,
                         )
+                    }
                 }
                 AnimatedContent(
                     targetState = state.uiState,

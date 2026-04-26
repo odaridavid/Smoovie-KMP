@@ -55,10 +55,9 @@
 ## Architecture & Quality
 
 - [ ] Compose UI tests for the screens (screenshot tests or interaction tests)
-- [ ] Add github ci/cd
 - [ ] AI and app actions
 - [ ] Create app icon and improve splash screen
-- [ ] Dependabot
 - [ ] Multimodules
 - [ ] Codecov
 - [ ] Observability
+- [ ] Update readme before going public with it

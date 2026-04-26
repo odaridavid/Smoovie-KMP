@@ -75,13 +75,15 @@ internal fun MovieDetail.toDetailUiModel(
     runtime = runtime?.let { "${it / 60}h ${it % 60}m" } ?: "",
     tagline = tagline,
     genres = genres.joinToString { it.name },
-    ageRating = releaseDates?.results
-        ?.firstOrNull { it.countryCode == "DE" }
-        ?.releaseDates
-        ?.firstOrNull { it.type == THEATRICAL_RELEASE_TYPE && it.certification.isNotBlank() }
-        ?.certification
-        ?.let { "FSK $it" }
-        ?: "",
+    ageRating =
+        releaseDates
+            ?.results
+            ?.firstOrNull { it.countryCode == "DE" }
+            ?.releaseDates
+            ?.firstOrNull { it.type == THEATRICAL_RELEASE_TYPE && it.certification.isNotBlank() }
+            ?.certification
+            ?.let { "FSK $it" }
+            ?: "",
     director =
         credits
             ?.crew

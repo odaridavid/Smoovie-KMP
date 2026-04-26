@@ -52,7 +52,7 @@ import dev.odaridavid.smoovie.theme.ShimmerList
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.ui.SearchBackHandler
 import dev.odaridavid.smoovie.ui.SetStatusBarIcons
-import previewMovieUiModels
+import dev.odaridavid.smoovie.utils.previewMovieUiModels
 
 private const val SLOW_ANIM_DURATION = 500
 private const val FEATURED_COUNT = 4
@@ -201,13 +201,17 @@ private fun MoviesContent(
                         .padding(top = 12.dp),
             ) {
                 when {
-                    state.uiState is MoviesUiState.Loading -> ShimmerChipsRow()
-                    state.genres.isNotEmpty() ->
+                    state.uiState is MoviesUiState.Loading -> {
+                        ShimmerChipsRow()
+                    }
+
+                    state.genres.isNotEmpty() -> {
                         GenreChips(
                             genres = state.genres,
                             selectedGenre = state.selectedGenre,
                             onGenreSelected = actions.onGenreSelected,
                         )
+                    }
                 }
                 AnimatedContent(
                     targetState = state.uiState,

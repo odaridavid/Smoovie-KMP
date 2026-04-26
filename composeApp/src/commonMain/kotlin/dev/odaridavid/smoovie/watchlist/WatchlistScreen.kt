@@ -54,7 +54,7 @@ import dev.odaridavid.smoovie.ui.SetStatusBarIcons
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import previewMovieUiModels
+import dev.odaridavid.smoovie.utils.previewMovieUiModels
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.media_type_movies
 import smoovie.composeapp.generated.resources.media_type_tv_shows

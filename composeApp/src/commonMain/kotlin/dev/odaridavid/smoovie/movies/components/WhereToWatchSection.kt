@@ -26,7 +26,7 @@ import coil3.compose.SubcomposeAsyncImage
 import dev.odaridavid.smoovie.movies.WatchProviderUiModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
-import previewWatchProviders
+import dev.odaridavid.smoovie.utils.previewWatchProviders
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.action_view_all
 import smoovie.composeapp.generated.resources.where_to_watch_provider_logo_description
@@ -104,9 +104,10 @@ private fun ProviderItem(provider: WatchProviderUiModel) {
             contentScale = ContentScale.Crop,
             loading = { ProviderLogoPlaceholder() },
             error = { ProviderLogoPlaceholder() },
-            modifier = Modifier
-                .size(PROVIDER_LOGO_SIZE)
-                .clip(RoundedCornerShape(8.dp)),
+            modifier =
+                Modifier
+                    .size(PROVIDER_LOGO_SIZE)
+                    .clip(RoundedCornerShape(8.dp)),
         )
     } else {
         ProviderLogoPlaceholder()
@@ -116,10 +117,11 @@ private fun ProviderItem(provider: WatchProviderUiModel) {
 @Composable
 private fun ProviderLogoPlaceholder() {
     Box(
-        modifier = Modifier
-            .size(PROVIDER_LOGO_SIZE)
-            .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant),
+        modifier =
+            Modifier
+                .size(PROVIDER_LOGO_SIZE)
+                .clip(RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant),
     )
 }
 

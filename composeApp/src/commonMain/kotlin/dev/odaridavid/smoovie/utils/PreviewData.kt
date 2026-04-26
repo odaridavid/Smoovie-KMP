@@ -1,3 +1,5 @@
+package dev.odaridavid.smoovie.utils
+
 import dev.odaridavid.smoovie.movies.CastMemberUiModel
 import dev.odaridavid.smoovie.movies.MovieDetailUiModel
 import dev.odaridavid.smoovie.movies.ReviewUiModel

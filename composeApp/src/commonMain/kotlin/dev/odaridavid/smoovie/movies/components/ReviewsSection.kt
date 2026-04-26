@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import dev.odaridavid.smoovie.movies.ReviewUiModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
-import previewReviews
+import dev.odaridavid.smoovie.utils.previewReviews
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.reviews_anonymous
 import smoovie.composeapp.generated.resources.reviews_read_more

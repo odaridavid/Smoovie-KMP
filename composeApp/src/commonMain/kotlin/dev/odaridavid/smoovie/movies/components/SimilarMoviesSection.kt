@@ -29,7 +29,7 @@ import coil3.compose.SubcomposeAsyncImage
 import dev.odaridavid.smoovie.movies.MovieUiModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
-import previewMovieUiModels
+import dev.odaridavid.smoovie.utils.previewMovieUiModels
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.similar_section_title
 

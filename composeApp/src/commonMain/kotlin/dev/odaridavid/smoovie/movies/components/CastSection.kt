@@ -30,7 +30,7 @@ import dev.odaridavid.smoovie.movies.CastMemberUiModel
 import dev.odaridavid.smoovie.person.PersonSummaryUiModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
-import previewCast
+import dev.odaridavid.smoovie.utils.previewCast
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.cast_section_title
 

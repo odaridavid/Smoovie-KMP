@@ -36,8 +36,8 @@ import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.ui.SetStatusBarIcons
 import dev.odaridavid.smoovie.utils.AppError
 import org.jetbrains.compose.resources.stringResource
-import previewPersonDetailUiModel
-import previewPersonSummaryUiModel
+import dev.odaridavid.smoovie.utils.previewPersonDetailUiModel
+import dev.odaridavid.smoovie.utils.previewPersonSummaryUiModel
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.error_person_detail_failed
 import smoovie.composeapp.generated.resources.media_type_movies

@@ -10,9 +10,8 @@ import dev.odaridavid.smoovie.movies.domain.GetTrendingMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.MoviesPage
 import dev.odaridavid.smoovie.movies.domain.SearchMoviesUseCase
 import dev.odaridavid.smoovie.utils.toAppError
-import kotlinx.coroutines.async
-import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +22,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 
 class MoviesViewModel(
     private val getPopularMovies: GetPopularMoviesUseCase,

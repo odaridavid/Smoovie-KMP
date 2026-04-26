@@ -3,6 +3,7 @@
 ## Features
 
 - [ ] Auth login/logout
+- [ ] Settings/Profile
 
 ### TMDB endpoints already reachable with the current token
 
@@ -61,3 +62,5 @@
 - [ ] Codecov
 - [ ] Observability
 - [ ] Update readme before going public with it
+- [ ] Code quality and git hooks
+- 

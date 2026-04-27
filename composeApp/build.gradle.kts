@@ -15,7 +15,7 @@ plugins {
 
 ktlint {
     filter {
-        exclude { entry -> entry.file.path.contains("/build/") }
+        exclude("**/generated/**")
     }
 }
 

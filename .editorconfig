@@ -13,3 +13,6 @@ max_line_length = 140
 ktlint_function_naming_ignore_when_annotated_with = Composable
 ktlint_standard_no-wildcard-imports = enabled
 ktlint_standard_filename = disabled
+
+[{**/build/**/*.kt,**/build/**/*.kts}]
+ktlint_standard = disabled

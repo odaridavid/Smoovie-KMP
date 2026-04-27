@@ -26,7 +26,12 @@ class GetTvShowDetailUseCase(
 
             val detail = detailDeferred.await()
             val regionData = resolveRegionData(providersDeferred.await())
-            val keywords = keywordsDeferred.await()?.results?.take(MAX_KEYWORDS)?.map { it.name } ?: emptyList()
+            val keywords =
+                keywordsDeferred
+                    .await()
+                    ?.results
+                    ?.take(MAX_KEYWORDS)
+                    ?.map { it.name } ?: emptyList()
 
             val streamingProviders = mapProviders(regionData?.flatrate.orEmpty())
             val streamingNames = streamingProviders.map { it.name }.toSet()

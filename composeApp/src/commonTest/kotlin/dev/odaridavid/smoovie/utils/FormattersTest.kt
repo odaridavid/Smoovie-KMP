@@ -88,8 +88,18 @@ class FormattersTest {
     fun `given all twelve months - when formatted - then each month name is correct`() {
         val expected =
             listOf(
-                "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
             )
         expected.forEachIndexed { index, name ->
             val month = (index + 1).toString().padStart(2, '0')

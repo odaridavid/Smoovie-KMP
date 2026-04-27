@@ -54,6 +54,7 @@ import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.ui.FilterSheet
 import dev.odaridavid.smoovie.ui.SearchBackHandler
 import dev.odaridavid.smoovie.ui.SetStatusBarIcons
+import dev.odaridavid.smoovie.utils.AppError
 import dev.odaridavid.smoovie.utils.previewMovieUiModels
 
 private const val SLOW_ANIM_DURATION = 500
@@ -304,6 +305,17 @@ private fun MoviesSuccessPreview() {
                     uiState = MoviesUiState.Success(previewMovieUiModels),
                     featuredMovies = previewMovieUiModels,
                 ),
+            actions = MovieActions(),
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun MoviesErrorPreview() {
+    SmoovieTheme {
+        MoviesContent(
+            state = MoviesScreenState(uiState = MoviesUiState.Error(AppError.NetworkError)),
             actions = MovieActions(),
         )
     }

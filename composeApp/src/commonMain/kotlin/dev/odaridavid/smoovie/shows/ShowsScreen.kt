@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -62,8 +63,10 @@ import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.ui.FilterSheet
 import dev.odaridavid.smoovie.ui.SearchBackHandler
 import dev.odaridavid.smoovie.ui.SetStatusBarIcons
+import dev.odaridavid.smoovie.utils.AppError
 import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
+import smoovie.composeapp.generated.resources.error_shows_failed
 import smoovie.composeapp.generated.resources.filter_button_description
 import smoovie.composeapp.generated.resources.media_type_tv_shows
 import smoovie.composeapp.generated.resources.search_shows_hint
@@ -173,18 +176,20 @@ private fun ShowsContent(
                     CenterAlignedTopAppBar(
                         title = { Text(text = stringResource(Res.string.media_type_tv_shows)) },
                         actions = {
-                            IconButton(onClick = { isSearchActive = true }) {
-                                Icon(
-                                    imageVector = Icons.Default.Search,
-                                    contentDescription = stringResource(Res.string.search_shows_hint),
-                                )
-                            }
-                            IconButton(onClick = { isFilterSheetVisible = true }) {
-                                BadgedBox(badge = { if (state.filterPreferences.isActive) Badge() }) {
+                            Row {
+                                IconButton(onClick = { isSearchActive = true }) {
                                     Icon(
-                                        imageVector = Icons.Default.Tune,
-                                        contentDescription = stringResource(Res.string.filter_button_description),
+                                        imageVector = Icons.Default.Search,
+                                        contentDescription = stringResource(Res.string.search_shows_hint),
                                     )
+                                }
+                                IconButton(onClick = { isFilterSheetVisible = true }) {
+                                    BadgedBox(badge = { if (state.filterPreferences.isActive) Badge() }) {
+                                        Icon(
+                                            imageVector = Icons.Default.Tune,
+                                            contentDescription = stringResource(Res.string.filter_button_description),
+                                        )
+                                    }
                                 }
                             }
                         },
@@ -265,6 +270,7 @@ private fun ShowsContent(
                                     error = uiState.error,
                                     onRetry = actions.onRetry,
                                     modifier = Modifier.align(Alignment.Center),
+                                    title = stringResource(Res.string.error_shows_failed),
                                 )
                             }
 
@@ -352,6 +358,17 @@ private fun ShowsSuccessPreview() {
                     uiState = ShowsUiState.Success(previewTvShows),
                     featuredTvShows = previewTvShows,
                 ),
+            actions = ShowActions(),
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun ShowsErrorPreview() {
+    SmoovieTheme {
+        ShowsContent(
+            state = ShowsScreenState(uiState = ShowsUiState.Error(AppError.NetworkError)),
             actions = ShowActions(),
         )
     }

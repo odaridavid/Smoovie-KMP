@@ -1,12 +1,13 @@
 package dev.odaridavid.smoovie.shows
 
+import dev.odaridavid.smoovie.filter.TvFilterPreferences
 import dev.odaridavid.smoovie.utils.AppError
 
 data class ShowsScreenState(
     val uiState: ShowsUiState = ShowsUiState.Loading,
     val searchQuery: String = "",
     val genres: List<TvGenreUiModel> = emptyList(),
-    val selectedGenre: TvGenreUiModel? = null,
+    val filterPreferences: TvFilterPreferences = TvFilterPreferences(),
     val featuredTvShows: List<TvShowUiModel> = emptyList(),
 )
 

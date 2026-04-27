@@ -25,7 +25,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -42,6 +46,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
+import smoovie.composeapp.generated.resources.filter_button_description
 import smoovie.composeapp.generated.resources.search_movies_hint
 
 private const val SHIMMER_ITEM_COUNT = 5
@@ -49,27 +54,23 @@ private val PAGER_SHIMMER_HEIGHT = 260.dp
 private val ICON_SCRIM_COLOR = Color.Black.copy(alpha = 0.35f)
 
 @Composable
-internal fun ShimmerHero(onSearchClick: () -> Unit) {
-    ShimmerFeaturedHero(brush = rememberShimmerBrush(), onSearchClick = onSearchClick)
-}
-
-@Composable
-internal fun ShimmerChipsRow() {
-    ShimmerGenreChips(brush = rememberShimmerBrush())
-}
-
-@Composable
-internal fun ShimmerList(
-    modifier: Modifier = Modifier,
-    showHero: Boolean = true,
-    onSearchClick: () -> Unit = {},
+internal fun ShimmerHero(
+    onSearchClick: () -> Unit,
+    onFilterClick: () -> Unit = {},
+    isFilterActive: Boolean = false,
 ) {
+    ShimmerFeaturedHero(
+        brush = rememberShimmerBrush(),
+        onSearchClick = onSearchClick,
+        onFilterClick = onFilterClick,
+        isFilterActive = isFilterActive,
+    )
+}
+
+@Composable
+internal fun ShimmerList(modifier: Modifier = Modifier) {
     val shimmerBrush = rememberShimmerBrush()
     Column(modifier = modifier) {
-        if (showHero) {
-            ShimmerFeaturedHero(brush = shimmerBrush, onSearchClick = onSearchClick)
-            ShimmerGenreChips(brush = shimmerBrush)
-        }
         LazyColumn(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -86,10 +87,13 @@ internal fun ShimmerList(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ShimmerFeaturedHero(
     brush: Brush,
     onSearchClick: () -> Unit,
+    onFilterClick: () -> Unit = {},
+    isFilterActive: Boolean = false,
 ) {
     Box(
         modifier =
@@ -115,6 +119,18 @@ private fun ShimmerFeaturedHero(
                     contentDescription = stringResource(Res.string.search_movies_hint),
                 )
             }
+            IconButton(
+                onClick = onFilterClick,
+                colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White),
+                modifier = Modifier.background(ICON_SCRIM_COLOR, CircleShape),
+            ) {
+                BadgedBox(badge = { if (isFilterActive) Badge() }) {
+                    Icon(
+                        imageVector = Icons.Default.Tune,
+                        contentDescription = stringResource(Res.string.filter_button_description),
+                    )
+                }
+            }
         }
         // Pagination dots — bottom padding clears the 28dp sheet overlap from the screen
         Row(
@@ -134,27 +150,6 @@ private fun ShimmerFeaturedHero(
                             .background(Color.White.copy(alpha = if (index == 0) 0.35f else 0.2f)),
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun ShimmerGenreChips(brush: Brush) {
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        repeat(4) {
-            Box(
-                modifier =
-                    Modifier
-                        .width(72.dp)
-                        .height(32.dp)
-                        .background(brush, MaterialTheme.shapes.extraLarge),
-            )
         }
     }
 }
@@ -260,13 +255,5 @@ private fun ShimmerMovieCard(brush: Brush) {
 private fun ShimmerListPreview() {
     SmoovieTheme {
         ShimmerList(modifier = Modifier.fillMaxSize())
-    }
-}
-
-@PreviewLightDark
-@Composable
-private fun ShimmerListNoHeroPreview() {
-    SmoovieTheme {
-        ShimmerList(modifier = Modifier.fillMaxSize(), showHero = false)
     }
 }

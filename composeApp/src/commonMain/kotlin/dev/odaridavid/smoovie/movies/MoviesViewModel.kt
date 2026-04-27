@@ -3,8 +3,11 @@ package dev.odaridavid.smoovie.movies
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.odaridavid.smoovie.configuration.LoadConfigurationUseCase
+import dev.odaridavid.smoovie.filter.FilterPreferencesStore
+import dev.odaridavid.smoovie.filter.MovieFilterPreferences
+import dev.odaridavid.smoovie.filter.MovieSortOption
+import dev.odaridavid.smoovie.movies.domain.DiscoverMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.GetGenresUseCase
-import dev.odaridavid.smoovie.movies.domain.GetMoviesByGenreUseCase
 import dev.odaridavid.smoovie.movies.domain.GetPopularMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.GetTrendingMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.MoviesPage
@@ -28,9 +31,10 @@ class MoviesViewModel(
     private val getPopularMovies: GetPopularMoviesUseCase,
     private val getTrendingMovies: GetTrendingMoviesUseCase,
     private val searchMovies: SearchMoviesUseCase,
-    private val getMoviesByGenre: GetMoviesByGenreUseCase,
+    private val discoverMovies: DiscoverMoviesUseCase,
     private val getGenres: GetGenresUseCase,
     private val loadConfiguration: LoadConfigurationUseCase,
+    private val filterPreferencesStore: FilterPreferencesStore,
 ) : ViewModel() {
     private val _state = MutableStateFlow(MoviesScreenState())
     val state: StateFlow<MoviesScreenState> = _state.asStateFlow()
@@ -39,7 +43,11 @@ class MoviesViewModel(
     private var totalPages = 1
 
     init {
-        loadData()
+        viewModelScope.launch {
+            val saved = filterPreferencesStore.getMovieFilter()
+            _state.update { it.copy(filterPreferences = saved) }
+            loadData()
+        }
         observeSearchQuery()
     }
 
@@ -47,10 +55,22 @@ class MoviesViewModel(
         _state.update { it.copy(searchQuery = query) }
     }
 
-    fun onGenreSelected(genre: GenreUiModel?) {
-        if (_state.value.selectedGenre == genre) return
-        _state.update { it.copy(selectedGenre = genre, searchQuery = "") }
-        loadMovies()
+    fun onFilterApplied(
+        genreId: Int?,
+        sortApiValue: String,
+        minRating: Float,
+    ) {
+        val prefs =
+            MovieFilterPreferences(
+                selectedGenreId = genreId,
+                sortBy = MovieSortOption.entries.find { it.apiValue == sortApiValue } ?: MovieSortOption.POPULARITY,
+                minRating = minRating,
+            )
+        viewModelScope.launch {
+            filterPreferencesStore.saveMovieFilter(prefs)
+            _state.update { it.copy(filterPreferences = prefs, searchQuery = "") }
+            loadMovies()
+        }
     }
 
     fun loadMovies() {
@@ -144,10 +164,10 @@ class MoviesViewModel(
 
     private suspend fun fetchPage(page: Int = 1): MoviesPage {
         val query = _state.value.searchQuery
-        val genreId = _state.value.selectedGenre?.id
+        val filter = _state.value.filterPreferences
         return when {
             query.isNotBlank() -> searchMovies(query, page)
-            genreId != null -> getMoviesByGenre(genreId, page)
+            filter.isActive -> discoverMovies(filter, page)
             else -> getPopularMovies(page)
         }
     }

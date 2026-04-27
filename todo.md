@@ -5,11 +5,6 @@
 - [ ] Auth login/logout
 - [ ] Settings/Profile
 
-### TMDB endpoints already reachable with the current token
-
-- [ ] Discover / filters screen — `GET /discover/movie` with `with_watch_providers`, runtime,
-  year range, vote-average filters; replaces the simple genre chip row with a real filter sheet
-
 ### External content sources
 
 - [ ] Cross-source rating chips on movie detail — OMDb free tier, keyed by IMDb ID (need to add
@@ -57,6 +52,6 @@
 - [ ] AI and app actions
 - [ ] Create app icon and improve splash screen
 - [ ] Multimodules
-- [ ] Observability
+- [ ] Observability - https://github.com/AAkira/Napier
 - [ ] Update readme before going public with it
--
+- [ ] Single vs multi select for genres

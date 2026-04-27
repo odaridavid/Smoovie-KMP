@@ -48,4 +48,11 @@
     <string name="media_type_movies">Movies</string>
     <string name="media_type_tv_shows">Shows</string>
     <string name="tv_shows_coming_soon">TV shows coming soon</string>
+    <string name="filter_button_description">Filter</string>
+    <string name="filter_sheet_title">Filter</string>
+    <string name="filter_genre_section">Genre</string>
+    <string name="filter_sort_section">Sort by</string>
+    <string name="filter_min_rating_section">Min rating</string>
+    <string name="filter_apply">Apply</string>
+    <string name="filter_reset">Reset</string>
 </resources>

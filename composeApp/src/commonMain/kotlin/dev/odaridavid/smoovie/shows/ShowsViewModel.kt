@@ -3,9 +3,12 @@ package dev.odaridavid.smoovie.shows
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.odaridavid.smoovie.configuration.LoadConfigurationUseCase
+import dev.odaridavid.smoovie.filter.FilterPreferencesStore
+import dev.odaridavid.smoovie.filter.TvFilterPreferences
+import dev.odaridavid.smoovie.filter.TvSortOption
+import dev.odaridavid.smoovie.shows.domain.DiscoverTvShowsUseCase
 import dev.odaridavid.smoovie.shows.domain.GetPopularTvShowsUseCase
 import dev.odaridavid.smoovie.shows.domain.GetTvGenresUseCase
-import dev.odaridavid.smoovie.shows.domain.GetTvShowsByGenreUseCase
 import dev.odaridavid.smoovie.shows.domain.SearchTvShowsUseCase
 import dev.odaridavid.smoovie.shows.domain.TvShowsPage
 import dev.odaridavid.smoovie.utils.toAppError
@@ -24,9 +27,10 @@ import kotlinx.coroutines.launch
 class ShowsViewModel(
     private val getPopularTvShows: GetPopularTvShowsUseCase,
     private val searchTvShows: SearchTvShowsUseCase,
-    private val getTvShowsByGenre: GetTvShowsByGenreUseCase,
+    private val discoverTvShows: DiscoverTvShowsUseCase,
     private val getTvGenres: GetTvGenresUseCase,
     private val loadConfiguration: LoadConfigurationUseCase,
+    private val filterPreferencesStore: FilterPreferencesStore,
 ) : ViewModel() {
     private val _state = MutableStateFlow(ShowsScreenState())
     val state: StateFlow<ShowsScreenState> = _state.asStateFlow()
@@ -35,7 +39,11 @@ class ShowsViewModel(
     private var totalPages = 1
 
     init {
-        loadData()
+        viewModelScope.launch {
+            val saved = filterPreferencesStore.getTvFilter()
+            _state.update { it.copy(filterPreferences = saved) }
+            loadData()
+        }
         observeSearchQuery()
     }
 
@@ -43,10 +51,22 @@ class ShowsViewModel(
         _state.update { it.copy(searchQuery = query) }
     }
 
-    fun onGenreSelected(genre: TvGenreUiModel?) {
-        if (_state.value.selectedGenre == genre) return
-        _state.update { it.copy(selectedGenre = genre, searchQuery = "") }
-        loadShows()
+    fun onFilterApplied(
+        genreId: Int?,
+        sortApiValue: String,
+        minRating: Float,
+    ) {
+        val prefs =
+            TvFilterPreferences(
+                selectedGenreId = genreId,
+                sortBy = TvSortOption.entries.find { it.apiValue == sortApiValue } ?: TvSortOption.POPULARITY,
+                minRating = minRating,
+            )
+        viewModelScope.launch {
+            filterPreferencesStore.saveTvFilter(prefs)
+            _state.update { it.copy(filterPreferences = prefs, searchQuery = "") }
+            loadShows()
+        }
     }
 
     fun loadShows() {
@@ -135,10 +155,10 @@ class ShowsViewModel(
 
     private suspend fun fetchPage(page: Int = 1): TvShowsPage {
         val query = _state.value.searchQuery
-        val genreId = _state.value.selectedGenre?.id
+        val filter = _state.value.filterPreferences
         return when {
             query.isNotBlank() -> searchTvShows(query, page)
-            genreId != null -> getTvShowsByGenre(genreId, page)
+            filter.isActive -> discoverTvShows(filter, page)
             else -> getPopularTvShows(page)
         }
     }

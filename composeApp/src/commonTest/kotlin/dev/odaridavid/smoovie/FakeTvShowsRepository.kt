@@ -44,8 +44,10 @@ class FakeTvShowsRepository(
         )
     }
 
-    override suspend fun discoverTvShowsByGenre(
-        genreId: Int,
+    override suspend fun discoverTvShows(
+        genreId: Int?,
+        sortBy: String,
+        minRating: Float,
         page: Int,
     ): TvShowsResponse {
         error?.let { throw it }

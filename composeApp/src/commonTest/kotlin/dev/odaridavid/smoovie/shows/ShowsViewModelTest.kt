@@ -1,15 +1,18 @@
 package dev.odaridavid.smoovie.shows
 
 import dev.odaridavid.smoovie.FakeConfigurationRepository
+import dev.odaridavid.smoovie.FakeFilterPreferencesStore
 import dev.odaridavid.smoovie.FakeTvShowsRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import dev.odaridavid.smoovie.configuration.LoadConfigurationUseCase
+import dev.odaridavid.smoovie.filter.TvFilterPreferences
+import dev.odaridavid.smoovie.filter.TvSortOption
 import dev.odaridavid.smoovie.shows.data.TvGenre
 import dev.odaridavid.smoovie.shows.data.TvShow
+import dev.odaridavid.smoovie.shows.domain.DiscoverTvShowsUseCase
 import dev.odaridavid.smoovie.shows.domain.GetPopularTvShowsUseCase
 import dev.odaridavid.smoovie.shows.domain.GetTvGenresUseCase
-import dev.odaridavid.smoovie.shows.domain.GetTvShowsByGenreUseCase
 import dev.odaridavid.smoovie.shows.domain.SearchTvShowsUseCase
 import dev.odaridavid.smoovie.utils.AppError
 import kotlinx.coroutines.Dispatchers
@@ -50,14 +53,16 @@ class ShowsViewModelTest {
         repo: FakeTvShowsRepository,
         configRepo: ConfigurationRepository = FakeConfigurationRepository(),
         configStore: ConfigurationStore = ConfigurationStore(),
+        filterStore: FakeFilterPreferencesStore = FakeFilterPreferencesStore(),
     ): ShowsViewModel {
         val mapper = TvShowUiMapper(configStore)
         return ShowsViewModel(
             getPopularTvShows = GetPopularTvShowsUseCase(repo, mapper),
             searchTvShows = SearchTvShowsUseCase(repo, mapper),
-            getTvShowsByGenre = GetTvShowsByGenreUseCase(repo, mapper),
+            discoverTvShows = DiscoverTvShowsUseCase(repo, mapper),
             getTvGenres = GetTvGenresUseCase(repo),
             loadConfiguration = LoadConfigurationUseCase(configRepo, configStore),
+            filterPreferencesStore = filterStore,
         )
     }
 
@@ -107,13 +112,13 @@ class ShowsViewModelTest {
         }
 
     @Test
-    fun `given genre selected - when onGenreSelected - then emits discover shows`() =
+    fun `given filter applied - when onFilterApplied - then emits discover shows`() =
         runTest {
             val dramaShows = listOf(TvShow(id = 10, name = "The Wire", overview = "Baltimore."))
             val repo = FakeTvShowsRepository(tvShows = testShows, discoverTvShows = dramaShows)
             val viewModel = buildViewModel(repo)
 
-            viewModel.onGenreSelected(TvGenreUiModel(18, "Drama"))
+            viewModel.onFilterApplied(18, TvSortOption.POPULARITY.apiValue, 0f)
 
             val state = viewModel.state.value.uiState
             assertIs<ShowsUiState.Success>(state)
@@ -122,19 +127,43 @@ class ShowsViewModelTest {
         }
 
     @Test
-    fun `given same genre already selected - when onGenreSelected - then shows are not reloaded`() =
+    fun `given filter applied - when filter reset - then emits popular shows`() =
         runTest {
-            val genre = TvGenreUiModel(18, "Drama")
             val dramaShows = listOf(TvShow(id = 10, name = "The Wire", overview = "Baltimore."))
             val repo = FakeTvShowsRepository(tvShows = testShows, discoverTvShows = dramaShows)
             val viewModel = buildViewModel(repo)
-            viewModel.onGenreSelected(genre)
-            val stateAfterFirst = viewModel.state.value.uiState
+            viewModel.onFilterApplied(18, TvSortOption.POPULARITY.apiValue, 0f)
+            assertIs<ShowsUiState.Success>(viewModel.state.value.uiState)
 
-            repo.discoverTvShows = listOf(TvShow(id = 11, name = "Different", overview = "X"))
-            viewModel.onGenreSelected(genre)
+            viewModel.onFilterApplied(null, TvSortOption.POPULARITY.apiValue, 0f)
 
-            assertEquals(stateAfterFirst, viewModel.state.value.uiState)
+            val state = viewModel.state.value.uiState
+            assertIs<ShowsUiState.Success>(state)
+            assertEquals(testShows.size, state.tvShows.size)
+        }
+
+    @Test
+    fun `given filter applied - when filter saved - then filter preferences are persisted`() =
+        runTest {
+            val repo = FakeTvShowsRepository(tvShows = testShows)
+            val filterStore = FakeFilterPreferencesStore()
+            val viewModel = buildViewModel(repo, filterStore = filterStore)
+            viewModel.onFilterApplied(18, TvSortOption.RATING.apiValue, 0f)
+
+            assertEquals(TvFilterPreferences(selectedGenreId = 18, sortBy = TvSortOption.RATING), filterStore.tvFilter)
+        }
+
+    @Test
+    fun `given saved filter in store - when viewmodel is created - then filter preferences are restored`() =
+        runTest {
+            val dramaShows = listOf(TvShow(id = 10, name = "The Wire", overview = "Baltimore."))
+            val repo = FakeTvShowsRepository(tvShows = testShows, discoverTvShows = dramaShows)
+            val savedFilter = TvFilterPreferences(selectedGenreId = 18)
+            val filterStore = FakeFilterPreferencesStore(tvFilter = savedFilter)
+
+            val viewModel = buildViewModel(repo, filterStore = filterStore)
+
+            assertEquals(savedFilter, viewModel.state.value.filterPreferences)
         }
 
     @Test
@@ -155,7 +184,11 @@ class ShowsViewModelTest {
             val viewModel = buildViewModel(repo)
 
             assertEquals(2, viewModel.state.value.genres.size)
-            assertEquals("Drama", viewModel.state.value.genres[0].name)
+            assertEquals(
+                "Drama",
+                viewModel.state.value.genres[0]
+                    .name,
+            )
         }
 
     @Test
@@ -164,18 +197,22 @@ class ShowsViewModelTest {
             val viewModel = buildViewModel(FakeTvShowsRepository(tvShows = testShows))
 
             assertEquals(testShows.size, viewModel.state.value.featuredTvShows.size)
-            assertEquals(testShows[0].id, viewModel.state.value.featuredTvShows[0].id)
+            assertEquals(
+                testShows[0].id,
+                viewModel.state.value.featuredTvShows[0]
+                    .id,
+            )
         }
 
     @Test
-    fun `given featured populated - when genre selected - then featured stays`() =
+    fun `given featured populated - when filter applied - then featured stays`() =
         runTest {
             val dramaShows = listOf(TvShow(id = 10, name = "The Wire", overview = "Baltimore."))
             val repo = FakeTvShowsRepository(tvShows = testShows, discoverTvShows = dramaShows)
             val viewModel = buildViewModel(repo)
             val featuredBefore = viewModel.state.value.featuredTvShows
 
-            viewModel.onGenreSelected(TvGenreUiModel(18, "Drama"))
+            viewModel.onFilterApplied(18, TvSortOption.POPULARITY.apiValue, 0f)
 
             assertEquals(featuredBefore, viewModel.state.value.featuredTvShows)
         }

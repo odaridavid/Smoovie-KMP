@@ -39,17 +39,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import dev.odaridavid.smoovie.filter.FilterGenreOption
+import dev.odaridavid.smoovie.filter.MovieSortOption
+import dev.odaridavid.smoovie.filter.SortEntry
 import dev.odaridavid.smoovie.movies.components.CollapsedToolbar
 import dev.odaridavid.smoovie.movies.components.FeaturedMoviesPager
-import dev.odaridavid.smoovie.movies.components.GenreChips
 import dev.odaridavid.smoovie.movies.components.movieItems
 import dev.odaridavid.smoovie.theme.EmptyContent
 import dev.odaridavid.smoovie.theme.ErrorContent
 import dev.odaridavid.smoovie.theme.SearchToolbar
-import dev.odaridavid.smoovie.theme.ShimmerChipsRow
 import dev.odaridavid.smoovie.theme.ShimmerHero
 import dev.odaridavid.smoovie.theme.ShimmerList
 import dev.odaridavid.smoovie.theme.SmoovieTheme
+import dev.odaridavid.smoovie.ui.FilterSheet
 import dev.odaridavid.smoovie.ui.SearchBackHandler
 import dev.odaridavid.smoovie.ui.SetStatusBarIcons
 import dev.odaridavid.smoovie.utils.previewMovieUiModels
@@ -59,9 +61,11 @@ private const val FEATURED_COUNT = 4
 private val SHEET_OVERLAP = 28.dp
 private val SheetShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
 
+private val movieSortEntries = MovieSortOption.entries.map { SortEntry(it.label, it.apiValue) }
+
 private data class MovieActions(
     val onSearchQueryChanged: (String) -> Unit = {},
-    val onGenreSelected: (GenreUiModel?) -> Unit = {},
+    val onFilterApplied: (Int?, String, Float) -> Unit = { _, _, _ -> },
     val onRetry: () -> Unit = {},
     val onLoadMore: () -> Unit = {},
     val onMovieClick: (MovieUiModel) -> Unit = {},
@@ -78,7 +82,7 @@ fun MoviesScreen(
         actions =
             MovieActions(
                 onSearchQueryChanged = viewModel::onSearchQueryChanged,
-                onGenreSelected = viewModel::onGenreSelected,
+                onFilterApplied = viewModel::onFilterApplied,
                 onRetry = viewModel::retry,
                 onLoadMore = viewModel::loadNextPage,
                 onMovieClick = onMovieClick,
@@ -93,6 +97,7 @@ private fun MoviesContent(
     actions: MovieActions,
 ) {
     var isSearchActive by rememberSaveable { mutableStateOf(false) }
+    var isFilterSheetVisible by remember { mutableStateOf(false) }
     SearchBackHandler(enabled = isSearchActive) {
         isSearchActive = false
         actions.onSearchQueryChanged("")
@@ -100,6 +105,7 @@ private fun MoviesContent(
 
     val heroVisible =
         !isSearchActive &&
+            state.uiState !is MoviesUiState.Error &&
             (state.featuredMovies.isNotEmpty() || state.uiState is MoviesUiState.Loading)
     SetStatusBarIcons(useDarkIcons = !isSystemInDarkTheme() && !heroVisible)
 
@@ -148,10 +154,14 @@ private fun MoviesContent(
                             actions.onSearchQueryChanged("")
                         },
                     )
-                } else if (state.featuredMovies.isEmpty() && state.uiState !is MoviesUiState.Loading) {
+                } else if (state.uiState is MoviesUiState.Error ||
+                    (state.featuredMovies.isEmpty() && state.uiState !is MoviesUiState.Loading)
+                ) {
                     CollapsedToolbar(
                         visible = true,
+                        isFilterActive = state.filterPreferences.isActive,
                         onSearchClick = { isSearchActive = true },
+                        onFilterClick = { isFilterSheetVisible = true },
                     )
                 }
             }
@@ -185,10 +195,16 @@ private fun MoviesContent(
                         FeaturedMoviesPager(
                             movies = state.featuredMovies.take(FEATURED_COUNT),
                             onSearchClick = { isSearchActive = true },
+                            onFilterClick = { isFilterSheetVisible = true },
+                            isFilterActive = state.filterPreferences.isActive,
                             onMovieClick = actions.onMovieClick,
                         )
                     } else {
-                        ShimmerHero(onSearchClick = { isSearchActive = true })
+                        ShimmerHero(
+                            onSearchClick = { isSearchActive = true },
+                            onFilterClick = { isFilterSheetVisible = true },
+                            isFilterActive = state.filterPreferences.isActive,
+                        )
                     }
                 }
             }
@@ -200,19 +216,6 @@ private fun MoviesContent(
                         .background(background, SheetShape)
                         .padding(top = 12.dp),
             ) {
-                when {
-                    state.uiState is MoviesUiState.Loading -> {
-                        ShimmerChipsRow()
-                    }
-
-                    state.genres.isNotEmpty() -> {
-                        GenreChips(
-                            genres = state.genres,
-                            selectedGenre = state.selectedGenre,
-                            onGenreSelected = actions.onGenreSelected,
-                        )
-                    }
-                }
                 AnimatedContent(
                     targetState = state.uiState,
                     transitionSpec = {
@@ -224,10 +227,7 @@ private fun MoviesContent(
                     Box(modifier = Modifier.fillMaxSize()) {
                         when (uiState) {
                             is MoviesUiState.Loading -> {
-                                ShimmerList(
-                                    modifier = Modifier.fillMaxSize(),
-                                    showHero = false,
-                                )
+                                ShimmerList(modifier = Modifier.fillMaxSize())
                             }
 
                             is MoviesUiState.Empty -> {
@@ -263,23 +263,32 @@ private fun MoviesContent(
             }
         }
     }
+
+    if (isFilterSheetVisible) {
+        val filter = state.filterPreferences
+        FilterSheet(
+            genres = state.genres.map { FilterGenreOption(it.id, it.name) },
+            sortEntries = movieSortEntries,
+            selectedGenreId = filter.selectedGenreId,
+            selectedSortApiValue = filter.sortBy.apiValue,
+            minRating = filter.minRating,
+            onApply = { genreId, sortEntry, rating ->
+                actions.onFilterApplied(genreId, sortEntry.apiValue, rating)
+                isFilterSheetVisible = false
+            },
+            onDismiss = { isFilterSheetVisible = false },
+        )
+    }
 }
 
 // region Previews
-
-private val previewGenres =
-    listOf(
-        GenreUiModel(28, "Action"),
-        GenreUiModel(35, "Comedy"),
-        GenreUiModel(18, "Drama"),
-    )
 
 @PreviewLightDark
 @Composable
 private fun MoviesLoadingPreview() {
     SmoovieTheme {
         MoviesContent(
-            state = MoviesScreenState(uiState = MoviesUiState.Loading, genres = previewGenres),
+            state = MoviesScreenState(uiState = MoviesUiState.Loading),
             actions = MovieActions(),
         )
     }
@@ -293,8 +302,6 @@ private fun MoviesSuccessPreview() {
             state =
                 MoviesScreenState(
                     uiState = MoviesUiState.Success(previewMovieUiModels),
-                    genres = previewGenres,
-                    selectedGenre = previewGenres[0],
                     featuredMovies = previewMovieUiModels,
                 ),
             actions = MovieActions(),

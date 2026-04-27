@@ -150,7 +150,12 @@ class SeasonDetailUiModelTest {
 
         val uiModel = detail.toUiModel(posterUrl = null)
 
-        assertTrue(uiModel.episodes.first().airDate.isEmpty())
+        assertTrue(
+            uiModel.episodes
+                .first()
+                .airDate
+                .isEmpty(),
+        )
     }
 
     // runtimeLabel
@@ -170,7 +175,12 @@ class SeasonDetailUiModelTest {
 
         val uiModel = detail.toUiModel(posterUrl = null)
 
-        assertTrue(uiModel.episodes.first().runtimeLabel.isEmpty())
+        assertTrue(
+            uiModel.episodes
+                .first()
+                .runtimeLabel
+                .isEmpty(),
+        )
     }
 
     // voteAverage
@@ -190,7 +200,12 @@ class SeasonDetailUiModelTest {
 
         val uiModel = detail.toUiModel(posterUrl = null)
 
-        assertTrue(uiModel.episodes.first().voteAverage.isEmpty())
+        assertTrue(
+            uiModel.episodes
+                .first()
+                .voteAverage
+                .isEmpty(),
+        )
     }
 
     // helpers

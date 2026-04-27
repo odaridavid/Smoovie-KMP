@@ -35,13 +35,14 @@ composeApp/
     │   ├── AppConfig.kt                  # expect-actual platform config (e.g. tmdbApiKey)
     │   ├── KoinInitializer.kt            # appModule wiring; initKoin { setup }
     │   ├── PlatformModule.kt             # expect val platformModule: Module
+    │   ├── filter/                       # cross-feature: MovieFilterPreferences, TvFilterPreferences, FilterPreferencesStore
     │   ├── <feature>/                    # one package per feature (movies, shows, person, watchlist, configuration)
     │   │   ├── <Feature>Screen.kt + <Feature>ViewModel.kt + <Feature>UiState.kt + UI models
     │   │   ├── components/               # feature-local composables
     │   │   ├── data/                     # <Feature>RepositoryImpl, DTOs (and DAO/Entity for watchlist)
     │   │   └── domain/                   # repository interface + use cases
     │   ├── storage/                      # Room database + migrations + expect DatabaseBuilderFactory
-    │   ├── theme/, ui/, utils/           # shared composables, expect helpers, TtlCache etc.
+    │   ├── theme/, ui/, utils/           # shared composables (FilterSheet in ui/), expect helpers, TtlCache etc.
     │   └── composeResources/values/strings.xml
     ├── androidMain/                      # actuals: AppConfig, PlatformModule, BackHandler, DatabaseBuilder, CurrentTime + SmoovieApplication, MainActivity
     ├── iosMain/                          # actuals (mirrors androidMain) + MainViewController
@@ -84,7 +85,7 @@ Each feature package is self-contained (UI + ViewModel + UiState + UI models + c
 ### In-memory request cache
 
 - `utils/TtlCache.kt` — generic `TtlCache<K, V>(ttlMillis, now)`. `Mutex`-protected map; `getOrFetch(key, fetch)` runs `fetch` outside the lock so different keys don't block each other.
-- Each network repo holds one `TtlCache` per endpoint, keyed by the query params (`page`, `SearchKey(query, page)`, `GenreKey(genreId, page)`, `Unit` for the static genres list, `Int` for detail). TTL constant lives on the repo, currently 1 hour.
+- Each network repo holds one `TtlCache` per endpoint, keyed by the query params (`page`, `SearchKey(query, page)`, `DiscoverKey(genreId?, sortBy, minRating, page)`, `Unit` for the static genres list, `Int` for detail). TTL constant lives on the repo, currently 1 hour.
 
 ### Expect/actual
 
@@ -131,9 +132,11 @@ UI strings live in `composeApp/src/commonMain/composeResources/values/strings.xm
 Default to none. Let well-named identifiers do the talking. Add a single-line comment only when the *why* is non-obvious (a workaround, a subtle invariant, a hidden constraint). No multi-paragraph docstrings.
 
 ### Previews
+- Every new composable **must** have a `@PreviewLightDark` preview — write it at the same time you write the composable, not as an afterthought.
 - `@PreviewLightDark` (preferred) on stateless `*Content` composables, which are `internal` so previews in the same module can reach them. A handful of older files (`theme/EmptyContent.kt`, `theme/ErrorContent.kt`) still use `@Preview` + `@Preview(uiMode = UI_MODE_NIGHT_YES)` — prefer `@PreviewLightDark` for new code.
 - Preview functions are `private` in PascalCase — the Composable naming exemption in `.editorconfig` covers these.
 - Shared preview data fixtures live in `utils/PreviewData.kt`.
+- When a composable has multiple meaningful states (e.g. empty vs. loaded, default filter vs. active filter), add a separate preview for each — name them `*DefaultPreview`, `*ActivePreview`, etc.
 
 ### Test naming
 Kotlin backtick syntax with Given/When/Then:
@@ -143,15 +146,20 @@ fun `given <context> - when <action> - then <result>`()
 
 ### ViewModel tests
 - Set `Dispatchers.setMain(UnconfinedTestDispatcher())` in `@BeforeTest` so `viewModelScope` runs eagerly.
-- Use the shared fakes in `commonTest/` root (`FakeMoviesRepository`, `FakeWatchlistRepository`, `FakePersonRepository`, `FakeConfigurationRepository`) — they live at test-root level and are reused across test files.
+- Use the shared fakes in `commonTest/` root (`FakeMoviesRepository`, `FakeTvShowsRepository`, `FakeWatchlistRepository`, `FakePersonRepository`, `FakeConfigurationRepository`, `FakeFilterPreferencesStore`) — they live at test-root level and are reused across test files.
 - `@AfterTest` always calls `Dispatchers.resetMain()`.
 - When a VM depends on use cases, wire the fakes into fresh use-case instances inside each test's `buildViewModel(...)` helper rather than mocking the use case itself.
 
 ### UI-model mapping
 Map domain → UI model in use cases (see `GetMovieDetailUseCase`) or ViewModels — not in composables. Composables receive ready-to-display data. It's fine for use cases to accept image-URL resolver lambdas (as `GetMovieDetailUseCase` does) because those lambdas resolve against `ConfigurationStore` at mapping time; just don't pass resolver lambdas *down the composable tree*.
 
+### Filter preferences
+- `filter/FilterPreferencesStore` persists Movie and TV filter state independently using `multiplatform-settings`. Android uses `SharedPreferencesSettings`; iOS uses `NSUserDefaultsSettings`. Both are bound as `Settings` in their respective `platformModule`.
+- `MovieFilterPreferences` and `TvFilterPreferences` are separate typed classes — applying a filter on one tab never affects the other. Each has an `isActive` computed property used to show/hide the badge dot on the filter icon.
+- `discoverMovies` / `discoverTvShows` repository methods accept `genreId?`, `sortBy`, `minRating`, `page`. `fetchPage()` routing in each ViewModel: search query wins → filter active → popular fallback.
+
 ### Error retry
-The movies screen's retry button calls `MoviesViewModel.retry()`, which runs the full `loadData()` (configuration + genres + first page + featuredMovies population). `loadMovies()` is the lighter path used by genre switches where config is already loaded. If you add a new initial-load side effect, put it in `loadData()` and retry will pick it up automatically.
+The movies screen's retry button calls `MoviesViewModel.retry()`, which runs the full `loadData()` (configuration + genres + first page + featuredMovies population). `loadMovies()` / `loadShows()` is the lighter path used by filter changes where config is already loaded. If you add a new initial-load side effect, put it in `loadData()` and retry will pick it up automatically.
 
 ## Key Dependencies
 
@@ -165,6 +173,7 @@ The movies screen's retry button calls `MoviesViewModel.retry()`, which runs the
 | Room KMP + sqlite-bundled          | Local persistence (watchlist)                                     |
 | Koin                               | Multiplatform DI                                                  |
 | Coil 3                             | Image loading                                                     |
+| multiplatform-settings             | Cross-platform KV persistence (SharedPrefs on Android, NSUserDefaults on iOS) |
 | KSP                                | Room annotation processing                                        |
 | ktlint-gradle                      | Code style enforcement (wraps ktlint 1.x)                         |
 | Kover                              | Code coverage reports (HTML + XML)                                |

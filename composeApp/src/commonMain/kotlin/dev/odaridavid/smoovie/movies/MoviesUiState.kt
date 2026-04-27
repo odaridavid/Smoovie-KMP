@@ -1,12 +1,13 @@
 package dev.odaridavid.smoovie.movies
 
+import dev.odaridavid.smoovie.filter.MovieFilterPreferences
 import dev.odaridavid.smoovie.utils.AppError
 
 data class MoviesScreenState(
     val uiState: MoviesUiState = MoviesUiState.Loading,
     val searchQuery: String = "",
     val genres: List<GenreUiModel> = emptyList(),
-    val selectedGenre: GenreUiModel? = null,
+    val filterPreferences: MovieFilterPreferences = MovieFilterPreferences(),
     val featuredMovies: List<MovieUiModel> = emptyList(),
 )
 

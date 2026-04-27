@@ -8,6 +8,9 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -22,6 +25,7 @@ import dev.odaridavid.smoovie.theme.SmoovieTheme
 import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.app_name
+import smoovie.composeapp.generated.resources.filter_button_description
 import smoovie.composeapp.generated.resources.search_movies_hint
 
 private const val ANIMATION_DURATION_MS = 500
@@ -30,7 +34,9 @@ private const val ANIMATION_DURATION_MS = 500
 @Composable
 internal fun CollapsedToolbar(
     visible: Boolean,
+    isFilterActive: Boolean = false,
     onSearchClick: () -> Unit,
+    onFilterClick: () -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
         title = {
@@ -69,6 +75,16 @@ internal fun CollapsedToolbar(
                         contentDescription = stringResource(Res.string.search_movies_hint),
                     )
                 }
+                IconButton(onClick = onFilterClick) {
+                    BadgedBox(
+                        badge = { if (isFilterActive) Badge() },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Tune,
+                            contentDescription = stringResource(Res.string.filter_button_description),
+                        )
+                    }
+                }
             }
         },
     )
@@ -79,5 +95,13 @@ internal fun CollapsedToolbar(
 private fun CollapsedToolbarPreview() {
     SmoovieTheme {
         CollapsedToolbar(visible = true, onSearchClick = {})
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun CollapsedToolbarFilterActivePreview() {
+    SmoovieTheme {
+        CollapsedToolbar(visible = true, isFilterActive = true, onSearchClick = {}, onFilterClick = {})
     }
 }

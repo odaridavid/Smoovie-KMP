@@ -1,14 +1,17 @@
 package dev.odaridavid.smoovie.movies
 
 import dev.odaridavid.smoovie.FakeConfigurationRepository
+import dev.odaridavid.smoovie.FakeFilterPreferencesStore
 import dev.odaridavid.smoovie.FakeMoviesRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import dev.odaridavid.smoovie.configuration.LoadConfigurationUseCase
+import dev.odaridavid.smoovie.filter.MovieFilterPreferences
+import dev.odaridavid.smoovie.filter.MovieSortOption
 import dev.odaridavid.smoovie.movies.data.Genre
 import dev.odaridavid.smoovie.movies.data.Movie
+import dev.odaridavid.smoovie.movies.domain.DiscoverMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.GetGenresUseCase
-import dev.odaridavid.smoovie.movies.domain.GetMoviesByGenreUseCase
 import dev.odaridavid.smoovie.movies.domain.GetPopularMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.GetTrendingMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.SearchMoviesUseCase
@@ -53,13 +56,15 @@ class MoviesViewModelTest {
         repo: FakeMoviesRepository,
         configRepo: ConfigurationRepository = FakeConfigurationRepository(),
         configStore: ConfigurationStore = ConfigurationStore(),
+        filterStore: FakeFilterPreferencesStore = FakeFilterPreferencesStore(),
     ) = MoviesViewModel(
         getPopularMovies = GetPopularMoviesUseCase(repo, MovieUiMapper(configStore)),
         getTrendingMovies = GetTrendingMoviesUseCase(repo, MovieUiMapper(configStore)),
         searchMovies = SearchMoviesUseCase(repo, MovieUiMapper(configStore)),
-        getMoviesByGenre = GetMoviesByGenreUseCase(repo, MovieUiMapper(configStore)),
+        discoverMovies = DiscoverMoviesUseCase(repo, MovieUiMapper(configStore)),
         getGenres = GetGenresUseCase(repo),
         loadConfiguration = LoadConfigurationUseCase(configRepo, configStore),
+        filterPreferencesStore = filterStore,
     )
 
     @Test
@@ -193,13 +198,13 @@ class MoviesViewModelTest {
         }
 
     @Test
-    fun `given genre selected - when onGenreSelected - then emits discover movies`() =
+    fun `given filter applied - when onFilterApplied - then emits discover movies`() =
         runTest {
             val actionMovies = listOf(Movie(id = 10, title = "Mad Max", overview = "Fury Road."))
             val repo = FakeMoviesRepository(movies = testMovies, discoverMovies = actionMovies)
             val viewModel = buildViewModel(repo)
 
-            viewModel.onGenreSelected(GenreUiModel(28, "Action"))
+            viewModel.onFilterApplied(28, MovieSortOption.POPULARITY.apiValue, 0f)
 
             val state = viewModel.state.value.uiState
             assertIs<MoviesUiState.Success>(state)
@@ -208,31 +213,15 @@ class MoviesViewModelTest {
         }
 
     @Test
-    fun `given same genre already selected - when onGenreSelected - then movies are not reloaded`() =
-        runTest {
-            val genre = GenreUiModel(28, "Action")
-            val actionMovies = listOf(Movie(id = 10, title = "Mad Max", overview = "Fury Road."))
-            val repo = FakeMoviesRepository(movies = testMovies, discoverMovies = actionMovies)
-            val viewModel = buildViewModel(repo)
-            viewModel.onGenreSelected(genre)
-            val stateAfterFirst = viewModel.state.value.uiState
-
-            repo.discoverMovies = listOf(Movie(id = 11, title = "Different", overview = "Film."))
-            viewModel.onGenreSelected(genre)
-
-            assertEquals(stateAfterFirst, viewModel.state.value.uiState)
-        }
-
-    @Test
-    fun `given genre selected - when genre deselected - then emits popular movies`() =
+    fun `given filter applied - when filter reset - then emits popular movies`() =
         runTest {
             val actionMovies = listOf(Movie(id = 10, title = "Mad Max", overview = "Fury Road."))
             val repo = FakeMoviesRepository(movies = testMovies, discoverMovies = actionMovies)
             val viewModel = buildViewModel(repo)
-            viewModel.onGenreSelected(GenreUiModel(28, "Action"))
+            viewModel.onFilterApplied(28, MovieSortOption.POPULARITY.apiValue, 0f)
             assertIs<MoviesUiState.Success>(viewModel.state.value.uiState)
 
-            viewModel.onGenreSelected(null)
+            viewModel.onFilterApplied(null, MovieSortOption.POPULARITY.apiValue, 0f)
 
             val state = viewModel.state.value.uiState
             assertIs<MoviesUiState.Success>(state)
@@ -240,13 +229,37 @@ class MoviesViewModelTest {
         }
 
     @Test
-    fun `given genre selected with more pages - when loadNextPage - then appends discover movies`() =
+    fun `given filter applied - when filter saved - then filter preferences are persisted`() =
+        runTest {
+            val repo = FakeMoviesRepository(movies = testMovies)
+            val filterStore = FakeFilterPreferencesStore()
+            val viewModel = buildViewModel(repo, filterStore = filterStore)
+            viewModel.onFilterApplied(28, MovieSortOption.RATING.apiValue, 0f)
+
+            assertEquals(MovieFilterPreferences(selectedGenreId = 28, sortBy = MovieSortOption.RATING), filterStore.movieFilter)
+        }
+
+    @Test
+    fun `given saved filter in store - when viewmodel is created - then filter preferences are restored`() =
+        runTest {
+            val actionMovies = listOf(Movie(id = 10, title = "Mad Max", overview = "Fury Road."))
+            val repo = FakeMoviesRepository(movies = testMovies, discoverMovies = actionMovies)
+            val savedFilter = MovieFilterPreferences(selectedGenreId = 28)
+            val filterStore = FakeFilterPreferencesStore(movieFilter = savedFilter)
+
+            val viewModel = buildViewModel(repo, filterStore = filterStore)
+
+            assertEquals(savedFilter, viewModel.state.value.filterPreferences)
+        }
+
+    @Test
+    fun `given filter applied with more pages - when loadNextPage - then appends discover movies`() =
         runTest {
             val page1Movies = listOf(Movie(id = 10, title = "Mad Max", overview = "Fury Road."))
             val page2Movies = listOf(Movie(id = 11, title = "Die Hard", overview = "Action film."))
             val repo = FakeMoviesRepository(discoverMovies = page1Movies, totalPages = 2)
             val viewModel = buildViewModel(repo)
-            viewModel.onGenreSelected(GenreUiModel(28, "Action"))
+            viewModel.onFilterApplied(28, MovieSortOption.POPULARITY.apiValue, 0f)
             assertIs<MoviesUiState.Success>(viewModel.state.value.uiState)
             assertTrue((viewModel.state.value.uiState as MoviesUiState.Success).hasMorePages)
 
@@ -267,8 +280,16 @@ class MoviesViewModelTest {
             val viewModel = buildViewModel(repo)
 
             assertEquals(2, viewModel.state.value.genres.size)
-            assertEquals("Action", viewModel.state.value.genres[0].name)
-            assertEquals("Comedy", viewModel.state.value.genres[1].name)
+            assertEquals(
+                "Action",
+                viewModel.state.value.genres[0]
+                    .name,
+            )
+            assertEquals(
+                "Comedy",
+                viewModel.state.value.genres[1]
+                    .name,
+            )
         }
 
     @Test

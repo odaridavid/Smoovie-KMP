@@ -22,6 +22,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -43,16 +47,19 @@ import dev.odaridavid.smoovie.utils.previewMovieUiModels
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
+import smoovie.composeapp.generated.resources.filter_button_description
 import smoovie.composeapp.generated.resources.search_movies_hint
 
 private val PAGER_HEIGHT = 260.dp
 private val ICON_SCRIM_COLOR = Color.Black.copy(alpha = 0.35f)
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun FeaturedMoviesPager(
     movies: List<MovieUiModel>,
     onSearchClick: () -> Unit,
+    onFilterClick: () -> Unit = {},
+    isFilterActive: Boolean = false,
     onMovieClick: (MovieUiModel) -> Unit,
 ) {
     if (movies.isEmpty()) return
@@ -119,13 +126,14 @@ internal fun FeaturedMoviesPager(
                     ),
         )
 
-        // Top-right action row — search, below status bar
+        // Top-right action row — search + filter, below status bar
         Row(
             modifier =
                 Modifier
                     .align(Alignment.TopEnd)
                     .windowInsetsPadding(WindowInsets.statusBars)
                     .padding(end = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             IconButton(
                 onClick = onSearchClick,
@@ -136,6 +144,18 @@ internal fun FeaturedMoviesPager(
                     imageVector = Icons.Default.Search,
                     contentDescription = stringResource(Res.string.search_movies_hint),
                 )
+            }
+            IconButton(
+                onClick = onFilterClick,
+                colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White),
+                modifier = Modifier.background(ICON_SCRIM_COLOR, CircleShape),
+            ) {
+                BadgedBox(badge = { if (isFilterActive) Badge() }) {
+                    Icon(
+                        imageVector = Icons.Default.Tune,
+                        contentDescription = stringResource(Res.string.filter_button_description),
+                    )
+                }
             }
         }
 

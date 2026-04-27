@@ -186,7 +186,8 @@ private fun DetailHeader(
             style = MaterialTheme.typography.headlineSmall,
         )
         MetadataRow(
-            detail.knownForDepartment.takeIf { it.isNotBlank() }
+            detail.knownForDepartment
+                .takeIf { it.isNotBlank() }
                 ?.let { stringResource(Res.string.person_known_for_format, it) },
             detail.birthday.takeIf { it.isNotBlank() },
             detail.placeOfBirth.takeIf { it.isNotBlank() },

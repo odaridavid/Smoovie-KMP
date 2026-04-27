@@ -14,8 +14,10 @@ interface MoviesRepository {
         page: Int = 1,
     ): MoviesResponse
 
-    suspend fun discoverMoviesByGenre(
-        genreId: Int,
+    suspend fun discoverMovies(
+        genreId: Int?,
+        sortBy: String,
+        minRating: Float,
         page: Int = 1,
     ): MoviesResponse
 

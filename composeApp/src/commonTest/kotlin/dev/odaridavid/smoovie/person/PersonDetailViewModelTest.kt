@@ -95,7 +95,12 @@ class PersonDetailViewModelTest {
 
             assertIs<PersonDetailUiState.Success>(state)
             assertEquals(listOf(1, 2), state.personDetail.movieFilmography.map { it.movie.id })
-            assertEquals("Cooper", state.personDetail.movieFilmography.first().role)
+            assertEquals(
+                "Cooper",
+                state.personDetail.movieFilmography
+                    .first()
+                    .role,
+            )
             assertEquals(emptyList(), state.personDetail.tvFilmography)
         }
 
@@ -118,8 +123,18 @@ class PersonDetailViewModelTest {
 
             val state = viewModel.uiState.value as PersonDetailUiState.Success
             assertEquals(listOf(100, 200), state.personDetail.tvFilmography.map { it.tvShow.id })
-            assertEquals("True Detective", state.personDetail.tvFilmography.first().tvShow.name)
-            assertEquals("Rust", state.personDetail.tvFilmography.first().role)
+            assertEquals(
+                "True Detective",
+                state.personDetail.tvFilmography
+                    .first()
+                    .tvShow.name,
+            )
+            assertEquals(
+                "Rust",
+                state.personDetail.tvFilmography
+                    .first()
+                    .role,
+            )
             assertEquals(listOf(1, 2), state.personDetail.movieFilmography.map { it.movie.id })
         }
 

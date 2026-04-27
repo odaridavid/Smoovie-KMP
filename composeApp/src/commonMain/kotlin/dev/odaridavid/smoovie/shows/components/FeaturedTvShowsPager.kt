@@ -21,7 +21,11 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Tv
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -42,16 +46,19 @@ import dev.odaridavid.smoovie.theme.SmoovieTheme
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
+import smoovie.composeapp.generated.resources.filter_button_description
 import smoovie.composeapp.generated.resources.search_shows_hint
 
 private val PAGER_HEIGHT = 260.dp
 private val ICON_SCRIM_COLOR = Color.Black.copy(alpha = 0.35f)
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun FeaturedTvShowsPager(
     tvShows: List<TvShowUiModel>,
     onSearchClick: () -> Unit,
+    onFilterClick: () -> Unit = {},
+    isFilterActive: Boolean = false,
     onTvShowClick: (TvShowUiModel) -> Unit,
 ) {
     if (tvShows.isEmpty()) return
@@ -116,12 +123,14 @@ internal fun FeaturedTvShowsPager(
                     ),
         )
 
+        // Top-right action row — search + filter, below status bar
         Row(
             modifier =
                 Modifier
                     .align(Alignment.TopEnd)
                     .windowInsetsPadding(WindowInsets.statusBars)
                     .padding(end = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             IconButton(
                 onClick = onSearchClick,
@@ -132,6 +141,18 @@ internal fun FeaturedTvShowsPager(
                     imageVector = Icons.Default.Search,
                     contentDescription = stringResource(Res.string.search_shows_hint),
                 )
+            }
+            IconButton(
+                onClick = onFilterClick,
+                colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White),
+                modifier = Modifier.background(ICON_SCRIM_COLOR, CircleShape),
+            ) {
+                BadgedBox(badge = { if (isFilterActive) Badge() }) {
+                    Icon(
+                        imageVector = Icons.Default.Tune,
+                        contentDescription = stringResource(Res.string.filter_button_description),
+                    )
+                }
             }
         }
 

@@ -43,8 +43,10 @@ class FakeMoviesRepository(
         )
     }
 
-    override suspend fun discoverMoviesByGenre(
-        genreId: Int,
+    override suspend fun discoverMovies(
+        genreId: Int?,
+        sortBy: String,
+        minRating: Float,
         page: Int,
     ): MoviesResponse {
         error?.let { throw it }

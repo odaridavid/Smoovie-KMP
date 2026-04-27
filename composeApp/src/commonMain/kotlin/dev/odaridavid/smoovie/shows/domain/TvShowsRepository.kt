@@ -15,8 +15,10 @@ interface TvShowsRepository {
         page: Int = 1,
     ): TvShowsResponse
 
-    suspend fun discoverTvShowsByGenre(
-        genreId: Int,
+    suspend fun discoverTvShows(
+        genreId: Int?,
+        sortBy: String,
+        minRating: Float,
         page: Int = 1,
     ): TvShowsResponse
 

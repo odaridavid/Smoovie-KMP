@@ -10,10 +10,10 @@ Targets Android and iOS with a shared Compose Multiplatform UI.
 
 ## Features
 
-- Browse popular movies with shimmer loading placeholders
-- Featured movies hero pager with auto-scroll and shared-element transitions into the detail screen
-- Genre filtering via chip row
-- Search movies with debounced input
+- Browse popular movies and TV shows with shimmer loading placeholders
+- Featured hero pager with auto-scroll on both Movies and Shows tabs
+- **Filter sheet** (genre, sort order, min rating) on Movies and Shows — filters are independent per tab, persist across app restarts, and show a badge dot on the filter icon when active
+- Search movies and TV shows with debounced input
 - Movie and TV show detail screens with edge-to-edge backdrop, cast, trailers, reviews, seasons,
   where to watch (streaming + rent/buy via JustWatch), FSK age rating, and a "More like this" section
 - Person detail screen with biography, birthday, place of birth, and movie + TV filmography
@@ -37,13 +37,14 @@ composeApp/src/
 │       ├── Screen.kt           # @Serializable navigation routes
 │       ├── KoinInitializer.kt  # DI module
 │       ├── configuration/      # TMDB image config + URL builder
-│       ├── movies/             # Movie list, detail, search, featured pager, use cases
+│       ├── filter/             # Cross-feature filter types (MovieFilterPreferences, TvFilterPreferences, FilterPreferencesStore)
+│       ├── movies/             # Movie list, detail, search, featured pager, filter, use cases
 │       ├── person/             # Person detail screen + filmography
-│       ├── shows/              # TV shows tab (in progress — see tv-shows-plan.md)
+│       ├── shows/              # TV shows list, detail, search, featured pager, filter, use cases
 │       ├── watchlist/          # Watchlist screen, repository, Room DAO + entity
 │       ├── storage/            # SmoovieDatabase (Room KMP) + platform DB builder
 │       ├── utils/              # TtlCache, currentTimeMillis (expect/actual)
-│       ├── ui/                 # Shared composables (search back handler, transition locals)
+│       ├── ui/                 # Shared composables: FilterSheet, SearchBackHandler, SetStatusBarIcons
 │       └── theme/              # SmoovieTheme (Material3, dark/light), ErrorContent, EmptyContent
 ├── androidMain/      # Android-specific (BuildConfig, OkHttp engine, Room builder)
 ├── iosMain/          # iOS-specific (NSBundle, Darwin engine, Room builder)
@@ -104,6 +105,7 @@ build time, where Kotlin reads it via `NSBundle`.
 | [Koin](https://insert-koin.io)                                                            | Multiplatform dependency injection           |
 | [Coil 3](https://coil-kt.github.io/coil/)                                                 | Image loading (backdrops, posters, profiles) |
 | [KSP](https://github.com/google/ksp)                                                      | Room annotation processing                   |
+| [multiplatform-settings](https://github.com/russhwolf/multiplatform-settings)             | Cross-platform KV persistence (filter prefs) |
 | [ktlint-gradle](https://github.com/JLLeitschuh/ktlint-gradle)                            | Code style enforcement                       |
 
 ## Build and Run

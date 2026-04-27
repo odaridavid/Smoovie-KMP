@@ -14,7 +14,7 @@ class TvShowsRepositoryImpl(
 ) : TvShowsRepository {
     private val popularCache = TtlCache<Int, TvShowsResponse>(CACHE_TTL_MS)
     private val searchCache = TtlCache<SearchKey, TvShowsResponse>(CACHE_TTL_MS)
-    private val genreDiscoverCache = TtlCache<GenreKey, TvShowsResponse>(CACHE_TTL_MS)
+    private val discoverCache = TtlCache<DiscoverKey, TvShowsResponse>(CACHE_TTL_MS)
     private val genresCache = TtlCache<Unit, List<TvGenre>>(CACHE_TTL_MS)
     private val detailCache = TtlCache<Int, TvShowDetail>(CACHE_TTL_MS)
     private val seasonDetailCache = TtlCache<SeasonKey, SeasonDetail>(CACHE_TTL_MS)
@@ -41,15 +41,18 @@ class TvShowsRepositoryImpl(
                 }.body()
         }
 
-    override suspend fun discoverTvShowsByGenre(
-        genreId: Int,
+    override suspend fun discoverTvShows(
+        genreId: Int?,
+        sortBy: String,
+        minRating: Float,
         page: Int,
     ): TvShowsResponse =
-        genreDiscoverCache.getOrFetch(GenreKey(genreId, page)) {
+        discoverCache.getOrFetch(DiscoverKey(genreId, sortBy, minRating, page)) {
             client
                 .get(Path.DISCOVER_TV) {
-                    parameter(Parameter.WITH_GENRES, genreId)
-                    parameter(Parameter.SORT_BY, "popularity.desc")
+                    if (genreId != null) parameter(Parameter.WITH_GENRES, genreId)
+                    parameter(Parameter.SORT_BY, sortBy)
+                    if (minRating > 0f) parameter(Parameter.VOTE_AVERAGE_GTE, minRating)
                     parameter(Parameter.PAGE, page)
                 }.body()
         }
@@ -90,8 +93,10 @@ class TvShowsRepositoryImpl(
         val page: Int,
     )
 
-    private data class GenreKey(
-        val genreId: Int,
+    private data class DiscoverKey(
+        val genreId: Int?,
+        val sortBy: String,
+        val minRating: Float,
         val page: Int,
     )
 
@@ -113,6 +118,7 @@ class TvShowsRepositoryImpl(
         const val QUERY = "query"
         const val WITH_GENRES = "with_genres"
         const val SORT_BY = "sort_by"
+        const val VOTE_AVERAGE_GTE = "vote_average.gte"
         const val APPEND_TO_RESPONSE = "append_to_response"
     }
 

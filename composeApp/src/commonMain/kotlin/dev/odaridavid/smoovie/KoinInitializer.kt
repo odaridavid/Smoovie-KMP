@@ -5,13 +5,15 @@ import dev.odaridavid.smoovie.configuration.ConfigurationRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationRepositoryImpl
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import dev.odaridavid.smoovie.configuration.LoadConfigurationUseCase
+import dev.odaridavid.smoovie.filter.FilterPreferencesStore
+import dev.odaridavid.smoovie.filter.FilterPreferencesStoreImpl
 import dev.odaridavid.smoovie.movies.MovieDetailViewModel
 import dev.odaridavid.smoovie.movies.MovieUiMapper
 import dev.odaridavid.smoovie.movies.MoviesViewModel
 import dev.odaridavid.smoovie.movies.data.MoviesRepositoryImpl
+import dev.odaridavid.smoovie.movies.domain.DiscoverMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.GetGenresUseCase
 import dev.odaridavid.smoovie.movies.domain.GetMovieDetailUseCase
-import dev.odaridavid.smoovie.movies.domain.GetMoviesByGenreUseCase
 import dev.odaridavid.smoovie.movies.domain.GetPopularMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.GetTrendingMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.MoviesRepository
@@ -26,11 +28,11 @@ import dev.odaridavid.smoovie.shows.ShowsViewModel
 import dev.odaridavid.smoovie.shows.TvShowDetailViewModel
 import dev.odaridavid.smoovie.shows.TvShowUiMapper
 import dev.odaridavid.smoovie.shows.data.TvShowsRepositoryImpl
+import dev.odaridavid.smoovie.shows.domain.DiscoverTvShowsUseCase
 import dev.odaridavid.smoovie.shows.domain.GetPopularTvShowsUseCase
 import dev.odaridavid.smoovie.shows.domain.GetSeasonDetailUseCase
 import dev.odaridavid.smoovie.shows.domain.GetTvGenresUseCase
 import dev.odaridavid.smoovie.shows.domain.GetTvShowDetailUseCase
-import dev.odaridavid.smoovie.shows.domain.GetTvShowsByGenreUseCase
 import dev.odaridavid.smoovie.shows.domain.SearchTvShowsUseCase
 import dev.odaridavid.smoovie.shows.domain.TvShowsRepository
 import dev.odaridavid.smoovie.storage.DatabaseBuilderFactory
@@ -101,19 +103,21 @@ private val appModule =
         single { get<SmoovieDatabase>().watchlistDao() }
         single<WatchlistRepository> { WatchlistRepositoryImpl(get()) }
 
+        single<FilterPreferencesStore> { FilterPreferencesStoreImpl(get()) }
+
         single { MovieUiMapper(get()) }
         single { TvShowUiMapper(get()) }
 
         single { LoadConfigurationUseCase(get(), get()) }
         single { GetPopularMoviesUseCase(get(), get()) }
         single { SearchMoviesUseCase(get(), get()) }
-        single { GetMoviesByGenreUseCase(get(), get()) }
+        single { DiscoverMoviesUseCase(get(), get()) }
         single { GetGenresUseCase(get()) }
         single { GetMovieDetailUseCase(get(), get()) }
         single { GetTrendingMoviesUseCase(get(), get()) }
         single { GetPopularTvShowsUseCase(get(), get()) }
         single { SearchTvShowsUseCase(get(), get()) }
-        single { GetTvShowsByGenreUseCase(get(), get()) }
+        single { DiscoverTvShowsUseCase(get(), get()) }
         single { GetTvGenresUseCase(get()) }
         single { GetTvShowDetailUseCase(get(), get()) }
         single { GetSeasonDetailUseCase(get(), get()) }
@@ -128,18 +132,20 @@ private val appModule =
                 getPopularMovies = get(),
                 getTrendingMovies = get(),
                 searchMovies = get(),
-                getMoviesByGenre = get(),
+                discoverMovies = get(),
                 getGenres = get(),
                 loadConfiguration = get(),
+                filterPreferencesStore = get(),
             )
         }
         viewModel {
             ShowsViewModel(
                 getPopularTvShows = get(),
                 searchTvShows = get(),
-                getTvShowsByGenre = get(),
+                discoverTvShows = get(),
                 getTvGenres = get(),
                 loadConfiguration = get(),
+                filterPreferencesStore = get(),
             )
         }
         viewModel { (tvShowId: Int, presentLabel: String) ->

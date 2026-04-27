@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Tune
@@ -69,20 +70,22 @@ internal fun CollapsedToolbar(
                     fadeOut(tween(ANIMATION_DURATION_MS)) +
                         slideOutHorizontally(tween(ANIMATION_DURATION_MS)) { it },
             ) {
-                IconButton(onClick = onSearchClick) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = stringResource(Res.string.search_movies_hint),
-                    )
-                }
-                IconButton(onClick = onFilterClick) {
-                    BadgedBox(
-                        badge = { if (isFilterActive) Badge() },
-                    ) {
+                Row {
+                    IconButton(onClick = onSearchClick) {
                         Icon(
-                            imageVector = Icons.Default.Tune,
-                            contentDescription = stringResource(Res.string.filter_button_description),
+                            imageVector = Icons.Default.Search,
+                            contentDescription = stringResource(Res.string.search_movies_hint),
                         )
+                    }
+                    IconButton(onClick = onFilterClick) {
+                        BadgedBox(
+                            badge = { if (isFilterActive) Badge() },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Tune,
+                                contentDescription = stringResource(Res.string.filter_button_description),
+                            )
+                        }
                     }
                 }
             }

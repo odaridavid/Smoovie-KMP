@@ -49,8 +49,6 @@
 ## Architecture & Quality
 
 - [ ] Compose UI tests for the screens (screenshot tests or interaction tests)
-- [ ] AI and app actions
 - [ ] Multimodules
 - [ ] Observability - https://github.com/AAkira/Napier
-- [ ] Update readme before going public with it
-- [ ] Single vs multi select for genres
+

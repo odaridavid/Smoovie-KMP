@@ -50,7 +50,6 @@
 
 - [ ] Compose UI tests for the screens (screenshot tests or interaction tests)
 - [ ] AI and app actions
-- [ ] Create app icon and improve splash screen
 - [ ] Multimodules
 - [ ] Observability - https://github.com/AAkira/Napier
 - [ ] Update readme before going public with it

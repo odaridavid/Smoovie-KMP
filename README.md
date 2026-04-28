@@ -155,7 +155,14 @@ changes, then commit again.
 
 |          Android                                 |         iOS                                  |
 |:-----------------------------------------:|:-----------------------------------------:|
-| <video src="https://github.com/user-attachments/assets/9d80af08-665f-4e59-b06f-1695cf886324" width="360"/> | <video src="https://github.com/user-attachments/assets/9817f814-fb88-4b8e-8f5b-2f7d52bec108" width="360"/> |
+| <video src="https://github.com/user-attachments/assets/9d80af08-665f-4e59-b06f-1695cf886324" width="360"/> | <video src="https://github.com/user-attachments/assets/03f1b98b-19e0-499e-bb75-d9d2956c790b" width="360"/> |
+
+
+
+
+
+
+
 
 
 Learn more

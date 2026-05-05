@@ -1,5 +1,5 @@
 [versions]
-agp = "8.11.2"
+agp = "8.13.2"
 ktlint-gradle = "14.2.0"
 kover = "0.9.8"
 android-compileSdk = "36"

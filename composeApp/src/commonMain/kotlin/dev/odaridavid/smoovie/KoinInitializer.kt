@@ -18,6 +18,9 @@ import dev.odaridavid.smoovie.movies.domain.GetPopularMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.GetTrendingMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.MoviesRepository
 import dev.odaridavid.smoovie.movies.domain.SearchMoviesUseCase
+import dev.odaridavid.smoovie.observability.Logger
+import dev.odaridavid.smoovie.observability.NapierKtorLogger
+import dev.odaridavid.smoovie.observability.NapierLogger
 import dev.odaridavid.smoovie.person.PersonDetailViewModel
 import dev.odaridavid.smoovie.person.PersonFilmographyViewModel
 import dev.odaridavid.smoovie.person.data.PersonRepositoryImpl
@@ -69,6 +72,7 @@ fun initKoin(setup: KoinApplication.() -> Unit = {}) {
 
 private val appModule =
     module {
+        single<Logger> { NapierLogger() }
         single {
             HttpClient {
                 install(ContentNegotiation) {
@@ -80,6 +84,7 @@ private val appModule =
                     )
                 }
                 install(Logging) {
+                    logger = NapierKtorLogger(get())
                     level = LogLevel.HEADERS
                 }
                 install(DefaultRequest) {

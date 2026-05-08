@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Auto Backup config used on Android 11 and below (android:fullBackupContent). -->
+<full-backup-content>
+    <include domain="database" path="smoovie.db" />
+    <include domain="database" path="smoovie.db-shm" />
+    <include domain="database" path="smoovie.db-wal" />
+    <include domain="sharedpref" path="." />
+</full-backup-content>

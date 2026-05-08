@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Backup & device-transfer config used on Android 12+ (android:dataExtractionRules). -->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="database" path="smoovie.db" />
+        <include domain="database" path="smoovie.db-shm" />
+        <include domain="database" path="smoovie.db-wal" />
+        <include domain="sharedpref" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="database" path="smoovie.db" />
+        <include domain="database" path="smoovie.db-shm" />
+        <include domain="database" path="smoovie.db-wal" />
+        <include domain="sharedpref" path="." />
+    </device-transfer>
+</data-extraction-rules>

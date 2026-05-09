@@ -19,8 +19,10 @@ Targets Android and iOS with a shared Compose Multiplatform UI.
 - Person detail screen with biography, birthday, place of birth, and movie + TV filmography
 - Watchlist — tap the bookmark on any movie or TV show detail to save it locally; browse saved
   titles from the Watchlist tab in the bottom navigation
-- Bottom navigation with Movies / Shows / Watchlist tabs; state preserved across tab switches,
-  instant tab-to-tab transitions and sliding detail pushes
+- **Settings tab** — pick a region (defaults to your system locale) which threads into TMDB's
+  popular/discover endpoints; TMDB attribution per the API ToS; app version footer
+- Bottom navigation with Movies / Shows / Watchlist / Settings tabs; state preserved across tab
+  switches, instant tab-to-tab transitions and sliding detail pushes
 - In-memory TTL caching for TMDB requests (1 hour) so navigating back and forth doesn't re-hit the
   network
 - Typed navigation via Jetpack Compose Navigation (KMP) with serializable routes
@@ -40,6 +42,8 @@ composeApp/src/
 │       ├── filter/             # Cross-feature filter types (MovieFilterPreferences, TvFilterPreferences, FilterPreferencesStore)
 │       ├── movies/             # Movie list, detail, search, featured pager, filter, use cases
 │       ├── person/             # Person detail screen + filmography
+│       ├── security/           # AppCheckTokenProvider interface + registry consumed from common code
+│       ├── settings/           # Settings tab: region selection, TMDB attribution, app version
 │       ├── shows/              # TV shows list, detail, search, featured pager, filter, use cases
 │       ├── watchlist/          # Watchlist screen, repository, Room DAO + entity
 │       ├── storage/            # SmoovieDatabase (Room KMP) + platform DB builder
@@ -90,6 +94,23 @@ build time, where Kotlin reads it via `NSBundle`.
 
 > **Note:** Add `Config.xcconfig` to `.gitignore` to keep the token out of version control.
 
+### 4. Firebase App Check (debug builds)
+
+`composeApp/google-services.json` and `iosApp/GoogleService-Info.plist` are committed so the build
+resolves out of the box — they hold project identifiers, not secrets. App Check is what gates
+abuse.
+
+For your local debug builds to be allowed once App Check enforcement is on, register your debug
+token in **Firebase Console → App Check → Apps → ⋮ → Manage debug tokens**:
+
+- **Android**: run the debug build on your device, then in Logcat filter for
+  `Enter this debug secret` and copy the UUID.
+- **iOS**: run the debug build, then in the Xcode Debug Area look for the line printed under
+  `===== Firebase App Check Debug Token =====` and copy the UUID.
+
+Paste the UUID into the Firebase Console and give it a name. The token persists per
+device/simulator install.
+
 ## Dependencies
 
 | Library                                                                                   | Purpose                                      |
@@ -105,7 +126,8 @@ build time, where Kotlin reads it via `NSBundle`.
 | [Koin](https://insert-koin.io)                                                            | Multiplatform dependency injection           |
 | [Coil 3](https://coil-kt.github.io/coil/)                                                 | Image loading (backdrops, posters, profiles) |
 | [KSP](https://github.com/google/ksp)                                                      | Room annotation processing                   |
-| [multiplatform-settings](https://github.com/russhwolf/multiplatform-settings)             | Cross-platform KV persistence (filter prefs) |
+| [multiplatform-settings](https://github.com/russhwolf/multiplatform-settings)             | Cross-platform KV persistence (filter + region prefs) |
+| [Firebase App Check](https://firebase.google.com/docs/app-check)                          | Verifies requests come from authentic builds (Play Integrity / App Attest) |
 | [ktlint-gradle](https://github.com/JLLeitschuh/ktlint-gradle)                            | Code style enforcement                       |
 
 ## Build and Run

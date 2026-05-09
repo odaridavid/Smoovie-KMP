@@ -24,8 +24,12 @@ kover {
     reports {
         filters {
             excludes {
-                // Generated Room / KSP code
-                packages("*.generated.*", "smoovie.composeapp.generated.*")
+                // Generated Room / KSP code + Firebase App Check platform glue
+                packages(
+                    "*.generated.*",
+                    "smoovie.composeapp.generated.*",
+                    "dev.odaridavid.smoovie.security",
+                )
                 annotatedBy(
                     "androidx.room.Database",
                     "androidx.room.Dao",

@@ -2,6 +2,7 @@ package dev.odaridavid.smoovie.movies.data
 
 import dev.odaridavid.smoovie.TMDB_BASE_URL
 import dev.odaridavid.smoovie.movies.domain.MoviesRepository
+import dev.odaridavid.smoovie.settings.SettingsPreferencesStore
 import dev.odaridavid.smoovie.shared.data.WatchProvidersResponse
 import dev.odaridavid.smoovie.utils.TtlCache
 import io.ktor.client.HttpClient
@@ -11,8 +12,9 @@ import io.ktor.client.request.parameter
 
 class MoviesRepositoryImpl(
     private val client: HttpClient,
+    private val settingsPreferencesStore: SettingsPreferencesStore,
 ) : MoviesRepository {
-    private val popularCache = TtlCache<Int, MoviesResponse>(CACHE_TTL_MS)
+    private val popularCache = TtlCache<PopularKey, MoviesResponse>(CACHE_TTL_MS)
     private val searchCache = TtlCache<SearchKey, MoviesResponse>(CACHE_TTL_MS)
     private val discoverCache = TtlCache<DiscoverKey, MoviesResponse>(CACHE_TTL_MS)
     private val genresCache = TtlCache<Unit, List<Genre>>(CACHE_TTL_MS)
@@ -21,13 +23,16 @@ class MoviesRepositoryImpl(
     private val keywordsCache = TtlCache<Int, KeywordsResponse>(CACHE_TTL_MS)
     private val trendingCache = TtlCache<Unit, MoviesResponse>(CACHE_TTL_MS)
 
-    override suspend fun getPopularMovies(page: Int): MoviesResponse =
-        popularCache.getOrFetch(page) {
+    override suspend fun getPopularMovies(page: Int): MoviesResponse {
+        val region = settingsPreferencesStore.regionCode.value
+        return popularCache.getOrFetch(PopularKey(page, region)) {
             client
                 .get(Path.POPULAR_MOVIES) {
                     parameter(Parameter.PAGE, page)
+                    if (region != null) parameter(Parameter.REGION, region)
                 }.body()
         }
+    }
 
     override suspend fun searchMovies(
         query: String,
@@ -46,16 +51,19 @@ class MoviesRepositoryImpl(
         sortBy: String,
         minRating: Float,
         page: Int,
-    ): MoviesResponse =
-        discoverCache.getOrFetch(DiscoverKey(genreId, sortBy, minRating, page)) {
+    ): MoviesResponse {
+        val region = settingsPreferencesStore.regionCode.value
+        return discoverCache.getOrFetch(DiscoverKey(genreId, sortBy, minRating, page, region)) {
             client
                 .get(Path.DISCOVER_MOVIES) {
                     if (genreId != null) parameter(Parameter.WITH_GENRES, genreId)
                     parameter(Parameter.SORT_BY, sortBy)
                     if (minRating > 0f) parameter(Parameter.VOTE_AVERAGE_GTE, minRating)
                     parameter(Parameter.PAGE, page)
+                    if (region != null) parameter(Parameter.REGION, region)
                 }.body()
         }
+    }
 
     override suspend fun getGenres(): List<Genre> =
         genresCache.getOrFetch(Unit) {
@@ -85,6 +93,11 @@ class MoviesRepositoryImpl(
             client.get(Path.TRENDING_MOVIES).body()
         }
 
+    private data class PopularKey(
+        val page: Int,
+        val region: String?,
+    )
+
     private data class SearchKey(
         val query: String,
         val page: Int,
@@ -95,6 +108,7 @@ class MoviesRepositoryImpl(
         val sortBy: String,
         val minRating: Float,
         val page: Int,
+        val region: String?,
     )
 
     private object Path {
@@ -113,6 +127,7 @@ class MoviesRepositoryImpl(
         const val SORT_BY = "sort_by"
         const val VOTE_AVERAGE_GTE = "vote_average.gte"
         const val APPEND_TO_RESPONSE = "append_to_response"
+        const val REGION = "region"
     }
 
     private companion object {

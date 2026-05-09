@@ -15,6 +15,9 @@ internal data object ShowsRoute
 internal data object WatchlistRoute
 
 @Serializable
+internal data object SettingsRoute
+
+@Serializable
 internal data class MovieDetailRoute(
     val id: Int,
     val title: String,

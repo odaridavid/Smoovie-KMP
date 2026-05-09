@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Movie
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -39,6 +40,8 @@ import dev.odaridavid.smoovie.person.PersonDetailViewModel
 import dev.odaridavid.smoovie.person.PersonFilmographyMediaType
 import dev.odaridavid.smoovie.person.PersonFilmographyScreen
 import dev.odaridavid.smoovie.person.PersonFilmographyViewModel
+import dev.odaridavid.smoovie.settings.SettingsScreen
+import dev.odaridavid.smoovie.settings.SettingsViewModel
 import dev.odaridavid.smoovie.shows.SeasonDetailScreen
 import dev.odaridavid.smoovie.shows.SeasonDetailViewModel
 import dev.odaridavid.smoovie.shows.ShowsScreen
@@ -54,6 +57,7 @@ import org.koin.core.parameter.parametersOf
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.media_type_movies
 import smoovie.composeapp.generated.resources.media_type_tv_shows
+import smoovie.composeapp.generated.resources.settings_title
 import smoovie.composeapp.generated.resources.tv_show_year_range_present
 import smoovie.composeapp.generated.resources.watchlist_title
 
@@ -134,6 +138,16 @@ fun App() {
                             onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
                             onTvShowClick = { show -> navController.navigate(show.toRoute()) },
                         )
+                    }
+
+                    composable<SettingsRoute>(
+                        enterTransition = { if (initialState.destination.isTopLevelTab()) EnterTransition.None else null },
+                        exitTransition = { if (targetState.destination.isTopLevelTab()) ExitTransition.None else null },
+                        popEnterTransition = { if (initialState.destination.isTopLevelTab()) EnterTransition.None else null },
+                        popExitTransition = { if (targetState.destination.isTopLevelTab()) ExitTransition.None else null },
+                    ) {
+                        val viewModel: SettingsViewModel = koinViewModel()
+                        SettingsScreen(viewModel = viewModel)
                     }
 
                     composable<MovieDetailRoute> { entry ->
@@ -264,10 +278,20 @@ private fun AppBottomBar(
             icon = { Icon(Icons.Default.BookmarkBorder, contentDescription = null) },
             label = { Text(stringResource(Res.string.watchlist_title)) },
         )
+        NavigationBarItem(
+            selected = currentDestination.hasRoute<SettingsRoute>(),
+            onClick = { onTabSelected(SettingsRoute) },
+            icon = { Icon(Icons.Default.Settings, contentDescription = null) },
+            label = { Text(stringResource(Res.string.settings_title)) },
+        )
     }
 }
 
-private fun NavDestination.isTopLevelTab(): Boolean = hasRoute<MoviesRoute>() || hasRoute<ShowsRoute>() || hasRoute<WatchlistRoute>()
+private fun NavDestination.isTopLevelTab(): Boolean =
+    hasRoute<MoviesRoute>() ||
+        hasRoute<ShowsRoute>() ||
+        hasRoute<WatchlistRoute>() ||
+        hasRoute<SettingsRoute>()
 
 private fun NavHostController.navigateToTab(route: Any) {
     navigate(route) {

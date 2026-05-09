@@ -26,6 +26,9 @@ import dev.odaridavid.smoovie.person.PersonFilmographyViewModel
 import dev.odaridavid.smoovie.person.data.PersonRepositoryImpl
 import dev.odaridavid.smoovie.person.domain.GetPersonDetailUseCase
 import dev.odaridavid.smoovie.person.domain.PersonRepository
+import dev.odaridavid.smoovie.settings.SettingsPreferencesStore
+import dev.odaridavid.smoovie.settings.SettingsPreferencesStoreImpl
+import dev.odaridavid.smoovie.settings.SettingsViewModel
 import dev.odaridavid.smoovie.shows.SeasonDetailViewModel
 import dev.odaridavid.smoovie.shows.ShowsViewModel
 import dev.odaridavid.smoovie.shows.TvShowDetailViewModel
@@ -94,9 +97,10 @@ private val appModule =
         }
         single { ConfigurationStore() }
         single<ConfigurationRepository> { ConfigurationRepositoryImpl(get()) }
-        single<MoviesRepository> { MoviesRepositoryImpl(get()) }
+        single<SettingsPreferencesStore> { SettingsPreferencesStoreImpl(get()) }
+        single<MoviesRepository> { MoviesRepositoryImpl(get(), get()) }
         single<PersonRepository> { PersonRepositoryImpl(get()) }
-        single<TvShowsRepository> { TvShowsRepositoryImpl(get()) }
+        single<TvShowsRepository> { TvShowsRepositoryImpl(get(), get()) }
         single<SmoovieDatabase> {
             get<DatabaseBuilderFactory>()
                 .create()
@@ -141,6 +145,7 @@ private val appModule =
                 getGenres = get(),
                 loadConfiguration = get(),
                 filterPreferencesStore = get(),
+                settingsPreferencesStore = get(),
             )
         }
         viewModel {
@@ -151,8 +156,10 @@ private val appModule =
                 getTvGenres = get(),
                 loadConfiguration = get(),
                 filterPreferencesStore = get(),
+                settingsPreferencesStore = get(),
             )
         }
+        viewModel { SettingsViewModel(get()) }
         viewModel { (tvShowId: Int, presentLabel: String) ->
             TvShowDetailViewModel(
                 tvShowId = tvShowId,

@@ -6,6 +6,7 @@ import dev.odaridavid.smoovie.configuration.LoadConfigurationUseCase
 import dev.odaridavid.smoovie.filter.FilterPreferencesStore
 import dev.odaridavid.smoovie.filter.TvFilterPreferences
 import dev.odaridavid.smoovie.filter.TvSortOption
+import dev.odaridavid.smoovie.settings.SettingsPreferencesStore
 import dev.odaridavid.smoovie.shows.domain.DiscoverTvShowsUseCase
 import dev.odaridavid.smoovie.shows.domain.GetPopularTvShowsUseCase
 import dev.odaridavid.smoovie.shows.domain.GetTvGenresUseCase
@@ -31,6 +32,7 @@ class ShowsViewModel(
     private val getTvGenres: GetTvGenresUseCase,
     private val loadConfiguration: LoadConfigurationUseCase,
     private val filterPreferencesStore: FilterPreferencesStore,
+    private val settingsPreferencesStore: SettingsPreferencesStore,
 ) : ViewModel() {
     private val _state = MutableStateFlow(ShowsScreenState())
     val state: StateFlow<ShowsScreenState> = _state.asStateFlow()
@@ -45,6 +47,7 @@ class ShowsViewModel(
             loadData()
         }
         observeSearchQuery()
+        observeRegionChanges()
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -107,6 +110,15 @@ class ShowsViewModel(
             } catch (_: Exception) {
                 _state.update { it.copy(uiState = currentUiState.copy(isLoadingMore = false)) }
             }
+        }
+    }
+
+    private fun observeRegionChanges() {
+        viewModelScope.launch {
+            settingsPreferencesStore.regionCode
+                .drop(1)
+                .distinctUntilChanged()
+                .collectLatest { loadData() }
         }
     }
 

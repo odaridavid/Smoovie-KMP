@@ -1,6 +1,7 @@
 package dev.odaridavid.smoovie.shows.data
 
 import dev.odaridavid.smoovie.TMDB_BASE_URL
+import dev.odaridavid.smoovie.settings.SettingsPreferencesStore
 import dev.odaridavid.smoovie.shared.data.WatchProvidersResponse
 import dev.odaridavid.smoovie.shows.domain.TvShowsRepository
 import dev.odaridavid.smoovie.utils.TtlCache
@@ -11,6 +12,7 @@ import io.ktor.client.request.parameter
 
 class TvShowsRepositoryImpl(
     private val client: HttpClient,
+    private val settingsPreferencesStore: SettingsPreferencesStore,
 ) : TvShowsRepository {
     private val popularCache = TtlCache<Int, TvShowsResponse>(CACHE_TTL_MS)
     private val searchCache = TtlCache<SearchKey, TvShowsResponse>(CACHE_TTL_MS)
@@ -46,16 +48,19 @@ class TvShowsRepositoryImpl(
         sortBy: String,
         minRating: Float,
         page: Int,
-    ): TvShowsResponse =
-        discoverCache.getOrFetch(DiscoverKey(genreId, sortBy, minRating, page)) {
+    ): TvShowsResponse {
+        val region = settingsPreferencesStore.regionCode.value
+        return discoverCache.getOrFetch(DiscoverKey(genreId, sortBy, minRating, page, region)) {
             client
                 .get(Path.DISCOVER_TV) {
                     if (genreId != null) parameter(Parameter.WITH_GENRES, genreId)
                     parameter(Parameter.SORT_BY, sortBy)
                     if (minRating > 0f) parameter(Parameter.VOTE_AVERAGE_GTE, minRating)
                     parameter(Parameter.PAGE, page)
+                    if (region != null) parameter(Parameter.WATCH_REGION, region)
                 }.body()
         }
+    }
 
     override suspend fun getGenres(): List<TvGenre> =
         genresCache.getOrFetch(Unit) {
@@ -98,6 +103,7 @@ class TvShowsRepositoryImpl(
         val sortBy: String,
         val minRating: Float,
         val page: Int,
+        val region: String?,
     )
 
     private data class SeasonKey(
@@ -120,6 +126,7 @@ class TvShowsRepositoryImpl(
         const val SORT_BY = "sort_by"
         const val VOTE_AVERAGE_GTE = "vote_average.gte"
         const val APPEND_TO_RESPONSE = "append_to_response"
+        const val WATCH_REGION = "watch_region"
     }
 
     private companion object {

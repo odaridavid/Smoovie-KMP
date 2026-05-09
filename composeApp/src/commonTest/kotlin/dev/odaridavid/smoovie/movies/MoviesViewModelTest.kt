@@ -3,6 +3,7 @@ package dev.odaridavid.smoovie.movies
 import dev.odaridavid.smoovie.FakeConfigurationRepository
 import dev.odaridavid.smoovie.FakeFilterPreferencesStore
 import dev.odaridavid.smoovie.FakeMoviesRepository
+import dev.odaridavid.smoovie.FakeSettingsPreferencesStore
 import dev.odaridavid.smoovie.configuration.ConfigurationRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import dev.odaridavid.smoovie.configuration.LoadConfigurationUseCase
@@ -57,6 +58,7 @@ class MoviesViewModelTest {
         configRepo: ConfigurationRepository = FakeConfigurationRepository(),
         configStore: ConfigurationStore = ConfigurationStore(),
         filterStore: FakeFilterPreferencesStore = FakeFilterPreferencesStore(),
+        settingsStore: FakeSettingsPreferencesStore = FakeSettingsPreferencesStore(),
     ) = MoviesViewModel(
         getPopularMovies = GetPopularMoviesUseCase(repo, MovieUiMapper(configStore)),
         getTrendingMovies = GetTrendingMoviesUseCase(repo, MovieUiMapper(configStore)),
@@ -65,6 +67,7 @@ class MoviesViewModelTest {
         getGenres = GetGenresUseCase(repo),
         loadConfiguration = LoadConfigurationUseCase(configRepo, configStore),
         filterPreferencesStore = filterStore,
+        settingsPreferencesStore = settingsStore,
     )
 
     @Test

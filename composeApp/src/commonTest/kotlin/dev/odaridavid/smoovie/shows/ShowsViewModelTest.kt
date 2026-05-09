@@ -2,6 +2,7 @@ package dev.odaridavid.smoovie.shows
 
 import dev.odaridavid.smoovie.FakeConfigurationRepository
 import dev.odaridavid.smoovie.FakeFilterPreferencesStore
+import dev.odaridavid.smoovie.FakeSettingsPreferencesStore
 import dev.odaridavid.smoovie.FakeTvShowsRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
@@ -54,6 +55,7 @@ class ShowsViewModelTest {
         configRepo: ConfigurationRepository = FakeConfigurationRepository(),
         configStore: ConfigurationStore = ConfigurationStore(),
         filterStore: FakeFilterPreferencesStore = FakeFilterPreferencesStore(),
+        settingsStore: FakeSettingsPreferencesStore = FakeSettingsPreferencesStore(),
     ): ShowsViewModel {
         val mapper = TvShowUiMapper(configStore)
         return ShowsViewModel(
@@ -63,6 +65,7 @@ class ShowsViewModelTest {
             getTvGenres = GetTvGenresUseCase(repo),
             loadConfiguration = LoadConfigurationUseCase(configRepo, configStore),
             filterPreferencesStore = filterStore,
+            settingsPreferencesStore = settingsStore,
         )
     }
 

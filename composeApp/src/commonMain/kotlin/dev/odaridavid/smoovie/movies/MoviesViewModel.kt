@@ -12,6 +12,7 @@ import dev.odaridavid.smoovie.movies.domain.GetPopularMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.GetTrendingMoviesUseCase
 import dev.odaridavid.smoovie.movies.domain.MoviesPage
 import dev.odaridavid.smoovie.movies.domain.SearchMoviesUseCase
+import dev.odaridavid.smoovie.settings.SettingsPreferencesStore
 import dev.odaridavid.smoovie.utils.toAppError
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.async
@@ -35,6 +36,7 @@ class MoviesViewModel(
     private val getGenres: GetGenresUseCase,
     private val loadConfiguration: LoadConfigurationUseCase,
     private val filterPreferencesStore: FilterPreferencesStore,
+    private val settingsPreferencesStore: SettingsPreferencesStore,
 ) : ViewModel() {
     private val _state = MutableStateFlow(MoviesScreenState())
     val state: StateFlow<MoviesScreenState> = _state.asStateFlow()
@@ -49,6 +51,7 @@ class MoviesViewModel(
             loadData()
         }
         observeSearchQuery()
+        observeRegionChanges()
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -111,6 +114,15 @@ class MoviesViewModel(
             } catch (_: Exception) {
                 _state.update { it.copy(uiState = currentUiState.copy(isLoadingMore = false)) }
             }
+        }
+    }
+
+    private fun observeRegionChanges() {
+        viewModelScope.launch {
+            settingsPreferencesStore.regionCode
+                .drop(1)
+                .distinctUntilChanged()
+                .collectLatest { loadData() }
         }
     }
 

@@ -131,6 +131,18 @@ val localProperties =
         if (file.exists()) load(file.inputStream())
     }
 
+fun signingProperty(key: String): String? = localProperties.getProperty(key) ?: System.getenv(key.uppercase().replace('.', '_'))
+
+val releaseStoreFile = signingProperty("release.store.file")
+val releaseStorePassword = signingProperty("release.store.password")
+val releaseKeyAlias = signingProperty("release.key.alias")
+val releaseKeyPassword = signingProperty("release.key.password")
+val hasReleaseSigningConfig =
+    releaseStoreFile != null &&
+        releaseStorePassword != null &&
+        releaseKeyAlias != null &&
+        releaseKeyPassword != null
+
 android {
     namespace = "dev.odaridavid.smoovie"
     compileSdk =
@@ -161,6 +173,16 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    signingConfigs {
+        if (hasReleaseSigningConfig) {
+            create("release") {
+                storeFile = file(releaseStoreFile!!)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
@@ -169,6 +191,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            if (hasReleaseSigningConfig) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
     compileOptions {

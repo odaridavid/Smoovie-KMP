@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "663083161688",
+    "project_id": "smoovie-kmp",
+    "storage_bucket": "smoovie-kmp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:663083161688:android:918aa2f01535994039522d",
+        "android_client_info": {
+          "package_name": "dev.odaridavid.smoovie"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCI467UHlYm5AF91jCK2WQTo-pSPW3bInA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

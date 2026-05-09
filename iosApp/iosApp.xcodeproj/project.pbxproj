@@ -6,7 +6,14 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		80578F1B2FAF57D00099F8D8 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 80578F1A2FAF57D00099F8D8 /* FirebaseAppCheck */; };
+		80578F1D2FAF57D00099F8D8 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 80578F1C2FAF57D00099F8D8 /* FirebaseCore */; };
+		80578F1F2FAF5E820099F8D8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 80578F1E2FAF5E810099F8D8 /* GoogleService-Info.plist */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		80578F1E2FAF5E810099F8D8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C9CDD30A69CA5D506CD8D861 /* Smoovie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Smoovie.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -41,6 +48,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80578F1D2FAF57D00099F8D8 /* FirebaseCore in Frameworks */,
+				80578F1B2FAF57D00099F8D8 /* FirebaseAppCheck in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,6 +70,7 @@
 				030BB9687C6790ACB08A5E3C /* Configuration */,
 				0F0406387362BF449F670DD7 /* iosApp */,
 				123A345966D29703ABF93DD4 /* Products */,
+				80578F1E2FAF5E810099F8D8 /* GoogleService-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -85,6 +95,8 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
+				80578F1A2FAF57D00099F8D8 /* FirebaseAppCheck */,
+				80578F1C2FAF57D00099F8D8 /* FirebaseCore */,
 			);
 			productName = iosApp;
 			productReference = C9CDD30A69CA5D506CD8D861 /* Smoovie.app */;
@@ -114,6 +126,9 @@
 			);
 			mainGroup = 9896E8DFC16A9C971400864A;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				80578F192FAF57D00099F8D8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 123A345966D29703ABF93DD4 /* Products */;
 			projectDirPath = "";
@@ -129,6 +144,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80578F1F2FAF5E820099F8D8 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -314,6 +330,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.odaridavid.smoovie;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -345,6 +362,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.odaridavid.smoovie;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -374,6 +392,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		80578F192FAF57D00099F8D8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.13.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		80578F1A2FAF57D00099F8D8 /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 80578F192FAF57D00099F8D8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
+		};
+		80578F1C2FAF57D00099F8D8 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 80578F192FAF57D00099F8D8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5EE5D4FDC81AC17AE31E5349 /* Project object */;
 }

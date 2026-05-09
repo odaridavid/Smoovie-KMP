@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.androidxRoom)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.kover)
+    alias(libs.plugins.googleServices)
 }
 
 ktlint {
@@ -86,6 +87,9 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.koin.android)
             implementation(libs.androidx.splashscreen)
+            implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.firebase.appcheck)
+            implementation(libs.firebase.appcheck.playintegrity)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -204,6 +208,7 @@ android {
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
+    debugImplementation(libs.firebase.appcheck.debug)
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)

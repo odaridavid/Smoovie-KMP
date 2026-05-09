@@ -1,5 +1,4 @@
 TEAM_ID=your_apple_team_id_here
-TMDB_ACCESS_TOKEN=your_tmdb_api_read_access_token_here
 
 PRODUCT_NAME=Smoovie
 PRODUCT_BUNDLE_IDENTIFIER=dev.odaridavid.smoovie

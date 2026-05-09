@@ -50,66 +50,58 @@ composeApp/src/
 │       ├── utils/              # TtlCache, currentTimeMillis (expect/actual)
 │       ├── ui/                 # Shared composables: FilterSheet, SearchBackHandler, SetStatusBarIcons
 │       └── theme/              # SmoovieTheme (Material3, dark/light), ErrorContent, EmptyContent
-├── androidMain/      # Android-specific (BuildConfig, OkHttp engine, Room builder)
-├── iosMain/          # iOS-specific (NSBundle, Darwin engine, Room builder)
+├── androidMain/      # Android-specific (OkHttp engine, Room builder, Firebase init)
+├── iosMain/          # iOS-specific (Darwin engine, Room builder)
 └── commonTest/       # Unit tests (ViewModels, use cases, TtlCache)
 
 composeApp/schemas/   # Exported Room schemas (tracked in git for migration review)
+functions/            # Firebase Cloud Function: thin TMDB proxy that holds the API token
 iosApp/               # Xcode project / Swift entry point
+firebase.json         # Firebase project config (functions source dir + predeploy build)
+.firebaserc           # Pins the repo to the smoovie-kmp Firebase project
 ```
+
+## Architecture
+
+The TMDB API token never ships in the mobile app. Requests flow:
+
+```
+App  ──(X-Firebase-AppCheck)──▶  Cloud Function (Firebase)  ──(Bearer token)──▶  TMDB
+```
+
+The Cloud Function (`functions/src/index.ts`) verifies the Firebase App Check token (proving the
+request came from an authentic build), attaches the TMDB bearer token from Google Secret Manager,
+and forwards `GET /3/*` to `api.themoviedb.org`. The mobile app's `TMDB_BASE_URL` points at the
+deployed function URL.
 
 ## Setup
 
-### 1. Get a TMDB API key
+### 1. Run the app locally (no setup)
 
-Create a free account at [themoviedb.org](https://www.themoviedb.org/) and go to
-**Settings → API**. You need the **API Read Access Token** (Bearer token), not the v3 API key.
+The Firebase config files (`composeApp/google-services.json`, `iosApp/GoogleService-Info.plist`) and
+the deployed proxy URL are committed, so cloning + opening should Just Work in debug. App Check
+debug tokens are per-device and registered once (see step 3 below).
 
-### 2. Configure Android
+### 2. Deploy your own proxy (only if you need a separate Firebase project)
 
-Add your token to `local.properties` (this file is gitignored and never committed):
+If you're forking and want your own TMDB proxy, see
+[`functions/README.md`](functions/README.md). You'll create a Firebase project, set the TMDB token
+as a Secret Manager secret, deploy the function, and update `TMDB_BASE_URL` in
+[`AppConfig.kt`](composeApp/src/commonMain/kotlin/dev/odaridavid/smoovie/AppConfig.kt) to your
+function URL.
 
-```properties
-tmdb.access.token=YOUR_API_READ_ACCESS_TOKEN
-```
+### 3. Register your debug build for App Check
 
-Gradle reads this at build time and injects it into `BuildConfig.TMDB_ACCESS_TOKEN`.
-
-### 3. Configure iOS
-
-Copy the example config and fill in your token:
-
-```shell
-cp iosApp/Configuration/Config.xcconfig.example iosApp/Configuration/Config.xcconfig
-```
-
-Then edit `Config.xcconfig`:
-
-```
-TMDB_ACCESS_TOKEN=YOUR_API_READ_ACCESS_TOKEN
-```
-
-`Config.xcconfig` is gitignored — never commit it. Xcode expands the value into `Info.plist` at
-build time, where Kotlin reads it via `NSBundle`.
-
-> **Note:** Add `Config.xcconfig` to `.gitignore` to keep the token out of version control.
-
-### 4. Firebase App Check (debug builds)
-
-`composeApp/google-services.json` and `iosApp/GoogleService-Info.plist` are committed so the build
-resolves out of the box — they hold project identifiers, not secrets. App Check is what gates
-abuse.
-
-For your local debug builds to be allowed once App Check enforcement is on, register your debug
-token in **Firebase Console → App Check → Apps → ⋮ → Manage debug tokens**:
+App Check rejects requests from non-authentic builds. For your local debug build to be allowed,
+register its debug token once per device/simulator install:
 
 - **Android**: run the debug build on your device, then in Logcat filter for
   `Enter this debug secret` and copy the UUID.
 - **iOS**: run the debug build, then in the Xcode Debug Area look for the line printed under
   `===== Firebase App Check Debug Token =====` and copy the UUID.
 
-Paste the UUID into the Firebase Console and give it a name. The token persists per
-device/simulator install.
+Paste the UUID into **Firebase Console → App Check → Apps → ⋮ → Manage debug tokens**, give it a
+name, save. The token persists in the app's local storage.
 
 ## Dependencies
 

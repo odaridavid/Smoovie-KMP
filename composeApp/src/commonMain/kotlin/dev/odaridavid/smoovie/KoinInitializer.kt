@@ -26,6 +26,7 @@ import dev.odaridavid.smoovie.person.PersonFilmographyViewModel
 import dev.odaridavid.smoovie.person.data.PersonRepositoryImpl
 import dev.odaridavid.smoovie.person.domain.GetPersonDetailUseCase
 import dev.odaridavid.smoovie.person.domain.PersonRepository
+import dev.odaridavid.smoovie.security.AppCheckHeader
 import dev.odaridavid.smoovie.settings.SettingsPreferencesStore
 import dev.odaridavid.smoovie.settings.SettingsPreferencesStoreImpl
 import dev.odaridavid.smoovie.settings.SettingsViewModel
@@ -52,12 +53,9 @@ import dev.odaridavid.smoovie.watchlist.domain.RemoveFromWatchlistUseCase
 import dev.odaridavid.smoovie.watchlist.domain.ToggleWatchlistUseCase
 import dev.odaridavid.smoovie.watchlist.domain.WatchlistRepository
 import io.ktor.client.HttpClient
-import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.request.header
-import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
@@ -90,9 +88,7 @@ private val appModule =
                     logger = NapierKtorLogger(get())
                     level = LogLevel.HEADERS
                 }
-                install(DefaultRequest) {
-                    header(HttpHeaders.Authorization, "Bearer $tmdbApiKey")
-                }
+                install(AppCheckHeader)
             }
         }
         single { ConfigurationStore() }

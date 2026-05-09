@@ -174,7 +174,6 @@ android {
                 .toInt()
         versionCode = 1
         versionName = "1.0"
-        buildConfigField("String", "TMDB_ACCESS_TOKEN", "\"${localProperties.getProperty("tmdb.access.token", "")}\"")
     }
     packaging {
         resources {

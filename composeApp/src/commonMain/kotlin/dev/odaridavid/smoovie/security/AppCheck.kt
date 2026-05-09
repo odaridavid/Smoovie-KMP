@@ -1,5 +1,7 @@
 package dev.odaridavid.smoovie.security
 
+import io.ktor.client.plugins.api.createClientPlugin
+import io.ktor.client.request.header
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -19,3 +21,11 @@ suspend fun fetchAppCheckToken(): String? {
         }
     }
 }
+
+val AppCheckHeader =
+    createClientPlugin("AppCheckHeader") {
+        onRequest { request, _ ->
+            val token = fetchAppCheckToken()
+            if (token != null) request.header("X-Firebase-AppCheck", token)
+        }
+    }

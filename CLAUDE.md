@@ -24,18 +24,33 @@ Single Gradle module: `:composeApp`. Powered by the TMDB API.
 
 `:composeApp:allTests` sometimes fails at `linkDebugTestIosSimulatorArm64` with a local `xcrun` error 72 — treat that as an environment issue, not a code failure. Fall back to `testDebugUnitTest` + `compileKotlinIosSimulatorArm64` to confirm KMP correctness.
 
+### Cloud Function
+
+```shell
+cd functions && npm install                        # one-time
+firebase functions:secrets:set TMDB_TOKEN          # set/rotate the upstream token
+firebase deploy --only functions                   # deploy
+firebase functions:log                             # tail logs
+npm run build                                      # type-check locally without deploying
+```
+
+Firebase project requires the **Blaze** plan (2nd-gen functions need it); free-tier usage is $0 for app-scale traffic. A budget alert at $5/month is recommended.
+
 ## File Structure
 
 ```
 composeApp/
 ├── schemas/                              # Exported Room schemas — check in migrations
+├── google-services.json                  # Firebase project config (committed; not a secret)
 └── src/
     ├── commonMain/kotlin/dev/odaridavid/smoovie/
     │   ├── App.kt, Screen.kt             # NavHost + Scaffold/NavigationBar; @Serializable routes
-    │   ├── AppConfig.kt                  # expect-actual platform config (e.g. tmdbApiKey)
+    │   ├── AppConfig.kt                  # `internal const val TMDB_BASE_URL` (points at the Cloud Function)
     │   ├── KoinInitializer.kt            # appModule wiring; initKoin { setup }
     │   ├── PlatformModule.kt             # expect val platformModule: Module
     │   ├── filter/                       # cross-feature: MovieFilterPreferences, TvFilterPreferences, FilterPreferencesStore
+    │   ├── security/                     # AppCheckTokenProvider interface + registry + Ktor plugin (X-Firebase-AppCheck header)
+    │   ├── settings/                     # Settings tab: Region picker, TMDB attribution, app version footer; SettingsPreferencesStore
     │   ├── <feature>/                    # one package per feature (movies, shows, person, watchlist, configuration)
     │   │   ├── <Feature>Screen.kt + <Feature>ViewModel.kt + <Feature>UiState.kt + UI models
     │   │   ├── components/               # feature-local composables
@@ -43,14 +58,18 @@ composeApp/
     │   │   └── domain/                   # repository interface + use cases
     │   ├── storage/                      # Room database + migrations + expect DatabaseBuilderFactory
     │   ├── theme/, ui/, utils/           # shared composables (FilterSheet in ui/), expect helpers, TtlCache etc.
-    │   └── composeResources/values/strings.xml
-    ├── androidMain/                      # actuals: AppConfig, PlatformModule, BackHandler, DatabaseBuilder, CurrentTime + SmoovieApplication, MainActivity
+    │   └── composeResources/             # strings.xml + drawables (incl. tmdb_logo.xml AVD)
+    ├── androidMain/                      # actuals + SmoovieApplication (Firebase + AppCheck init), MainActivity, AndroidAppCheckTokenProvider
+    ├── debug/, release/                  # Android variant-only sources for App Check factory split (Debug vs PlayIntegrity providers)
     ├── iosMain/                          # actuals (mirrors androidMain) + MainViewController
     └── commonTest/kotlin/dev/odaridavid/smoovie/
         ├── Fake*Repository.kt            # shared test doubles at test-root
         └── <feature>/                    # tests mirror commonMain feature layout
 
-iosApp/                                   # Xcode project / Swift entry point
+functions/                                # Firebase Cloud Function (TypeScript): TMDB proxy with App Check enforcement
+firebase.json, .firebaserc                # Firebase project pin + functions source declaration
+iosApp/                                   # Xcode project / Swift entry point (iOSApp.swift owns Firebase init + IosAppCheckTokenProvider)
+iosApp/iosApp/GoogleService-Info.plist    # Firebase iOS config (committed; not a secret)
 ```
 
 Each feature package is self-contained (UI + ViewModel + UiState + UI models + components + data + domain). Look inside the package you're touching to see the exact files; the structure is consistent across features, so once you've seen one (`movies/` is a good reference), the rest follow the same shape.
@@ -76,7 +95,7 @@ Each feature package is self-contained (UI + ViewModel + UiState + UI models + c
 
 - Jetpack Compose Navigation (KMP variant, `org.jetbrains.androidx.navigation:navigation-compose`).
 - Routes live in `Screen.kt` as top-level `@Serializable` types (`data object MoviesRoute`, `data class MovieDetailRoute(...)`, etc.) plus `toRoute()` / `toUiModel()` converters.
-- `App.kt` wraps the `NavHost` in a `Scaffold` with a Material3 `NavigationBar`. Three top-level tabs: **Movies**, **Shows**, **Watchlist**. The bar is shown only when the current destination satisfies `NavDestination.isTopLevelTab()` — hidden on detail pushes (`MovieDetailRoute`, `PersonDetailRoute`).
+- `App.kt` wraps the `NavHost` in a `Scaffold` with a Material3 `NavigationBar`. Four top-level tabs: **Movies**, **Shows**, **Watchlist**, **Settings**. The bar is shown only when the current destination satisfies `NavDestination.isTopLevelTab()` — hidden on detail pushes (`MovieDetailRoute`, `PersonDetailRoute`).
 - Tab clicks go through `NavHostController.navigateToTab(route)`, which uses the standard Material pattern: `popUpTo(startDestination) { saveState = true } + launchSingleTop + restoreState` so each tab preserves its scroll / filter / loaded-page state across switches.
 - **Transitions**: the `NavHost` defines slide-horizontal enter/exit/pop defaults for detail pushes. Each tab destination (`composable<MoviesRoute>`, `composable<ShowsRoute>`, `composable<WatchlistRoute>`) overrides all four transitions with `if (initialState.destination.isTopLevelTab()) EnterTransition.None else null` (and mirror for exit/pop), returning `null` to fall through to the NavHost default. Net effect: tab ↔ tab is instant, tab → detail slides, detail pop → tab slides back.
 - **Adding a new detail destination**: add a `@Serializable` route in `Screen.kt`, add a `composable<Route> { ... }` block in `App.kt` (no transition overrides — inherits the default slide), wire up back/forward with `navController.navigate(...)` / `navController.navigateUp()`.
@@ -90,26 +109,39 @@ Each feature package is self-contained (UI + ViewModel + UiState + UI models + c
 ### Expect/actual
 
 - Use for platform-native integration (native SDKs, no cross-platform wrapper libs).
-- Existing: `tmdbApiKey` (AppConfig), `platformModule` (DI), `DatabaseBuilderFactory` (Room), `currentTimeMillis` (utils), `SearchBackHandler` (UI back-handler), Room's own `SmoovieDatabaseConstructor` (generated by KSP).
+- Existing: `platformModule` (DI), `DatabaseBuilderFactory` (Room), `currentTimeMillis` (utils), `SearchBackHandler` (UI back-handler), `systemRegionCode` (settings/), `appVersionInfo` (settings/), Room's own `SmoovieDatabaseConstructor` (generated by KSP).
 - `-Xexpect-actual-classes` is enabled in `composeApp/build.gradle.kts` to silence the Beta warning.
+- The Android variant-only source dirs (`src/debug/kotlin/`, `src/release/kotlin/`) emit a deprecation warning suggesting `androidDebug`/`androidRelease`. Migration is pending.
 
-## API Key Configuration
+## TMDB Proxy + App Check
 
-### Android
-Add to `local.properties` (gitignored):
-```
-tmdb.access.token=YOUR_TOKEN
-```
-Gradle injects it into `BuildConfig.TMDB_ACCESS_TOKEN` via `buildConfigField`. `SmoovieApplication` bootstraps Koin with `androidContext(this)` and is registered in `AndroidManifest.xml` via `android:name=".SmoovieApplication"` — don't replace it without updating the manifest.
+The TMDB API token never ships in the mobile app. Network flow:
 
-### iOS
-Copy and fill in `iosApp/Configuration/Config.xcconfig` (gitignored):
 ```
-TMDB_ACCESS_TOKEN=YOUR_TOKEN
+App  ──(X-Firebase-AppCheck header)──▶  Cloud Function (Firebase)  ──(Bearer token)──▶  TMDB
 ```
-Xcode expands this into `Info.plist`, read at runtime via `NSBundle`.
 
-Use the **API Read Access Token** (Bearer token) from TMDB settings, not the v3 API key.
+### Cloud Function (`functions/src/index.ts`)
+
+2nd-gen `onRequest` deployed to `europe-west1`. Verifies the App Check token via `firebase-admin`, then forwards `GET /3/*` to `api.themoviedb.org` with the bearer header from a Secret Manager secret (`TMDB_TOKEN`). Returns 401 on missing/invalid App Check, 405 on non-GET, 404 on paths not under `/3/`. Deploy: `firebase deploy --only functions`. Set the secret: `firebase functions:secrets:set TMDB_TOKEN`. Detailed steps in `functions/README.md`.
+
+`TMDB_BASE_URL` in `commonMain/AppConfig.kt` points at the deployed function URL — change it there if you re-deploy under a different name/region/project.
+
+### App Check on the client
+
+- **Token API**: `security/AppCheck.kt` declares `interface AppCheckTokenProvider { fun fetchToken(callback) }` plus `object AppCheckTokenProviderRegistry { var instance: AppCheckTokenProvider? }` and a `suspend fun fetchAppCheckToken()` that converts the callback to suspend.
+- **Android**: `SmoovieApplication.onCreate` runs `FirebaseApp.initializeApp` + `FirebaseAppCheck.installAppCheckProviderFactory(appCheckProviderFactory())`. The factory is variant-split: `src/debug/.../AppCheckProviderFactory.debug.kt` returns `DebugAppCheckProviderFactory`, `src/release/.../AppCheckProviderFactory.release.kt` returns `PlayIntegrityAppCheckProviderFactory`. Then registers `AndroidAppCheckTokenProvider` into the registry.
+- **iOS**: `iOSApp.swift` runs `FirebaseApp.configure()` + `AppCheck.setAppCheckProviderFactory(...)` (App Attest in release, Debug factory in DEBUG). A Swift class `IosAppCheckTokenProvider: NSObject, AppCheckTokenProvider` calls `AppCheck.appCheck().token(forcingRefresh:)` and the iOS app injects it into `AppCheckTokenProviderRegistry.shared`.
+- **Ktor wiring**: `KoinInitializer` installs the `AppCheckHeader` plugin (defined in `security/AppCheck.kt` via `createClientPlugin`). The plugin's `onRequest` calls `fetchAppCheckToken()` and attaches `X-Firebase-AppCheck` per request. No bearer header is added on the client — the proxy attaches it server-side.
+
+### Debug-token registration (per device)
+
+App Check rejects unauthorized debug builds. To allow yours: run the debug build, copy the printed UUID, paste into Firebase Console → App Check → Apps → ⋮ → Manage debug tokens.
+
+- **Android logcat filter**: `Enter this debug secret`
+- **iOS Xcode console**: explicit `print` block in `iOSApp.swift` between `===== Firebase App Check Debug Token =====` lines
+
+`SmoovieApplication` is registered in `AndroidManifest.xml` via `android:name=".SmoovieApplication"` — don't replace it without updating the manifest.
 
 ## Conventions
 
@@ -158,6 +190,11 @@ Map domain → UI model in use cases (see `GetMovieDetailUseCase`) or ViewModels
 - `MovieFilterPreferences` and `TvFilterPreferences` are separate typed classes — applying a filter on one tab never affects the other. Each has an `isActive` computed property used to show/hide the badge dot on the filter icon.
 - `discoverMovies` / `discoverTvShows` repository methods accept `genreId?`, `sortBy`, `minRating`, `page`. `fetchPage()` routing in each ViewModel: search query wins → filter active → popular fallback.
 
+### Settings preferences (region)
+- `settings/SettingsPreferencesStore` exposes `regionCode: StateFlow<String?>` and `suspend setRegionCode(...)`. Backed by the same `Settings` instance as filter prefs. Default is seeded eagerly from `systemRegionCode()` (expect/actual: `Locale.getDefault().country` on Android, `NSLocale.currentLocale.countryCode` on iOS) at construction.
+- The store is **injected into `MoviesRepositoryImpl` / `TvShowsRepositoryImpl`**, not threaded through use-case signatures. The repo reads `regionCode.value` synchronously per call and includes it in the `TtlCache` key (so changing region invalidates the right entries). Movies/Shows VMs observe `regionCode.drop(1).distinctUntilChanged()` and trigger `loadData()` on change.
+- TMDB endpoints with region wired: `/movie/popular` (`region`), `/discover/movie` (`region`), `/discover/tv` (`watch_region`). `/tv/popular` and `/trending/movie/week` don't accept it. Watch-providers per-title is **not yet** region-wired — extend `getWatchProviders` if/when region needs to influence the "Where to Watch" section.
+
 ### Error retry
 The movies screen's retry button calls `MoviesViewModel.retry()`, which runs the full `loadData()` (configuration + genres + first page + featuredMovies population). `loadMovies()` / `loadShows()` is the lighter path used by filter changes where config is already loaded. If you add a new initial-load side effect, put it in `loadData()` and retry will pick it up automatically.
 
@@ -176,4 +213,7 @@ The movies screen's retry button calls `MoviesViewModel.retry()`, which runs the
 | multiplatform-settings             | Cross-platform KV persistence (SharedPrefs on Android, NSUserDefaults on iOS) |
 | KSP                                | Room annotation processing                                        |
 | ktlint-gradle                      | Code style enforcement (wraps ktlint 1.x)                         |
-| Kover                              | Code coverage reports (HTML + XML)                                |
+| Kover                              | Code coverage reports (HTML + XML); excludes the `security` package |
+| Firebase BOM (Android)             | Pins firebase-appcheck + firebase-appcheck-playintegrity / -debug |
+| Firebase iOS SDK (SPM)             | FirebaseCore + FirebaseAppCheck added via Xcode SPM, locked in `Package.resolved` |
+| firebase-functions / firebase-admin | Node SDKs used by the Cloud Function (TypeScript, in `functions/`) |

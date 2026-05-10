@@ -16,6 +16,7 @@ export const tmdbProxy = onRequest(
     region: "europe-west1",
     timeoutSeconds: 30,
     memory: "256MiB",
+    invoker: "public",
   },
   async (request, response) => {
     const appCheckToken = request.header("X-Firebase-AppCheck");

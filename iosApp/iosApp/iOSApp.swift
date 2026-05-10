@@ -6,7 +6,8 @@ import ComposeApp
 @main
 struct iOSApp: App {
     init() {
-        FirebaseApp.configure()
+        // setAppCheckProviderFactory MUST be called before FirebaseApp.configure()
+        // — Firebase locks in the factory during configure() and ignores later changes.
         let factory: AppCheckProviderFactory
         #if DEBUG
         factory = AppCheckDebugProviderFactory()
@@ -14,6 +15,7 @@ struct iOSApp: App {
         factory = AppAttestProviderFactory()
         #endif
         AppCheck.setAppCheckProviderFactory(factory)
+        FirebaseApp.configure()
         AppCheckTokenProviderRegistry.shared.instance = IosAppCheckTokenProvider()
         #if DEBUG
         if let app = FirebaseApp.app(), let provider = AppCheckDebugProvider(app: app) {

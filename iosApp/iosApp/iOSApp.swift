@@ -6,15 +6,13 @@ import ComposeApp
 @main
 struct iOSApp: App {
     init() {
+        configureFirebase()
+    }
+
+    private func configureFirebase() {
         // setAppCheckProviderFactory MUST be called before FirebaseApp.configure()
         // — Firebase locks in the factory during configure() and ignores later changes.
-        let factory: AppCheckProviderFactory
-        #if DEBUG
-        factory = AppCheckDebugProviderFactory()
-        #else
-        factory = AppAttestProviderFactory()
-        #endif
-        AppCheck.setAppCheckProviderFactory(factory)
+        AppCheck.setAppCheckProviderFactory(appCheckProviderFactory())
         FirebaseApp.configure()
         AppCheckTokenProviderRegistry.shared.instance = IosAppCheckTokenProvider()
         #if DEBUG
@@ -23,6 +21,14 @@ struct iOSApp: App {
             print(provider.currentDebugToken())
             print("==========================================")
         }
+        #endif
+    }
+
+    private func appCheckProviderFactory() -> AppCheckProviderFactory {
+        #if DEBUG
+        return AppCheckDebugProviderFactory()
+        #else
+        return AppAttestProviderFactory()
         #endif
     }
 
@@ -39,7 +45,7 @@ private final class AppAttestProviderFactory: NSObject, AppCheckProviderFactory 
     }
 }
 
-final class IosAppCheckTokenProvider: NSObject, AppCheckTokenProvider {
+private final class IosAppCheckTokenProvider: NSObject, AppCheckTokenProvider {
     func fetchToken(callback: @escaping (String?) -> Void) {
         AppCheck.appCheck().token(forcingRefresh: false) { token, _ in
             callback(token?.token)

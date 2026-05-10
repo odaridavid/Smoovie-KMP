@@ -1,5 +1,6 @@
 package dev.odaridavid.smoovie.shows.domain
 
+import dev.odaridavid.smoovie.FakeSettingsPreferencesStore
 import dev.odaridavid.smoovie.FakeTvShowsRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import dev.odaridavid.smoovie.shared.data.Keyword
@@ -17,7 +18,7 @@ class GetTvShowDetailUseCaseTest {
     private val baseDetail = TvShowDetail(id = 1, name = "Test Show")
 
     private fun buildUseCase(repo: FakeTvShowsRepository = FakeTvShowsRepository(tvShowDetail = baseDetail)) =
-        GetTvShowDetailUseCase(repo, ConfigurationStore())
+        GetTvShowDetailUseCase(repo, ConfigurationStore(), FakeSettingsPreferencesStore(initialRegionCode = "DE"))
 
     @Test
     fun `given providers have DE region - when invoked - then uses DE streaming data`() =
@@ -116,7 +117,12 @@ class GetTvShowDetailUseCaseTest {
                     override suspend fun getWatchProviders(tvShowId: Int): WatchProvidersResponse = throw RuntimeException("network error")
                 }
 
-            val result = GetTvShowDetailUseCase(repo, ConfigurationStore()).invoke(1, presentLabel = "Present")
+            val result =
+                GetTvShowDetailUseCase(
+                    repo,
+                    ConfigurationStore(),
+                    FakeSettingsPreferencesStore(initialRegionCode = "DE"),
+                ).invoke(1, presentLabel = "Present")
 
             assertTrue(result.streamingProviders.isEmpty())
             assertTrue(result.rentBuyProviders.isEmpty())
@@ -131,7 +137,12 @@ class GetTvShowDetailUseCaseTest {
                     override suspend fun getKeywords(tvShowId: Int): TvKeywordsResponse = throw RuntimeException("network error")
                 }
 
-            val result = GetTvShowDetailUseCase(repo, ConfigurationStore()).invoke(1, presentLabel = "Present")
+            val result =
+                GetTvShowDetailUseCase(
+                    repo,
+                    ConfigurationStore(),
+                    FakeSettingsPreferencesStore(initialRegionCode = "DE"),
+                ).invoke(1, presentLabel = "Present")
 
             assertTrue(result.keywords.isEmpty())
         }

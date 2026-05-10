@@ -118,13 +118,13 @@ private val appModule =
         single { SearchMoviesUseCase(get(), get()) }
         single { DiscoverMoviesUseCase(get(), get()) }
         single { GetGenresUseCase(get()) }
-        single { GetMovieDetailUseCase(get(), get()) }
+        single { GetMovieDetailUseCase(get(), get(), get()) }
         single { GetTrendingMoviesUseCase(get(), get()) }
         single { GetPopularTvShowsUseCase(get(), get()) }
         single { SearchTvShowsUseCase(get(), get()) }
         single { DiscoverTvShowsUseCase(get(), get()) }
         single { GetTvGenresUseCase(get()) }
-        single { GetTvShowDetailUseCase(get(), get()) }
+        single { GetTvShowDetailUseCase(get(), get(), get()) }
         single { GetSeasonDetailUseCase(get(), get()) }
         single { GetPersonDetailUseCase(get(), get()) }
         single { ObserveIsInWatchlistUseCase(get()) }

@@ -4,6 +4,7 @@ import dev.odaridavid.smoovie.configuration.BackdropSize
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import dev.odaridavid.smoovie.movies.MovieDetailUiModel
 import dev.odaridavid.smoovie.movies.toDetailUiModel
+import dev.odaridavid.smoovie.settings.SettingsPreferencesStore
 import dev.odaridavid.smoovie.shared.WatchProviderUiModel
 import dev.odaridavid.smoovie.shared.data.WatchProvider
 import dev.odaridavid.smoovie.shared.data.WatchProviderRegion
@@ -14,6 +15,7 @@ import kotlinx.coroutines.coroutineScope
 class GetMovieDetailUseCase(
     private val repository: MoviesRepository,
     private val configurationStore: ConfigurationStore,
+    private val settingsPreferencesStore: SettingsPreferencesStore,
 ) {
     suspend operator fun invoke(movieId: Int): MovieDetailUiModel =
         coroutineScope {
@@ -56,8 +58,11 @@ class GetMovieDetailUseCase(
         const val MAX_KEYWORDS = 3
     }
 
-    private fun resolveRegionData(response: WatchProvidersResponse?): WatchProviderRegion? =
-        response?.results?.let { it["DE"] ?: it["US"] ?: it.values.firstOrNull() }
+    private fun resolveRegionData(response: WatchProvidersResponse?): WatchProviderRegion? {
+        val results = response?.results ?: return null
+        val preferred = settingsPreferencesStore.regionCode.value
+        return preferred?.let { results[it] } ?: results["US"] ?: results.values.firstOrNull()
+    }
 
     private fun mapProviders(providers: List<WatchProvider>): List<WatchProviderUiModel> =
         providers

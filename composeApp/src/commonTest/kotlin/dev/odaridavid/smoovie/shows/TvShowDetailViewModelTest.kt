@@ -1,5 +1,6 @@
 package dev.odaridavid.smoovie.shows
 
+import dev.odaridavid.smoovie.FakeSettingsPreferencesStore
 import dev.odaridavid.smoovie.FakeTvShowsRepository
 import dev.odaridavid.smoovie.FakeWatchlistRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
@@ -65,7 +66,7 @@ class TvShowDetailViewModelTest {
     ) = TvShowDetailViewModel(
         tvShowId = detail.id,
         presentLabel = "present",
-        getTvShowDetail = GetTvShowDetailUseCase(repo, configStore),
+        getTvShowDetail = GetTvShowDetailUseCase(repo, configStore, FakeSettingsPreferencesStore(initialRegionCode = "DE")),
         observeIsInWatchlist = ObserveIsInWatchlistUseCase(watchlistRepository),
         toggleWatchlistUseCase = ToggleWatchlistUseCase(watchlistRepository),
     )

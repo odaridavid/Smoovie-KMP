@@ -1,6 +1,7 @@
 package dev.odaridavid.smoovie.movies.domain
 
 import dev.odaridavid.smoovie.FakeMoviesRepository
+import dev.odaridavid.smoovie.FakeSettingsPreferencesStore
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import dev.odaridavid.smoovie.movies.data.KeywordsResponse
 import dev.odaridavid.smoovie.movies.data.MovieDetail
@@ -17,7 +18,7 @@ class GetMovieDetailUseCaseTest {
     private val baseDetail = MovieDetail(id = 1, title = "Test Movie", overview = "")
 
     private fun buildUseCase(repo: FakeMoviesRepository = FakeMoviesRepository(movieDetail = baseDetail)) =
-        GetMovieDetailUseCase(repo, ConfigurationStore())
+        GetMovieDetailUseCase(repo, ConfigurationStore(), FakeSettingsPreferencesStore(initialRegionCode = "DE"))
 
     @Test
     fun `given providers have DE region - when invoked - then uses DE streaming data`() =
@@ -116,7 +117,7 @@ class GetMovieDetailUseCaseTest {
                     override suspend fun getWatchProviders(movieId: Int): WatchProvidersResponse = throw RuntimeException("network error")
                 }
 
-            val result = GetMovieDetailUseCase(repo, ConfigurationStore()).invoke(1)
+            val result = GetMovieDetailUseCase(repo, ConfigurationStore(), FakeSettingsPreferencesStore(initialRegionCode = "DE")).invoke(1)
 
             assertTrue(result.streamingProviders.isEmpty())
             assertTrue(result.rentBuyProviders.isEmpty())
@@ -131,7 +132,7 @@ class GetMovieDetailUseCaseTest {
                     override suspend fun getMovieKeywords(movieId: Int): KeywordsResponse = throw RuntimeException("network error")
                 }
 
-            val result = GetMovieDetailUseCase(repo, ConfigurationStore()).invoke(1)
+            val result = GetMovieDetailUseCase(repo, ConfigurationStore(), FakeSettingsPreferencesStore(initialRegionCode = "DE")).invoke(1)
 
             assertTrue(result.keywords.isEmpty())
         }

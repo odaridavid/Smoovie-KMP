@@ -1,6 +1,7 @@
 package dev.odaridavid.smoovie.movies
 
 import dev.odaridavid.smoovie.FakeMoviesRepository
+import dev.odaridavid.smoovie.FakeSettingsPreferencesStore
 import dev.odaridavid.smoovie.FakeWatchlistRepository
 import dev.odaridavid.smoovie.configuration.ConfigurationStore
 import dev.odaridavid.smoovie.movies.data.Genre
@@ -55,7 +56,7 @@ class MovieDetailViewModelTest {
     ) = MovieDetailViewModel(
         observeIsInWatchlist = ObserveIsInWatchlistUseCase(watchlistRepository),
         movieId = testMovieDetail.id,
-        getMovieDetail = GetMovieDetailUseCase(repo, configStore),
+        getMovieDetail = GetMovieDetailUseCase(repo, configStore, FakeSettingsPreferencesStore(initialRegionCode = "DE")),
         toggleWatchlistUseCase = ToggleWatchlistUseCase(watchlistRepository),
     )
 

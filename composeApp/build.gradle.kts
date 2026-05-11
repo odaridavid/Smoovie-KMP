@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.ktlint)
     alias(libs.plugins.kover)
     alias(libs.plugins.googleServices)
+    alias(libs.plugins.crashlytics)
 }
 
 ktlint {
@@ -94,6 +95,7 @@ kotlin {
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.appcheck)
             implementation(libs.firebase.appcheck.playintegrity)
+            implementation(libs.firebase.crashlytics)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)

@@ -10,6 +10,7 @@
 		80578F1B2FAF57D00099F8D8 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 80578F1A2FAF57D00099F8D8 /* FirebaseAppCheck */; };
 		80578F1D2FAF57D00099F8D8 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 80578F1C2FAF57D00099F8D8 /* FirebaseCore */; };
 		80578F1F2FAF5E820099F8D8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 80578F1E2FAF5E810099F8D8 /* GoogleService-Info.plist */; };
+		80578F242FB120160099F8D8 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 80578F232FB120160099F8D8 /* FirebaseCrashlytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +49,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80578F242FB120160099F8D8 /* FirebaseCrashlytics in Frameworks */,
 				80578F1D2FAF57D00099F8D8 /* FirebaseCore in Frameworks */,
 				80578F1B2FAF57D00099F8D8 /* FirebaseAppCheck in Frameworks */,
 			);
@@ -64,6 +66,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		80578F222FB120160099F8D8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		9896E8DFC16A9C971400864A = {
 			isa = PBXGroup;
 			children = (
@@ -71,6 +80,7 @@
 				0F0406387362BF449F670DD7 /* iosApp */,
 				123A345966D29703ABF93DD4 /* Products */,
 				80578F1E2FAF5E810099F8D8 /* GoogleService-Info.plist */,
+				80578F222FB120160099F8D8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -85,6 +95,7 @@
 				A22CA9F30C98F1D3349ED1FD /* Sources */,
 				046734934858700972A1EDDC /* Frameworks */,
 				AB0EE6973CCFB13E93E30274 /* Resources */,
+				80578F262FB12D030099F8D8 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -97,6 +108,7 @@
 			packageProductDependencies = (
 				80578F1A2FAF57D00099F8D8 /* FirebaseAppCheck */,
 				80578F1C2FAF57D00099F8D8 /* FirebaseCore */,
+				80578F232FB120160099F8D8 /* FirebaseCrashlytics */,
 			);
 			productName = iosApp;
 			productReference = C9CDD30A69CA5D506CD8D861 /* Smoovie.app */;
@@ -151,6 +163,28 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		80578F262FB12D030099F8D8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%Build/*}SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
 		E8AB9F32F217AF1C5A9444C4 /* Compile Kotlin Framework */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -277,7 +311,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -414,6 +448,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 80578F192FAF57D00099F8D8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCore;
+		};
+		80578F232FB120160099F8D8 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 80578F192FAF57D00099F8D8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

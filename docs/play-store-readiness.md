@@ -54,8 +54,8 @@ TMDB's API terms require visible attribution: "This product uses the TMDB API bu
 ### 9. Crash reporting
 Napier (already in the project) is for logs, not prod crashes. Add Crashlytics or Sentry before staged rollout — you'll want signal on day-one launches.
 
-### 10. Material3 is on an alpha
-`material3 = "1.11.0-alpha07"` in `gradle/libs.versions.toml`. Move to the latest stable for the release build to avoid alpha-only regressions. Will require visual smoke-testing.
+### 10. Material3 is on an alpha — not actionable
+`org.jetbrains.compose.material3:material3` has no stable release; the JetBrains KMP wrapper is alpha-only. `1.11.0-alpha07` is already the latest available version. Monitor the [Compose Multiplatform releases](https://github.com/JetBrains/compose-multiplatform/releases) and upgrade when a stable is published.
 
 ### 11. versionCode / versionName strategy
 Currently hardcoded `versionCode = 1, versionName = "1.0"`. Before the first release, set up either:

@@ -141,6 +141,11 @@ val localProperties =
         if (file.exists()) load(file.inputStream())
     }
 
+val versionProperties =
+    Properties().apply {
+        load(rootProject.file("version.properties").inputStream())
+    }
+
 fun signingProperty(key: String): String? = localProperties.getProperty(key) ?: System.getenv(key.uppercase().replace('.', '_'))
 
 val releaseStoreFile = signingProperty("release.store.file")
@@ -174,8 +179,8 @@ android {
             libs.versions.android.targetSdk
                 .get()
                 .toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = versionProperties.getProperty("versionCode").toInt()
+        versionName = versionProperties.getProperty("versionName")
     }
     packaging {
         resources {

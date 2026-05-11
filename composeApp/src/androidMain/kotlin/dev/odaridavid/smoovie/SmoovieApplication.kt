@@ -24,9 +24,6 @@ class SmoovieApplication : Application() {
         FirebaseApp.initializeApp(this)
         FirebaseAppCheck.getInstance().installAppCheckProviderFactory(appCheckProviderFactory())
         AppCheckTokenProviderRegistry.instance = AndroidAppCheckTokenProvider()
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
-        if (BuildConfig.DEBUG) {
-            FirebaseAppCheck.getInstance().getAppCheckToken(false)
-        }
+        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = !BuildConfig.DEBUG
     }
 }

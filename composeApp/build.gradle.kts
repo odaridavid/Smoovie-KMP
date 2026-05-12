@@ -96,6 +96,7 @@ kotlin {
             implementation(libs.firebase.appcheck)
             implementation(libs.firebase.appcheck.playintegrity)
             implementation(libs.firebase.crashlytics)
+            implementation(libs.play.review)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)

@@ -2,6 +2,7 @@ package dev.odaridavid.smoovie.watchlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.odaridavid.smoovie.utils.AppReviewRequester
 import dev.odaridavid.smoovie.watchlist.domain.MediaType
 import dev.odaridavid.smoovie.watchlist.domain.ObserveWatchlistUseCase
 import dev.odaridavid.smoovie.watchlist.domain.RemoveFromWatchlistUseCase
@@ -12,14 +13,28 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class WatchlistViewModel(
-    observeWatchlist: ObserveWatchlistUseCase,
+    private val observeWatchlist: ObserveWatchlistUseCase,
     private val removeFromWatchlist: RemoveFromWatchlistUseCase,
+    private val appReviewRequester: AppReviewRequester,
 ) : ViewModel() {
     private val filter = MutableStateFlow(WatchlistFilter.ALL)
+
+    init {
+        viewModelScope.launch {
+            observeWatchlist()
+                .map { it.size }
+                .distinctUntilChanged()
+                .collect { count ->
+                    if (count == REVIEW_PROMPT_THRESHOLD) appReviewRequester.requestReview()
+                }
+        }
+    }
 
     val state: StateFlow<WatchlistUiState> =
         combine(observeWatchlist(), filter) { entries, currentFilter ->
@@ -65,5 +80,6 @@ class WatchlistViewModel(
 
     private companion object {
         const val STATE_TIMEOUT_MS = 5_000L
+        const val REVIEW_PROMPT_THRESHOLD = 3
     }
 }

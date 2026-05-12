@@ -1,5 +1,6 @@
 package dev.odaridavid.smoovie.watchlist
 
+import dev.odaridavid.smoovie.FakeAppReviewRequester
 import dev.odaridavid.smoovie.FakeWatchlistRepository
 import dev.odaridavid.smoovie.watchlist.domain.MediaType
 import dev.odaridavid.smoovie.watchlist.domain.ObserveWatchlistUseCase
@@ -16,6 +17,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
@@ -57,10 +59,14 @@ class WatchlistViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun buildViewModel(repo: FakeWatchlistRepository = FakeWatchlistRepository()): WatchlistViewModel =
+    private fun buildViewModel(
+        repo: FakeWatchlistRepository = FakeWatchlistRepository(),
+        appReviewRequester: FakeAppReviewRequester = FakeAppReviewRequester(),
+    ): WatchlistViewModel =
         WatchlistViewModel(
             observeWatchlist = ObserveWatchlistUseCase(repo),
             removeFromWatchlist = RemoveFromWatchlistUseCase(repo),
+            appReviewRequester = appReviewRequester,
         )
 
     @Test
@@ -196,5 +202,34 @@ class WatchlistViewModelTest {
             val state = viewModel.state.value
             assertIs<WatchlistUiState.Loaded>(state)
             assertEquals(movieEntry.id, (state.items.single() as WatchlistItemUiModel.Movie).movie.id)
+        }
+
+    @Test
+    fun `given watchlist reaches 3 items - when observed - then review is requested`() =
+        runTest {
+            val repo = FakeWatchlistRepository()
+            val reviewer = FakeAppReviewRequester()
+            val viewModel = buildViewModel(repo, reviewer)
+            backgroundScope.launch(testDispatcher) { viewModel.state.collect {} }
+
+            repo.toggle(movieEntry)
+            repo.toggle(tvEntry)
+            repo.toggle(movieEntry.copy(id = 3, title = "Third"))
+
+            assertEquals(1, reviewer.requestCount)
+        }
+
+    @Test
+    fun `given watchlist below threshold - when observed - then review is not requested`() =
+        runTest {
+            val repo = FakeWatchlistRepository()
+            val reviewer = FakeAppReviewRequester()
+            val viewModel = buildViewModel(repo, reviewer)
+            backgroundScope.launch(testDispatcher) { viewModel.state.collect {} }
+
+            repo.toggle(movieEntry)
+            repo.toggle(tvEntry)
+
+            assertFalse(reviewer.requestCount > 0)
         }
 }

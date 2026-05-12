@@ -182,5 +182,5 @@ private val appModule =
         }
         viewModel { (personId: Int) -> PersonDetailViewModel(personId, get()) }
         viewModel { (personId: Int) -> PersonFilmographyViewModel(personId, get()) }
-        viewModel { WatchlistViewModel(get(), get()) }
+        viewModel { WatchlistViewModel(get(), get(), get()) }
     }

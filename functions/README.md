@@ -32,8 +32,8 @@ firebase deploy --only functions
 ```
 
 Note the printed function URL — something like
-`https://tmdbproxy-<hash>-ew.a.run.app`. The mobile app's `TMDB_BASE_URL` will
-point at this in Phase 3.
+`https://tmdbproxy-<hash>-ew.a.run.app`. Update `TMDB_BASE_URL` in
+`composeApp/src/commonMain/kotlin/dev/odaridavid/smoovie/AppConfig.kt` to this URL.
 
 ## Local development
 

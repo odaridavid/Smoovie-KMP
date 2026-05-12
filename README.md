@@ -23,10 +23,7 @@ Targets Android and iOS with a shared Compose Multiplatform UI.
   popular/discover endpoints; TMDB attribution per the API ToS; app version footer
 - Bottom navigation with Movies / Shows / Watchlist / Settings tabs; state preserved across tab
   switches, instant tab-to-tab transitions and sliding detail pushes
-- In-memory TTL caching for TMDB requests (1 hour) so navigating back and forth doesn't re-hit the
-  network
-- Typed navigation via Jetpack Compose Navigation (KMP) with serializable routes
-- Smooth slide transitions between destinations, shared-element transitions on hero images
+- Smooth slide transitions between destinations
 - Light and dark theme support
 
 ## Project Structure
@@ -165,14 +162,8 @@ git config core.hooksPath hooks
 If the hook blocks a commit, run `./gradlew :composeApp:ktlintFormat` to auto-fix, re-stage the
 changes, then commit again.
 
----
+## Demo
 
 |          Android                                 |         iOS                                  |
 |:-----------------------------------------:|:-----------------------------------------:|
 | <video src="https://github.com/user-attachments/assets/51419a7b-d51f-4172-a259-769d14b4aa2c" width="360"/> | <video src="https://github.com/user-attachments/assets/03f1b98b-19e0-499e-bb75-d9d2956c790b" width="360"/> |
-
-
-
-
-Learn more
-about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)

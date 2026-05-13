@@ -17,5 +17,6 @@ actual val platformModule: Module =
                 androidContext().getSharedPreferences("smoovie_filter", Context.MODE_PRIVATE),
             )
         }
-        single<AppReviewRequester> { AndroidAppReviewRequester() }
+        single { AndroidAppReviewRequester() }
+        single<AppReviewRequester> { get<AndroidAppReviewRequester>() }
     }

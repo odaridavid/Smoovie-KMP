@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Tv
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -20,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination
@@ -40,8 +42,10 @@ import dev.odaridavid.smoovie.person.PersonDetailViewModel
 import dev.odaridavid.smoovie.person.PersonFilmographyMediaType
 import dev.odaridavid.smoovie.person.PersonFilmographyScreen
 import dev.odaridavid.smoovie.person.PersonFilmographyViewModel
+import dev.odaridavid.smoovie.settings.CrashReportingConsentViewModel
 import dev.odaridavid.smoovie.settings.SettingsScreen
 import dev.odaridavid.smoovie.settings.SettingsViewModel
+import dev.odaridavid.smoovie.settings.components.CrashReportingConsentSheet
 import dev.odaridavid.smoovie.shows.SeasonDetailScreen
 import dev.odaridavid.smoovie.shows.SeasonDetailViewModel
 import dev.odaridavid.smoovie.shows.ShowsScreen
@@ -64,6 +68,7 @@ import smoovie.composeapp.generated.resources.watchlist_title
 private const val TRANSITION_DURATION_MS = 500
 private val TransitionEasing = CubicBezierEasing(0.4f, 0.0f, 0.2f, 1.0f)
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App() {
     SmoovieTheme {
@@ -71,6 +76,8 @@ fun App() {
             val navController = rememberNavController()
             val currentBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = currentBackStackEntry?.destination
+            val crashReportingConsentViewModel: CrashReportingConsentViewModel = koinViewModel()
+            val isConsentSheetVisible by crashReportingConsentViewModel.isVisible.collectAsState()
 
             Scaffold(
                 contentWindowInsets = WindowInsets(0),
@@ -249,6 +256,13 @@ fun App() {
                         )
                     }
                 }
+            }
+
+            if (isConsentSheetVisible) {
+                CrashReportingConsentSheet(
+                    onEnable = crashReportingConsentViewModel::onEnable,
+                    onDecline = crashReportingConsentViewModel::onDecline,
+                )
             }
         }
     }

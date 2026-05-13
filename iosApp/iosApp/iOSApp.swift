@@ -16,6 +16,7 @@ struct iOSApp: App {
         AppCheck.setAppCheckProviderFactory(appCheckProviderFactory())
         FirebaseApp.configure()
         AppCheckTokenProviderRegistry.shared.instance = IosAppCheckTokenProvider()
+        CrashReportingControllerRegistry.shared.instance = IosCrashReportingController()
         #if DEBUG
         if let app = FirebaseApp.app(), let provider = AppCheckDebugProvider(app: app) {
             print("===== Firebase App Check Debug Token =====")
@@ -51,5 +52,15 @@ private final class IosAppCheckTokenProvider: NSObject, AppCheckTokenProvider {
         AppCheck.appCheck().token(forcingRefresh: false) { token, _ in
             callback(token?.token)
         }
+    }
+}
+
+private final class IosCrashReportingController: NSObject, CrashReportingController {
+    func setEnabled(enabled: Bool) {
+        #if DEBUG
+        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(false)
+        #else
+        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(enabled)
+        #endif
     }
 }

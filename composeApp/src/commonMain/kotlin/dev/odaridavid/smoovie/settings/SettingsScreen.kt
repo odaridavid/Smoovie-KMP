@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,6 +21,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -40,6 +42,8 @@ import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
 import smoovie.composeapp.generated.resources.app_name
 import smoovie.composeapp.generated.resources.settings_app_version_format
+import smoovie.composeapp.generated.resources.settings_crash_reporting_description
+import smoovie.composeapp.generated.resources.settings_crash_reporting_label
 import smoovie.composeapp.generated.resources.settings_region_label
 import smoovie.composeapp.generated.resources.settings_region_unset
 import smoovie.composeapp.generated.resources.settings_title
@@ -54,6 +58,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
         state = state,
         version = appVersionInfo(),
         onRegionSelected = viewModel::onRegionSelected,
+        onCrashReportingToggled = viewModel::onCrashReportingToggled,
     )
 }
 
@@ -63,6 +68,7 @@ internal fun SettingsContent(
     state: SettingsUiState,
     version: AppVersion,
     onRegionSelected: (Region) -> Unit,
+    onCrashReportingToggled: (Boolean) -> Unit,
 ) {
     SetStatusBarIcons(useDarkIcons = !isSystemInDarkTheme())
     var isRegionSheetVisible by remember { mutableStateOf(false) }
@@ -85,6 +91,11 @@ internal fun SettingsContent(
             RegionRow(
                 selectedRegion = state.selectedRegion,
                 onClick = { isRegionSheetVisible = true },
+            )
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            CrashReportingRow(
+                enabled = state.crashReportingEnabled,
+                onToggled = onCrashReportingToggled,
             )
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
             Spacer(modifier = Modifier.height(16.dp))
@@ -150,6 +161,43 @@ private fun RegionRow(
 }
 
 @Composable
+private fun CrashReportingRow(
+    enabled: Boolean,
+    onToggled: (Boolean) -> Unit,
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable { onToggled(!enabled) }
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Icon(
+            imageVector = Icons.Default.BugReport,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = stringResource(Res.string.settings_crash_reporting_label),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                text = stringResource(Res.string.settings_crash_reporting_description),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Switch(
+            checked = enabled,
+            onCheckedChange = onToggled,
+        )
+    }
+}
+
+@Composable
 private fun TmdbAttribution() {
     Column(
         modifier =
@@ -204,9 +252,10 @@ private val previewVersion = AppVersion(name = "1.0", code = "1")
 private fun SettingsContentDefaultPreview() {
     SmoovieTheme {
         SettingsContent(
-            state = SettingsUiState(selectedRegion = null),
+            state = SettingsUiState(selectedRegion = null, crashReportingEnabled = true),
             version = previewVersion,
             onRegionSelected = {},
+            onCrashReportingToggled = {},
         )
     }
 }
@@ -216,9 +265,31 @@ private fun SettingsContentDefaultPreview() {
 private fun SettingsContentSelectedPreview() {
     SmoovieTheme {
         SettingsContent(
-            state = SettingsUiState(selectedRegion = SUPPORTED_REGIONS.first { it.code == "DE" }),
+            state =
+                SettingsUiState(
+                    selectedRegion = SUPPORTED_REGIONS.first { it.code == "DE" },
+                    crashReportingEnabled = true,
+                ),
             version = previewVersion,
             onRegionSelected = {},
+            onCrashReportingToggled = {},
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun SettingsContentCrashReportingOffPreview() {
+    SmoovieTheme {
+        SettingsContent(
+            state =
+                SettingsUiState(
+                    selectedRegion = SUPPORTED_REGIONS.first { it.code == "DE" },
+                    crashReportingEnabled = false,
+                ),
+            version = previewVersion,
+            onRegionSelected = {},
+            onCrashReportingToggled = {},
         )
     }
 }

@@ -1,6 +1,8 @@
 package dev.odaridavid.smoovie.settings
 
+import dev.odaridavid.smoovie.FakeCrashReportingController
 import dev.odaridavid.smoovie.FakeSettingsPreferencesStore
+import dev.odaridavid.smoovie.observability.CrashReportingControllerRegistry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -12,19 +14,23 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SettingsViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val crashReporting = FakeCrashReportingController()
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        CrashReportingControllerRegistry.instance = crashReporting
     }
 
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
+        CrashReportingControllerRegistry.instance = null
     }
 
     @Test
@@ -81,5 +87,51 @@ class SettingsViewModelTest {
                 viewModel.state.value.selectedRegion
                     ?.code,
             )
+        }
+
+    @Test
+    fun `given store has crash reporting enabled - when viewmodel is created - then state reflects it`() =
+        runTest {
+            val store = FakeSettingsPreferencesStore(initialCrashReportingEnabled = true)
+
+            val viewModel = SettingsViewModel(store)
+
+            assertTrue(viewModel.state.value.crashReportingEnabled)
+        }
+
+    @Test
+    fun `given store default - when viewmodel is created - then crash reporting is off`() =
+        runTest {
+            val store = FakeSettingsPreferencesStore()
+
+            val viewModel = SettingsViewModel(store)
+
+            assertEquals(false, viewModel.state.value.crashReportingEnabled)
+        }
+
+    @Test
+    fun `given crash reporting is on - when onCrashReportingToggled false - then store and controller are updated`() =
+        runTest {
+            val store = FakeSettingsPreferencesStore(initialCrashReportingEnabled = true)
+            val viewModel = SettingsViewModel(store)
+
+            viewModel.onCrashReportingToggled(false)
+
+            assertEquals(false, store.crashReportingEnabled.value)
+            assertEquals(false, viewModel.state.value.crashReportingEnabled)
+            assertEquals(listOf(false), crashReporting.calls)
+        }
+
+    @Test
+    fun `given crash reporting is off - when onCrashReportingToggled true - then store and controller are updated`() =
+        runTest {
+            val store = FakeSettingsPreferencesStore(initialCrashReportingEnabled = false)
+            val viewModel = SettingsViewModel(store)
+
+            viewModel.onCrashReportingToggled(true)
+
+            assertEquals(true, store.crashReportingEnabled.value)
+            assertEquals(true, viewModel.state.value.crashReportingEnabled)
+            assertEquals(listOf(true), crashReporting.calls)
         }
 }

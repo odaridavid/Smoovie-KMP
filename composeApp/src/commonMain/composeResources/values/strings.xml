@@ -65,4 +65,11 @@
     <string name="settings_tmdb_attribution">This application uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.</string>
     <string name="settings_about_section_title">About</string>
     <string name="settings_app_version_format" translatable="false">Version %1$s (%2$s)</string>
+    <string name="settings_crash_reporting_label">Send crash reports</string>
+    <string name="settings_crash_reporting_description">Help improve the app by sharing anonymous crash data. No personal information is collected.</string>
+    <string name="crash_consent_title">Help improve Smoovie</string>
+    <string name="crash_consent_body">Share anonymous crash reports so bugs can be tracked down faster. Reports include the error stack trace, your device model, and the app version — no personal information.</string>
+    <string name="crash_consent_enable">Enable</string>
+    <string name="crash_consent_not_now">Not now</string>
+    <string name="crash_consent_footnote">You can change this any time in Settings.</string>
 </resources>

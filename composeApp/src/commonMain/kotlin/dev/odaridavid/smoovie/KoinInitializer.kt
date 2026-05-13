@@ -21,12 +21,14 @@ import dev.odaridavid.smoovie.movies.domain.SearchMoviesUseCase
 import dev.odaridavid.smoovie.observability.Logger
 import dev.odaridavid.smoovie.observability.NapierKtorLogger
 import dev.odaridavid.smoovie.observability.NapierLogger
+import dev.odaridavid.smoovie.observability.setCrashReportingEnabled
 import dev.odaridavid.smoovie.person.PersonDetailViewModel
 import dev.odaridavid.smoovie.person.PersonFilmographyViewModel
 import dev.odaridavid.smoovie.person.data.PersonRepositoryImpl
 import dev.odaridavid.smoovie.person.domain.GetPersonDetailUseCase
 import dev.odaridavid.smoovie.person.domain.PersonRepository
 import dev.odaridavid.smoovie.security.AppCheckHeader
+import dev.odaridavid.smoovie.settings.CrashReportingConsentViewModel
 import dev.odaridavid.smoovie.settings.SettingsPreferencesStore
 import dev.odaridavid.smoovie.settings.SettingsPreferencesStoreImpl
 import dev.odaridavid.smoovie.settings.SettingsViewModel
@@ -65,10 +67,13 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 fun initKoin(setup: KoinApplication.() -> Unit = {}) {
-    startKoin {
-        setup()
-        modules(appModule, platformModule)
-    }
+    val koinApp =
+        startKoin {
+            setup()
+            modules(appModule, platformModule)
+        }
+    val settingsPreferencesStore = koinApp.koin.get<SettingsPreferencesStore>()
+    setCrashReportingEnabled(settingsPreferencesStore.crashReportingEnabled.value)
 }
 
 private val appModule =
@@ -156,6 +161,7 @@ private val appModule =
             )
         }
         viewModel { SettingsViewModel(get()) }
+        viewModel { CrashReportingConsentViewModel(get()) }
         viewModel { (tvShowId: Int, presentLabel: String) ->
             TvShowDetailViewModel(
                 tvShowId = tvShowId,

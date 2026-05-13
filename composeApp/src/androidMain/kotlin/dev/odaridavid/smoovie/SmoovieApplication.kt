@@ -3,7 +3,8 @@ package dev.odaridavid.smoovie
 import android.app.Application
 import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import dev.odaridavid.smoovie.observability.AndroidCrashReportingController
+import dev.odaridavid.smoovie.observability.CrashReportingControllerRegistry
 import dev.odaridavid.smoovie.observability.initLogger
 import dev.odaridavid.smoovie.security.AndroidAppCheckTokenProvider
 import dev.odaridavid.smoovie.security.AppCheckTokenProviderRegistry
@@ -24,6 +25,6 @@ class SmoovieApplication : Application() {
         FirebaseApp.initializeApp(this)
         FirebaseAppCheck.getInstance().installAppCheckProviderFactory(appCheckProviderFactory())
         AppCheckTokenProviderRegistry.instance = AndroidAppCheckTokenProvider()
-        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = !BuildConfig.DEBUG
+        CrashReportingControllerRegistry.instance = AndroidCrashReportingController()
     }
 }

@@ -54,7 +54,8 @@ composeApp/src/
 composeApp/schemas/   # Exported Room schemas (tracked in git for migration review)
 functions/            # Firebase Cloud Function: thin TMDB proxy that holds the API token
 iosApp/               # Xcode project / Swift entry point
-firebase.json         # Firebase project config (functions source dir + predeploy build)
+docs/                 # Privacy policy + demo assets (privacy-policy.html is served via Firebase Hosting)
+firebase.json         # Firebase project config (functions + hosting)
 .firebaserc           # Pins the repo to the smoovie-kmp Firebase project
 ```
 
@@ -161,6 +162,20 @@ git config core.hooksPath hooks
 
 If the hook blocks a commit, run `./gradlew :composeApp:ktlintFormat` to auto-fix, re-stage the
 changes, then commit again.
+
+## Privacy Policy
+
+The privacy policy lives at [`docs/privacy-policy.html`](docs/privacy-policy.html) and is served via
+Firebase Hosting:
+
+- <https://smoovie-kmp.web.app/privacy>
+- <https://smoovie-kmp.web.app/privacy-policy.html>
+
+To redeploy after editing:
+
+```shell
+firebase deploy --only hosting
+```
 
 ## Demo
 

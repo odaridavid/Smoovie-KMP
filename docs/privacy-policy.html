@@ -34,10 +34,12 @@
 
   <h2>Data We Collect</h2>
 
-  <h2>1. Crash and Diagnostics Data</h2>
+  <h2>1. Crash and Diagnostics Data (Opt-in)</h2>
   <p>
-    Smoovie uses <strong>Firebase Crashlytics</strong> to collect crash reports when the app
-    encounters an unexpected error. This includes:
+    Smoovie can use <strong>Firebase Crashlytics</strong> to collect crash reports when the app
+    encounters an unexpected error. Crash reporting is <strong>off by default</strong>. On first
+    launch you will be asked whether to enable it; nothing is collected unless you opt in. When
+    enabled, the following is sent:
   </p>
   <ul>
     <li>The crash stack trace and error message</li>
@@ -47,7 +49,11 @@
   <p>
     This data is used solely to identify and fix bugs. It is processed by Google LLC under
     their <a href="https://firebase.google.com/support/privacy" target="_blank">Firebase Privacy Policy</a>.
-    Crash collection is disabled in debug builds.
+    Crash collection is also disabled in debug builds, regardless of your preference.
+  </p>
+  <p>
+    You can change your choice any time from <strong>Settings → Send crash reports</strong>.
+    When disabled, no crash data is collected or transmitted.
   </p>
 
   <h2>2. App Integrity Verification</h2>

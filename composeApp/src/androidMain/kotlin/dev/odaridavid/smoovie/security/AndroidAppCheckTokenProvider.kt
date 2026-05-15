@@ -1,7 +1,7 @@
 package dev.odaridavid.smoovie.security
 
+import android.util.Log
 import com.google.firebase.appcheck.FirebaseAppCheck
-import io.github.aakira.napier.Napier
 
 class AndroidAppCheckTokenProvider : AppCheckTokenProvider {
     override fun fetchToken(callback: (String?) -> Unit) {
@@ -10,7 +10,7 @@ class AndroidAppCheckTokenProvider : AppCheckTokenProvider {
             .getAppCheckToken(false)
             .addOnSuccessListener { result -> callback(result.token) }
             .addOnFailureListener { error ->
-                Napier.e(tag = "AppCheck", throwable = error) { "Failed to fetch App Check token" }
+                Log.e("AppCheck", "Failed to fetch App Check token", error)
                 callback(null)
             }
     }

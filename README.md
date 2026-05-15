@@ -8,56 +8,16 @@ A Kotlin Multiplatform app for browsing and exploring movies, powered by
 the [TMDB API](https://www.themoviedb.org/).
 Targets Android and iOS with a shared Compose Multiplatform UI.
 
-## Features
-
-- Browse popular movies and TV shows with shimmer loading placeholders
-- Featured hero pager with auto-scroll on both Movies and Shows tabs
-- **Filter sheet** (genre, sort order, min rating) on Movies and Shows — filters are independent per tab, persist across app restarts, and show a badge dot on the filter icon when active
-- Search movies and TV shows with debounced input
-- Movie and TV show detail screens with edge-to-edge backdrop, cast, trailers, reviews, seasons,
-  where to watch (streaming + rent/buy via JustWatch), FSK age rating, and a "More like this" section
-- Person detail screen with biography, birthday, place of birth, and movie + TV filmography
-- Watchlist — tap the bookmark on any movie or TV show detail to save it locally; browse saved
-  titles from the Watchlist tab in the bottom navigation
-- **Settings tab** — pick a region (defaults to your system locale) which threads into TMDB's
-  popular/discover endpoints; TMDB attribution per the API ToS; app version footer
-- Bottom navigation with Movies / Shows / Watchlist / Settings tabs; state preserved across tab
-  switches, instant tab-to-tab transitions and sliding detail pushes
-- Smooth slide transitions between destinations
-- Light and dark theme support
+Browse popular movies and TV shows, search the TMDB catalog, drill into details (cast, trailers,
+reviews, seasons, where to watch), and bookmark titles to a local watchlist. Region-aware results
+are driven by a Settings picker that defaults to your system locale.
 
 ## Project Structure
 
-```
-composeApp/src/
-├── commonMain/       # Shared code (UI, ViewModels, API client, persistence)
-│   └── dev/odaridavid/smoovie/
-│       ├── App.kt              # NavHost + shared-transition scaffolding
-│       ├── Screen.kt           # @Serializable navigation routes
-│       ├── KoinInitializer.kt  # DI module
-│       ├── configuration/      # TMDB image config + URL builder
-│       ├── filter/             # Cross-feature filter types (MovieFilterPreferences, TvFilterPreferences, FilterPreferencesStore)
-│       ├── movies/             # Movie list, detail, search, featured pager, filter, use cases
-│       ├── person/             # Person detail screen + filmography
-│       ├── security/           # AppCheckTokenProvider interface + registry consumed from common code
-│       ├── settings/           # Settings tab: region selection, TMDB attribution, app version
-│       ├── shows/              # TV shows list, detail, search, featured pager, filter, use cases
-│       ├── watchlist/          # Watchlist screen, repository, Room DAO + entity
-│       ├── storage/            # SmoovieDatabase (Room KMP) + platform DB builder
-│       ├── utils/              # TtlCache, currentTimeMillis (expect/actual)
-│       ├── ui/                 # Shared composables: FilterSheet, SearchBackHandler, SetStatusBarIcons
-│       └── theme/              # SmoovieTheme (Material3, dark/light), ErrorContent, EmptyContent
-├── androidMain/      # Android-specific (OkHttp engine, Room builder, Firebase init)
-├── iosMain/          # iOS-specific (Darwin engine, Room builder)
-└── commonTest/       # Unit tests (ViewModels, use cases, TtlCache)
-
-composeApp/schemas/   # Exported Room schemas (tracked in git for migration review)
-functions/            # Firebase Cloud Function: thin TMDB proxy that holds the API token
-iosApp/               # Xcode project / Swift entry point
-docs/                 # Privacy policy + demo assets (privacy-policy.html is served via Firebase Hosting)
-firebase.json         # Firebase project config (functions + hosting)
-.firebaserc           # Pins the repo to the smoovie-kmp Firebase project
-```
+The app is a single Gradle module (`:composeApp`) with one package per feature under
+`composeApp/src/commonMain/kotlin/dev/odaridavid/smoovie/`. Each feature package is self-contained
+(screen + ViewModel + UI models + `data/` + `domain/`); platform-native pieces live in
+`androidMain/` and `iosMain/`. The Firebase Cloud Function in `functions/` proxies TMDB.
 
 ## Architecture
 
@@ -116,9 +76,13 @@ name, save. The token persists in the app's local storage.
 | [Koin](https://insert-koin.io)                                                            | Multiplatform dependency injection           |
 | [Coil 3](https://coil-kt.github.io/coil/)                                                 | Image loading (backdrops, posters, profiles) |
 | [KSP](https://github.com/google/ksp)                                                      | Room annotation processing                   |
-| [multiplatform-settings](https://github.com/russhwolf/multiplatform-settings)             | Cross-platform KV persistence (filter + region prefs) |
+| [multiplatform-settings](https://github.com/russhwolf/multiplatform-settings)             | Cross-platform KV persistence (filter + region + consent prefs) |
 | [Firebase App Check](https://firebase.google.com/docs/app-check)                          | Verifies requests come from authentic builds (Play Integrity / App Attest) |
+| [Firebase Crashlytics](https://firebase.google.com/docs/crashlytics)                      | Android crash reporting (opt-in via settings consent prompt) |
+| [Napier](https://github.com/AAkira/Napier)                                                | Multiplatform logging behind the `observability.Logger` interface |
+| [Play In-App Review](https://developer.android.com/guide/playcore/in-app-review)          | Android in-app review prompt (paired with `SKStoreReviewController` on iOS) |
 | [ktlint-gradle](https://github.com/JLLeitschuh/ktlint-gradle)                            | Code style enforcement                       |
+| [Kover](https://github.com/Kotlin/kotlinx-kover)                                          | Code coverage reports (HTML + XML, used by CI) |
 
 ## Build and Run
 

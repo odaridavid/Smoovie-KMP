@@ -59,6 +59,17 @@ Rotate any of these by overwriting the secret value — no workflow change neede
 
 Auto-bumping in CI is a future improvement; bump manually as part of the release commit for now.
 
+### Release notes ("What's new")
+
+The workflow_dispatch form has a **Release notes** input. Whatever you type there gets written to `whatsnew/whatsnew-en-US` and uploaded as the **"What's new in this version"** text on the Play listing.
+
+- Default fallback: `Internal testing release.` — unfilled runs still produce a valid file.
+- Play caps the text at **500 characters per locale**; anything longer is truncated server-side.
+- For multi-locale notes, add more `whatsnew-<locale>` files in the same step (e.g. `whatsnew-de-DE`). The upload action picks up every locale file in the directory.
+- The field is per-run — it doesn't persist between releases.
+
+For richer per-version notes (changelog from commits since the last tag), wire `release_notes` from `git log` output instead of the manual input. Worth it once you're releasing more than weekly.
+
 ### Promotion path
 
 ```

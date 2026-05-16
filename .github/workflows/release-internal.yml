@@ -1,15 +1,23 @@
-name: Release to Internal Testing
+name: Release
 
 on:
   workflow_dispatch:
     inputs:
+      track:
+        description: Play Console track to upload to
+        required: true
+        type: choice
+        options:
+          - internal
+          - production
+        default: internal
       release_notes:
-        description: Release notes for the internal testing track (≤500 chars)
+        description: Release notes (≤500 chars)
         required: false
         default: Internal testing release.
 
 concurrency:
-  group: release-internal
+  group: release
   cancel-in-progress: false
 
 jobs:
@@ -68,13 +76,13 @@ jobs:
           mkdir -p whatsnew
           printf '%s' "${{ inputs.release_notes }}" > whatsnew/whatsnew-en-US
 
-      - name: Upload AAB to Play Console internal track
+      - name: Upload AAB to Play Console
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: dev.odaridavid.smoovie
           releaseFiles: composeApp/build/outputs/bundle/release/composeApp-release.aab
-          track: internal
+          track: ${{ inputs.track }}
           status: draft
           whatsNewDirectory: whatsnew
           mappingFile: composeApp/build/outputs/mapping/release/mapping.txt
@@ -85,12 +93,13 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -a "${{ steps.version.outputs.tag }}" -m "Release ${{ steps.version.outputs.tag }} → Play internal testing"
+          git tag -a "${{ steps.version.outputs.tag }}" -m "Release ${{ steps.version.outputs.tag }} → Play ${{ inputs.track }} track"
           git push origin "${{ steps.version.outputs.tag }}"
           gh release create "${{ steps.version.outputs.tag }}" \
             --title "${{ steps.version.outputs.tag }}" \
             --notes "${{ inputs.release_notes }}" \
-            --target "${{ github.sha }}"
+            --target "${{ github.sha }}" \
+            ${{ inputs.track == 'internal' && '--prerelease' || '' }}
 
       - name: Clean up keystore
         if: always()

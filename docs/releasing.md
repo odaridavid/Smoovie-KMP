@@ -42,11 +42,15 @@ Rotate any of these by overwriting the secret value — no workflow change neede
 
 ### Cutting a release
 
-1. **Bump** `versionName` in `version.properties` (semver, e.g. `1.0.1`). `versionCode` is auto-bumped by CI
+1. **Bump** `versionName` in `version.properties` (semver, e.g. `1.0.1`). `versionCode` is auto-bumped by CI.
 2. Commit and push.
-3. **GitHub Actions** → **Release to Internal Testing** → **Run workflow** → optional release notes → **Run**.
+3. **GitHub Actions** → **Release** → **Run workflow** → pick **track** (`internal` or `production`) → optional release notes → **Run**.
 4. Wait 3-5 minutes.
-5. **Play Console** → Smoovie → **Test and release** → **Internal testing** → review the draft → **Start rollout to Internal testing**.
+5. **Play Console** → Smoovie → **Test and release** → corresponding track → review the draft → **Start rollout**.
+
+Both tracks upload as `status: draft` — production rollouts still require explicit "Start rollout" + percentage selection in Play Console. The workflow never auto-publishes to users.
+
+GitHub Releases reflect the track choice: internal creates the GitHub Release as **prerelease**; production creates a full release. Tag format is the same (`v{versionName}-{versionCode}`) either way.
 
 ### Versioning
 

@@ -169,7 +169,7 @@ Firebase Crashlytics on both platforms, consent-gated.
 
 ## Release
 
-Android release pipeline lives in `.github/workflows/release-internal.yml`, triggered manually via workflow_dispatch with an optional release-notes input.
+Android release pipeline lives in `.github/workflows/release-internal.yml`, triggered manually via workflow_dispatch with a **track** choice (`internal` or `production`) and an optional release-notes input. Both tracks upload as `status: draft` — production rollouts still require explicit rollout-start + percentage selection in Play Console.
 
 - `versionName` is human-controlled in `version.properties` (semver).
 - `versionCode` is auto-derived in CI as `100 + GITHUB_RUN_NUMBER`. `composeApp/build.gradle.kts` reads a Gradle property `versionCodeOverride` (passed by the workflow via `-PversionCodeOverride=…`) and falls back to `version.properties` when absent — so local release builds still work unchanged.

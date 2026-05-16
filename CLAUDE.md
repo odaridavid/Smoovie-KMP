@@ -20,9 +20,13 @@ Single Gradle module: `:composeApp`. Powered by the TMDB API.
 ./gradlew :composeApp:ktlintFormat                           # auto-fix style violations
 ./gradlew :composeApp:koverHtmlReportDebug                   # HTML coverage report → build/reports/kover/htmlDebug/
 ./gradlew :composeApp:koverXmlReportDebug                    # XML coverage report → build/reports/kover/reportDebug.xml (runs in CI)
+./gradlew :composeApp:assembleRelease                        # signed release APK (requires release.* in local.properties)
+./gradlew :composeApp:bundleRelease                          # signed release AAB for Play Console upload
 ```
 
 `:composeApp:allTests` sometimes fails at `linkDebugTestIosSimulatorArm64` with a local `xcrun` error 72 — treat that as an environment issue, not a code failure. Fall back to `testDebugUnitTest` + `compileKotlinIosSimulatorArm64` to confirm KMP correctness.
+
+Releases run through `.github/workflows/release-internal.yml` (workflow_dispatch). Full procedure in `docs/releasing.md`; local dev setup in `docs/onboarding.md`.
 
 ### Cloud Function
 
@@ -49,8 +53,9 @@ composeApp/
     │   ├── KoinInitializer.kt            # appModule wiring; initKoin { setup }
     │   ├── PlatformModule.kt             # expect val platformModule: Module
     │   ├── filter/                       # cross-feature: MovieFilterPreferences, TvFilterPreferences, FilterPreferencesStore
+    │   ├── observability/                # Logger interface + Napier antilog wiring + CrashReporting interface + registry
     │   ├── security/                     # AppCheckTokenProvider interface + registry + Ktor plugin (X-Firebase-AppCheck header)
-    │   ├── settings/                     # Settings tab: Region picker, TMDB attribution, app version footer; SettingsPreferencesStore
+    │   ├── settings/                     # Settings tab: Region picker, TMDB attribution, app version footer; SettingsPreferencesStore + Crash reporting consent
     │   ├── <feature>/                    # one package per feature (movies, shows, person, watchlist, configuration)
     │   │   ├── <Feature>Screen.kt + <Feature>ViewModel.kt + <Feature>UiState.kt + UI models
     │   │   ├── components/               # feature-local composables
@@ -141,6 +146,37 @@ App Check rejects unauthorized debug builds. To allow yours: run the debug build
 - **iOS Xcode console**: explicit `print` block in `iOSApp.swift` between `===== Firebase App Check Debug Token =====` lines
 
 `SmoovieApplication` is registered in `AndroidManifest.xml` via `android:name=".SmoovieApplication"` — don't replace it without updating the manifest.
+
+### Release builds + Play App Signing
+
+Once enrolled in Play App Signing, Google generates a separate app signing key and re-signs distributed APKs with it. Play Integrity attestations on Play-installed builds are signed against the **app signing key**, not your upload key. Both SHA-256 fingerprints must be in Firebase Console (Project Settings → Android app → SHA fingerprints):
+- Upload key SHA-256: `keytool -list -v -keystore ~/.android/smoovie-upload.keystore`
+- App signing key SHA-256: Play Console → Setup → App integrity → App signing tab
+
+Without both registered, App Check tokens are silently null and the Cloud Function returns 401 "Missing App Check token" — Movies/Shows show "Failed to load." `AndroidAppCheckTokenProvider` logs the underlying `FirebaseAppCheckException` via `android.util.Log.e("AppCheck", ...)` directly (not Napier, since release builds have no Napier antilog installed). Sideloaded release builds (`adb install`) get `UNRECOGNIZED_VERSION` from Play Integrity and never get a token — install via Play Store internal testing to exercise the full release path.
+
+## Observability
+
+Firebase Crashlytics on both platforms, consent-gated.
+
+- `observability/CrashReporting.kt` (commonMain) declares `CrashReportingController` interface + `CrashReportingControllerRegistry` singleton — same registry pattern as App Check.
+- Android: `observability/AndroidCrashReportingController.kt` wraps `FirebaseCrashlytics.getInstance()` (`setCollectionEnabled`, `recordException`, `log`). Registered in `SmoovieApplication.initFirebase()` next to the App Check provider.
+- iOS: Swift bridge via the FirebaseCrashlytics SPM module, mirroring the App Check pattern.
+- Consent UI: `settings/CrashReportingConsentViewModel` + `settings/components/CrashReportingConsentSheet`. State lives in `SettingsPreferencesStore`. Default off — opt-in only. Toggling off stops future collection immediately.
+- Napier (`observability/NapierLogger.kt`) abstracts logging through a `Logger` interface; `LoggerInitializer.android.kt` only installs `DebugAntilog` when `BuildConfig.DEBUG=true`, so Napier is a no-op in release builds. For release-path errors that must survive (e.g. App Check failures), use `android.util.Log` directly — see `AndroidAppCheckTokenProvider`.
+- `observability/NapierKtorLogger.kt` plugs Napier into Ktor's `Logging` plugin so HTTP debug logs flow through the same antilog config.
+- Mapping/symbol upload: Android Crashlytics mapping uploads automatically during `bundleRelease` (`uploadCrashlyticsMappingFileRelease` task). iOS dSYM upload is a Run Script build phase in the Xcode target. Both run unconditionally during release builds.
+
+## Release
+
+Android release pipeline lives in `.github/workflows/release-internal.yml`, triggered manually via workflow_dispatch with an optional release-notes input.
+
+- `versionName` is human-controlled in `version.properties` (semver).
+- `versionCode` is auto-derived in CI as `100 + GITHUB_RUN_NUMBER`. `composeApp/build.gradle.kts` reads a Gradle property `versionCodeOverride` (passed by the workflow via `-PversionCodeOverride=…`) and falls back to `version.properties` when absent — so local release builds still work unchanged.
+- The workflow signs the AAB, uploads to Play Console internal track as **draft**, then on success creates an annotated git tag `v{versionName}-{versionCode}` and a matching GitHub Release. Tag presence = successful Play upload.
+- iOS releases are still manual (Xcode → Archive → TestFlight). dSYM upload runs as part of the archive.
+
+Full procedure (secrets setup, promotion path, gotchas): `docs/releasing.md`. Contributor onboarding (local dev, debug App Check token, daily commands, known quirks): `docs/onboarding.md`.
 
 ## Conventions
 

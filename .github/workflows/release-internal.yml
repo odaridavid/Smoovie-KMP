@@ -14,7 +14,7 @@ on:
       release_notes:
         description: Release notes (≤500 chars)
         required: false
-        default: Internal testing release.
+        default: Paste release notes here.
 
 concurrency:
   group: release

@@ -63,6 +63,9 @@
     <string name="settings_tmdb_powered_by">Powered by TMDB</string>
     <string name="settings_tmdb_powered_by_short">Powered by</string>
     <string name="settings_tmdb_attribution">This application uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.</string>
+    <string name="settings_justwatch_attribution">Watch provider data is sourced from JustWatch.</string>
+    <string name="where_to_watch_view_on_justwatch">View on JustWatch</string>
+    <string name="where_to_watch_justwatch_attribution">Data provided by JustWatch</string>
     <string name="settings_about_section_title">About</string>
     <string name="settings_app_version_format" translatable="false">Version %1$s (%2$s)</string>
     <string name="settings_crash_reporting_label">Send crash reports</string>

@@ -44,6 +44,7 @@ import smoovie.composeapp.generated.resources.app_name
 import smoovie.composeapp.generated.resources.settings_app_version_format
 import smoovie.composeapp.generated.resources.settings_crash_reporting_description
 import smoovie.composeapp.generated.resources.settings_crash_reporting_label
+import smoovie.composeapp.generated.resources.settings_justwatch_attribution
 import smoovie.composeapp.generated.resources.settings_region_label
 import smoovie.composeapp.generated.resources.settings_region_unset
 import smoovie.composeapp.generated.resources.settings_title
@@ -222,6 +223,12 @@ private fun TmdbAttribution() {
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = stringResource(Res.string.settings_tmdb_attribution),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = stringResource(Res.string.settings_justwatch_attribution),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

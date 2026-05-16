@@ -28,11 +28,12 @@ import dev.odaridavid.smoovie.theme.SmoovieTheme
 import dev.odaridavid.smoovie.utils.previewWatchProviders
 import org.jetbrains.compose.resources.stringResource
 import smoovie.composeapp.generated.resources.Res
-import smoovie.composeapp.generated.resources.action_view_all
+import smoovie.composeapp.generated.resources.where_to_watch_justwatch_attribution
 import smoovie.composeapp.generated.resources.where_to_watch_provider_logo_description
 import smoovie.composeapp.generated.resources.where_to_watch_rent_buy_label
 import smoovie.composeapp.generated.resources.where_to_watch_section_title
 import smoovie.composeapp.generated.resources.where_to_watch_stream_label
+import smoovie.composeapp.generated.resources.where_to_watch_view_on_justwatch
 
 @Composable
 internal fun WhereToWatchSection(
@@ -57,7 +58,7 @@ internal fun WhereToWatchSection(
             )
             if (!link.isNullOrBlank()) {
                 TextButton(onClick = { uriHandler.openUri(link) }) {
-                    Text(stringResource(Res.string.action_view_all))
+                    Text(stringResource(Res.string.where_to_watch_view_on_justwatch))
                 }
             }
         }
@@ -73,6 +74,11 @@ internal fun WhereToWatchSection(
                 providers = rentBuyProviders,
             )
         }
+        Text(
+            text = stringResource(Res.string.where_to_watch_justwatch_attribution),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -131,12 +137,25 @@ private val PROVIDER_LOGO_SIZE = 52.dp
 
 @PreviewLightDark
 @Composable
-private fun WhereToWatchSectionPreview() {
+private fun WhereToWatchSectionWithoutLinkPreview() {
     SmoovieTheme {
         WhereToWatchSection(
             streamingProviders = previewWatchProviders,
             rentBuyProviders = previewWatchProviders.take(2),
             link = null,
+            modifier = Modifier.padding(16.dp),
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun WhereToWatchSectionWithJustWatchLinkPreview() {
+    SmoovieTheme {
+        WhereToWatchSection(
+            streamingProviders = previewWatchProviders,
+            rentBuyProviders = previewWatchProviders.take(2),
+            link = "https://www.justwatch.com/us/movie/example",
             modifier = Modifier.padding(16.dp),
         )
     }

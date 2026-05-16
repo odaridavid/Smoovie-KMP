@@ -16,9 +16,22 @@ jobs:
   release:
     name: Build and upload AAB
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Compute version
+        id: version
+        run: |
+          VERSION_NAME=$(grep '^versionName=' version.properties | cut -d'=' -f2)
+          VERSION_CODE=$((100 + GITHUB_RUN_NUMBER))
+          TAG="v${VERSION_NAME}-${VERSION_CODE}"
+          echo "name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Computed $TAG (versionName=$VERSION_NAME, versionCode=$VERSION_CODE)"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -48,7 +61,7 @@ jobs:
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-        run: ./gradlew :composeApp:bundleRelease -PversionCodeOverride=$((100 + GITHUB_RUN_NUMBER))
+        run: ./gradlew :composeApp:bundleRelease -PversionCodeOverride=${{ steps.version.outputs.code }}
 
       - name: Write release notes file
         run: |
@@ -65,6 +78,19 @@ jobs:
           status: draft
           whatsNewDirectory: whatsnew
           mappingFile: composeApp/build/outputs/mapping/release/mapping.txt
+
+      - name: Tag release and create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.version.outputs.tag }}" -m "Release ${{ steps.version.outputs.tag }} → Play internal testing"
+          git push origin "${{ steps.version.outputs.tag }}"
+          gh release create "${{ steps.version.outputs.tag }}" \
+            --title "${{ steps.version.outputs.tag }}" \
+            --notes "${{ inputs.release_notes }}" \
+            --target "${{ github.sha }}"
 
       - name: Clean up keystore
         if: always()

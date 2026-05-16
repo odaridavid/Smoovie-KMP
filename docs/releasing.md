@@ -51,11 +51,19 @@ Rotate any of these by overwriting the secret value — no workflow change neede
 ### Versioning
 
 - `versionName` — semver (`MAJOR.MINOR.PATCH`). Patch for fixes, minor for features. Human-controlled, lives in `version.properties`.
-- `versionCode` — auto-derived by the workflow as `github.run_number + 100`. Monotonically increases per workflow run; survives until the workflow file is renamed or the repo is migrated.
+- `versionCode` — auto-derived by the workflow as `100 + GITHUB_RUN_NUMBER`. Monotonically increases per workflow run; survives until the workflow file is renamed or the repo is migrated.
 
 The 100 offset gives headroom above the manual versionCodes (1, 2) used during initial setup. The `version.properties` `versionCode` entry is only read for local release-builds; CI overrides it via `-PversionCodeOverride=…`.
 
 If you ever need to manually upload a release outside the workflow (emergency hotfix, sideloaded testing), pick a `versionCode` higher than the latest CI-produced one in Play Console to avoid the "version already used" rejection.
+
+### Tagging
+
+After a successful AAB upload, the workflow creates an annotated git tag (`v{versionName}-{versionCode}`, e.g. `v1.0.1-103`) on the release commit and publishes a matching GitHub Release with the release-notes input as its body. Both are pushed to the remote.
+
+If the upload step fails, no tag is created — tag presence reflects a real, accepted Play upload. Tags are immutable; rolling back a release means cutting a new one with a higher versionCode, not retagging.
+
+The job needs `contents: write` permission (set at the job level) so the runner's `GITHUB_TOKEN` can push the tag.
 
 ### Release notes ("What's new")
 

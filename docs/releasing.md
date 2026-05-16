@@ -42,11 +42,7 @@ Rotate any of these by overwriting the secret value — no workflow change neede
 
 ### Cutting a release
 
-1. **Bump** `version.properties`:
-   ```
-   versionCode=N+1      # always increment; Play rejects re-uploads of the same code
-   versionName=1.0.1    # semver
-   ```
+1. **Bump** `versionName` in `version.properties` (semver, e.g. `1.0.1`). `versionCode` is auto-bumped by CI
 2. Commit and push.
 3. **GitHub Actions** → **Release to Internal Testing** → **Run workflow** → optional release notes → **Run**.
 4. Wait 3-5 minutes.
@@ -54,10 +50,12 @@ Rotate any of these by overwriting the secret value — no workflow change neede
 
 ### Versioning
 
-- `versionCode` — monotonically increasing integer. Never reuse.
-- `versionName` — semver (`MAJOR.MINOR.PATCH`). Patch for fixes; minor for features.
+- `versionName` — semver (`MAJOR.MINOR.PATCH`). Patch for fixes, minor for features. Human-controlled, lives in `version.properties`.
+- `versionCode` — auto-derived by the workflow as `github.run_number + 100`. Monotonically increases per workflow run; survives until the workflow file is renamed or the repo is migrated.
 
-Auto-bumping in CI is a future improvement; bump manually as part of the release commit for now.
+The 100 offset gives headroom above the manual versionCodes (1, 2) used during initial setup. The `version.properties` `versionCode` entry is only read for local release-builds; CI overrides it via `-PversionCodeOverride=…`.
+
+If you ever need to manually upload a release outside the workflow (emergency hotfix, sideloaded testing), pick a `versionCode` higher than the latest CI-produced one in Play Console to avoid the "version already used" rejection.
 
 ### Release notes ("What's new")
 

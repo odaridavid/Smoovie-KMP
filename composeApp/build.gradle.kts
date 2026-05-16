@@ -180,7 +180,8 @@ android {
             libs.versions.android.targetSdk
                 .get()
                 .toInt()
-        versionCode = versionProperties.getProperty("versionCode").toInt()
+        versionCode = (project.findProperty("versionCodeOverride") as String?)?.toInt()
+            ?: versionProperties.getProperty("versionCode").toInt()
         versionName = versionProperties.getProperty("versionName")
     }
     packaging {

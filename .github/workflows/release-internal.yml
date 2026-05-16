@@ -48,7 +48,7 @@ jobs:
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-        run: ./gradlew :composeApp:bundleRelease -PversionCodeOverride=${{ github.run_number + 100 }}
+        run: ./gradlew :composeApp:bundleRelease -PversionCodeOverride=$((100 + GITHUB_RUN_NUMBER))
 
       - name: Write release notes file
         run: |

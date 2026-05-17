@@ -8,6 +8,8 @@ A Kotlin Multiplatform app for browsing and exploring movies, powered by
 the [TMDB API](https://www.themoviedb.org/).
 Targets Android and iOS with a shared Compose Multiplatform UI.
 
+<a href="https://play.google.com/store/apps/details?id=dev.odaridavid.smoovie&pli=1"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="60"/></a>
+
 Browse popular movies and TV shows, search the TMDB catalog, drill into details (cast, trailers,
 reviews, seasons, where to watch), and bookmark titles to a local watchlist. Region-aware results
 are driven by a Settings picker that defaults to your system locale.

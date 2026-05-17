@@ -91,16 +91,58 @@ This developer account predates the Nov 2023 personal-account rule, so the "12 t
 
 ## iOS release process
 
-Not automated. Manual archive-and-upload.
+Triggered manually from GitHub Actions. Workflow lives in `.github/workflows/release-testflight.yml`.
 
-1. Bump `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in `iosApp/iosApp.xcodeproj` (or via Xcode's General target settings).
-2. Xcode → **iosApp** scheme → destination **Any iOS Device (arm64)**.
-3. **Product → Archive**. Crashlytics dSYM upload runs as a build phase.
-4. Organizer → select archive → **Distribute App** → **App Store Connect** → **Upload**.
-5. App Store Connect → TestFlight → wait for processing (10-30 min) → add to internal/external testing group.
-6. Promote to App Store review when ready.
+```
+GitHub Actions ──► import distribution cert into temp keychain
+              ──► install provisioning profile
+              ──► xcodebuild archive (Release, manual signing, override xcconfig)
+              ──► xcodebuild -exportArchive → .ipa
+              ──► xcrun altool --upload-app → TestFlight
+              ──► dSYM upload runs as a build phase during archive
+              ──► tag release and create GitHub Release (prerelease)
+```
+
+`MARKETING_VERSION` is sourced from `version.properties` (same file Android reads — single source of truth). `CURRENT_PROJECT_VERSION` is `100 + GITHUB_RUN_NUMBER`, mirroring the Android `versionCode` scheme. The workflow synthesises a release `xcconfig` at runtime to inject Team ID, provisioning profile name, and the two version numbers; the committed `Configuration/Config.xcconfig` is for local development only.
+
+The upload lands in TestFlight as a new build; App Store Connect handles testing-group routing and submission for App Review separately.
+
+### Required GitHub secrets
+
+| Secret | What it is | How to produce it |
+|---|---|---|
+| `IOS_CERTIFICATE_BASE64` | Apple Distribution `.p12` | Keychain Access → export private key + cert → `base64 -i Smoovie_Distribution.p12 \| pbcopy`. |
+| `IOS_CERTIFICATE_PASSWORD` | Password used when exporting the `.p12` | — |
+| `IOS_PROVISIONING_PROFILE_BASE64` | App Store distribution `.mobileprovision` | Apple Developer Portal → Profiles → download → `base64 -i Smoovie.mobileprovision \| pbcopy`. |
+| `IOS_PROVISIONING_PROFILE_NAME` | Human-readable profile name | The "Name" field shown in the developer portal (e.g. `Smoovie App Store`). |
+| `IOS_TEAM_ID` | 10-character Apple Team ID | Developer portal → Membership. **Not** your Apple ID email. |
+| `IOS_KEYCHAIN_PASSWORD` | Random string for the temp CI keychain | Any value; only used inside the job. |
+| `APP_STORE_CONNECT_API_KEY_ID` | 10-char API key ID | App Store Connect → Users and Access → Integrations → App Store Connect API → generate key. |
+| `APP_STORE_CONNECT_ISSUER_ID` | UUID issuer ID | Shown above the API key list. |
+| `APP_STORE_CONNECT_API_KEY_BASE64` | Base64-encoded `.p8` private key | `base64 -i AuthKey_XXXX.p8 \| pbcopy`. The `.p8` file is only downloadable once — store it somewhere safe before encoding. |
 
 App Check on iOS uses **App Attest** in release. Requires real hardware — simulators won't produce a valid attestation.
+
+### Production-hardening checklist (one-time, before first TestFlight upload)
+
+| Item | Where | Notes |
+|---|---|---|
+| Apple Developer Program enrollment | developer.apple.com | Personal Team is not enough — App Attest entitlement is not in the Personal Team allowlist. |
+| `TEAM_ID` in `iosApp/Configuration/Config.xcconfig` | Local file (gitignored) | Must be the 10-character Team ID (e.g. `A1B2C3D4E5`), **not** an Apple ID email. |
+| App Attest entitlement | `iosApp/iosApp.entitlements` | Already wired into the Release config via `CODE_SIGN_ENTITLEMENTS`. Environment is `production` (works in TestFlight too). |
+| Privacy manifest | `iosApp/iosApp/PrivacyInfo.xcprivacy` | Required by Apple. Auto-included via the file-system synchronized group. Declares NSUserDefaults / FileTimestamp / DiskSpace required-reason API usage. |
+| Bundle ID registered in Firebase Console | Project Settings → iOS app | Must match `PRODUCT_BUNDLE_IDENTIFIER` (`dev.odaridavid.smoovie`). |
+| Apple Team ID registered in Firebase Console | Project Settings → iOS app → Apple Team ID | Required for App Attest token validation. |
+| App Attest enabled for the iOS app | Firebase Console → App Check → Apps → iOS app → ⋮ → Manage providers | Toggle App Attest on. Without this, tokens are rejected even with a valid entitlement. |
+| Privacy nutrition labels | App Store Connect → App Privacy | Declared once, applies to all submissions. See `docs/play-store-listing.md` for the data-collection profile (mirror it). |
+
+### iOS App Check gotcha (mirror of Android Play Integrity SHA trap)
+
+App Attest tokens are minted by Apple and validated by Firebase against the registered **Bundle ID + Team ID + App Attest provider config**. If any of those three is missing or wrong, Firebase silently returns a null token and the Cloud Function rejects every request with 401 "Missing App Check token" — same symptom as the Android SHA mismatch.
+
+**Diagnostic:** iOS doesn't have an equivalent of the Android `Log.e("AppCheck", ...)` line we added — the token simply comes back null. To debug a release build, run the app from Xcode against a release-archive build, watch the console for the `FIRAppCheck` logger, and confirm `AppCheck.appCheck().token(...)` returns an error rather than just nil.
+
+**Sandbox vs production environment:** App Attest's `production` environment (set in `iosApp.entitlements`) works in TestFlight and the App Store. The `development` environment is only useful when the app is launched directly from Xcode against a debug build, and the Debug Provider already covers that path. Don't switch to `development` to debug TestFlight issues — that breaks attestation.
 
 ## Operations
 

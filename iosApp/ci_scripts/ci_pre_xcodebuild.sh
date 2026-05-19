@@ -1,0 +1,29 @@
+#!/bin/sh
+set -eu
+
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+IOS_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
+REPO_ROOT=$(cd "$IOS_DIR/.." && pwd)
+
+: "${TEAM_ID:?TEAM_ID must be set in the Xcode Cloud workflow environment}"
+
+PRODUCT_NAME=${PRODUCT_NAME:-Smoovie}
+PRODUCT_BUNDLE_IDENTIFIER=${PRODUCT_BUNDLE_IDENTIFIER:-dev.odaridavid.smoovie}
+
+VERSION_NAME=$(grep '^versionName=' "$REPO_ROOT/version.properties" | cut -d'=' -f2)
+BUILD_NUMBER=${CI_BUILD_NUMBER:-1}
+
+CONFIG_PATH="$IOS_DIR/Configuration/Config.xcconfig"
+mkdir -p "$(dirname "$CONFIG_PATH")"
+
+cat > "$CONFIG_PATH" <<EOF
+TEAM_ID=$TEAM_ID
+
+PRODUCT_NAME=$PRODUCT_NAME
+PRODUCT_BUNDLE_IDENTIFIER=$PRODUCT_BUNDLE_IDENTIFIER
+
+CURRENT_PROJECT_VERSION=$BUILD_NUMBER
+MARKETING_VERSION=$VERSION_NAME
+EOF
+
+echo "Wrote $CONFIG_PATH (MARKETING_VERSION=$VERSION_NAME, CURRENT_PROJECT_VERSION=$BUILD_NUMBER, TEAM_ID=$TEAM_ID)"

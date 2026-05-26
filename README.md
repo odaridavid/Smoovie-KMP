@@ -154,8 +154,6 @@ To redeploy after editing:
 firebase deploy --only hosting
 ```
 
-## Demo
+<video src="https://github.com/user-attachments/assets/05d3e58f-7128-4728-b37d-e787260e6df6" width="320"/>
 
-|          Android                                 |         iOS                                  |
-|:-----------------------------------------:|:-----------------------------------------:|
-| <video src="https://github.com/user-attachments/assets/51419a7b-d51f-4172-a259-769d14b4aa2c" width="360"/> | <video src="https://github.com/user-attachments/assets/03f1b98b-19e0-499e-bb75-d9d2956c790b" width="360"/> |
+

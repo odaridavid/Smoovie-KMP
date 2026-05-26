@@ -36,19 +36,30 @@ deployed function URL.
 
 ## Setup
 
-### 1. Run the app locally (no setup)
+Running the app from source requires **your own Firebase project**. The committed
+`google-services.json` / `GoogleService-Info.plist` and the `TMDB_BASE_URL` in `AppConfig.kt` all
+point at the production Smoovie project, and only its owner can register debug App Check tokens
+against it — so cloning and running as-is will fail with "Failed to load" on every TMDB call.
 
-The Firebase config files (`composeApp/google-services.json`, `iosApp/GoogleService-Info.plist`) and
-the deployed proxy URL are committed, so cloning + opening should Just Work in debug. App Check
-debug tokens are per-device and registered once (see step 3 below).
+If you just want to try the app, install it from
+[Google Play](https://play.google.com/store/apps/details?id=dev.odaridavid.smoovie). To build from
+source, work through all three steps below.
 
-### 2. Deploy your own proxy (only if you need a separate Firebase project)
+### 1. Deploy your own TMDB proxy
 
-If you're forking and want your own TMDB proxy, see
-[`functions/README.md`](functions/README.md). You'll create a Firebase project, set the TMDB token
-as a Secret Manager secret, deploy the function, and update `TMDB_BASE_URL` in
-[`AppConfig.kt`](composeApp/src/commonMain/kotlin/dev/odaridavid/smoovie/AppConfig.kt) to your
-function URL.
+Create a Firebase project (Blaze plan — 2nd-gen functions require it; app-scale usage is $0),
+grab a [TMDB API token](https://www.themoviedb.org/settings/api), and deploy the Cloud Function.
+Full walkthrough in [`functions/README.md`](functions/README.md). You'll end up with a function
+URL like `https://tmdb-proxy-<hash>-<region>.a.run.app`.
+
+### 2. Wire your project into the app
+
+- Add Android + iOS apps to your Firebase project, then download the generated
+  `google-services.json` (Android) and `GoogleService-Info.plist` (iOS) and replace the committed
+  files at `composeApp/google-services.json` and `iosApp/iosApp/GoogleService-Info.plist`.
+- Update `TMDB_BASE_URL` in
+  [`AppConfig.kt`](composeApp/src/commonMain/kotlin/dev/odaridavid/smoovie/AppConfig.kt) to point
+  at your function URL.
 
 ### 3. Register your debug build for App Check
 
@@ -60,8 +71,8 @@ register its debug token once per device/simulator install:
 - **iOS**: run the debug build, then in the Xcode Debug Area look for the line printed under
   `===== Firebase App Check Debug Token =====` and copy the UUID.
 
-Paste the UUID into **Firebase Console → App Check → Apps → ⋮ → Manage debug tokens**, give it a
-name, save. The token persists in the app's local storage.
+Paste the UUID into **Firebase Console → App Check → Apps → ⋮ → Manage debug tokens** (in *your*
+project from step 1), give it a name, save. The token persists in the app's local storage.
 
 ## Dependencies
 

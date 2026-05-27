@@ -140,13 +140,21 @@ git config core.hooksPath hooks
 If the hook blocks a commit, run `./gradlew :composeApp:ktlintFormat` to auto-fix, re-stage the
 changes, then commit again.
 
-## Privacy Policy
+## Privacy Policy and Support
 
-The privacy policy lives at [`docs/privacy-policy.html`](docs/privacy-policy.html) and is served via
-Firebase Hosting:
+Both pages live under [`docs/`](docs/) and are served via Firebase Hosting.
+
+**Privacy policy** ([`docs/privacy-policy.html`](docs/privacy-policy.html)) — linked from the Google
+Play and App Store listings:
 
 - <https://smoovie-kmp.web.app/privacy>
 - <https://smoovie-kmp.web.app/privacy-policy.html>
+
+**Support** ([`docs/support.html`](docs/support.html)) — linked from the App Store listing (the
+Play Console uses the developer support email instead):
+
+- <https://smoovie-kmp.web.app/support>
+- <https://smoovie-kmp.web.app/support.html>
 
 To redeploy after editing:
 

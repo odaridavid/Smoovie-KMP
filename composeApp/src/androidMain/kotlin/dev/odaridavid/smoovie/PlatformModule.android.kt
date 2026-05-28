@@ -3,6 +3,7 @@ package dev.odaridavid.smoovie
 import android.content.Context
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.SharedPreferencesSettings
+import dev.odaridavid.smoovie.appfunctions.SmoovieAppFunctions
 import dev.odaridavid.smoovie.storage.DatabaseBuilderFactory
 import dev.odaridavid.smoovie.utils.AppReviewRequester
 import org.koin.android.ext.koin.androidContext
@@ -19,4 +20,13 @@ actual val platformModule: Module =
         }
         single { AndroidAppReviewRequester() }
         single<AppReviewRequester> { get<AndroidAppReviewRequester>() }
+        single {
+            SmoovieAppFunctions(
+                searchMovies = get(),
+                searchTvShows = get(),
+                toggleWatchlist = get(),
+                removeFromWatchlist = get(),
+                observeWatchlist = get(),
+            )
+        }
     }

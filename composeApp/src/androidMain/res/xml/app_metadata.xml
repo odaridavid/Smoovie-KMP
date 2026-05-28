@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AppFunctionAppMetadata
+    xmlns:appfn="http://schemas.android.com/apk/androidx.appfunctions"
+    appfn:description="Smoovie surfaces TMDB movies and TV shows and maintains the user's local watchlist.
+
+Operational Patterns:
+- Use 'searchMovies' or 'searchTvShows' to resolve a free-form title into a numeric tmdbId before calling 'addToWatchlist' or 'removeFromWatchlist'.
+- Prefer the first result when the query is a precise title; ask the user to disambiguate when several results share similar release years.
+- 'listWatchlist' returns the user's saved entries with tmdbId values that are valid inputs to 'removeFromWatchlist'.
+
+Constraints:
+- Watchlist mutations require a valid integer tmdbId from a prior search or list call; arbitrary IDs are rejected.
+- Search results are paged (20 per page) and capped at TMDB's upstream limits.
+- All network calls go through Firebase App Check; calls from unattested clients fail.
+- Regional availability of titles is determined by the user's configured region and cannot be overridden per call."
+    appfn:displayDescription="@string/app_functions_description" />

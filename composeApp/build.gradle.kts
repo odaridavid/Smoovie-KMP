@@ -97,6 +97,8 @@ kotlin {
             implementation(libs.firebase.appcheck.playintegrity)
             implementation(libs.firebase.crashlytics)
             implementation(libs.play.review)
+            implementation(libs.androidx.appfunctions)
+            implementation(libs.androidx.appfunctions.service)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -222,6 +224,11 @@ dependencies {
     debugImplementation(libs.compose.uiTooling)
     debugImplementation(libs.firebase.appcheck.debug)
     add("kspAndroid", libs.androidx.room.compiler)
+    add("kspAndroid", libs.androidx.appfunctions.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+}
+
+ksp {
+    arg("appfunctions:aggregateAppFunctions", "true")
 }

@@ -35,7 +35,9 @@ jobs:
 
       - name: Compute versionCode
         id: version
-        run: echo "code=$((100 + GITHUB_RUN_NUMBER))" >> "$GITHUB_OUTPUT"
+        # Starts from 103 because this workflow started after the app was already released
+        # and that was the current version code
+        run: echo "code=$((103 + GITHUB_RUN_NUMBER))" >> "$GITHUB_OUTPUT"
 
       - name: Build debug APK
         run: ./gradlew :composeApp:assembleDebug -PversionCodeOverride=${{ steps.version.outputs.code }}

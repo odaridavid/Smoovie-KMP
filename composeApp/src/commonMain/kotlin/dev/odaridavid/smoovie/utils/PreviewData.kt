@@ -12,6 +12,8 @@ import dev.odaridavid.smoovie.shared.ReviewUiModel
 import dev.odaridavid.smoovie.shared.TrailerUiModel
 import dev.odaridavid.smoovie.shared.WatchProviderUiModel
 import dev.odaridavid.smoovie.shows.TvShowUiModel
+import dev.odaridavid.smoovie.trivia.TriviaQuestionKind
+import dev.odaridavid.smoovie.trivia.TriviaQuestionUiModel
 
 internal val previewMovies =
     listOf(
@@ -169,6 +171,31 @@ internal val previewPersonDetailUiModel =
                     role = "Rust Cohle",
                 ),
             ),
+    )
+
+internal val previewTriviaQuestions =
+    listOf(
+        TriviaQuestionUiModel(
+            id = "year",
+            kind = TriviaQuestionKind.RELEASE_YEAR,
+            subject = "Interstellar",
+            options = listOf("2012", "2014", "2016", "2010"),
+            correctIndex = 1,
+        ),
+        TriviaQuestionUiModel(
+            id = "genre",
+            kind = TriviaQuestionKind.GENRE,
+            subject = "Interstellar",
+            options = listOf("Comedy", "Science Fiction", "Horror", "Western"),
+            correctIndex = 1,
+        ),
+        TriviaQuestionUiModel(
+            id = "director",
+            kind = TriviaQuestionKind.DIRECTOR,
+            subject = "Interstellar",
+            options = listOf("Christopher Nolan", "Steven Spielberg", "Denis Villeneuve", "Ridley Scott"),
+            correctIndex = 0,
+        ),
     )
 
 internal val previewMovieDetailUiModel =

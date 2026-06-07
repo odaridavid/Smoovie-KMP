@@ -53,6 +53,8 @@ import dev.odaridavid.smoovie.shows.ShowsViewModel
 import dev.odaridavid.smoovie.shows.TvShowDetailScreen
 import dev.odaridavid.smoovie.shows.TvShowDetailViewModel
 import dev.odaridavid.smoovie.theme.SmoovieTheme
+import dev.odaridavid.smoovie.trivia.MovieTriviaScreen
+import dev.odaridavid.smoovie.trivia.MovieTriviaViewModel
 import dev.odaridavid.smoovie.watchlist.WatchlistScreen
 import dev.odaridavid.smoovie.watchlist.WatchlistViewModel
 import org.jetbrains.compose.resources.stringResource
@@ -170,6 +172,24 @@ fun App() {
                             onBack = { navController.navigateUp() },
                             onMovieClick = { movie -> navController.navigate(movie.toRoute()) },
                             onPersonClick = { person -> navController.navigate(person.toRoute()) },
+                            onPlayTrivia = {
+                                navController.navigate(
+                                    MovieTriviaRoute(movieId = route.id, movieTitle = route.title),
+                                )
+                            },
+                        )
+                    }
+
+                    composable<MovieTriviaRoute> { entry ->
+                        val route: MovieTriviaRoute = entry.toRoute()
+                        val viewModel: MovieTriviaViewModel =
+                            koinViewModel(
+                                key = "trivia_${route.movieId}",
+                                parameters = { parametersOf(route.movieId) },
+                            )
+                        MovieTriviaScreen(
+                            viewModel = viewModel,
+                            onBack = { navController.navigateUp() },
                         )
                     }
 

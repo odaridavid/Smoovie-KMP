@@ -29,6 +29,12 @@ internal data class MovieDetailRoute(
 )
 
 @Serializable
+internal data class MovieTriviaRoute(
+    val movieId: Int,
+    val movieTitle: String,
+)
+
+@Serializable
 internal data class PersonDetailRoute(
     val id: Int,
     val name: String,

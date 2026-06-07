@@ -75,4 +75,20 @@
     <string name="crash_consent_enable">Enable</string>
     <string name="crash_consent_not_now">Not now</string>
     <string name="crash_consent_footnote">You can change this any time in Settings.</string>
+    <string name="trivia_title">Trivia</string>
+    <string name="trivia_button">Test your knowledge</string>
+    <string name="trivia_progress">Question %1$d of %2$d</string>
+    <string name="trivia_score">Score: %1$d</string>
+    <string name="trivia_next">Next</string>
+    <string name="trivia_finish">See results</string>
+    <string name="trivia_empty">No trivia available for this title</string>
+    <string name="trivia_result_title">Quiz complete!</string>
+    <string name="trivia_result_score">You scored %1$d out of %2$d</string>
+    <string name="trivia_play_again">Play again</string>
+    <string name="trivia_done">Done</string>
+    <string name="trivia_q_year">In what year was \"%1$s\" released?</string>
+    <string name="trivia_q_runtime">How long is \"%1$s\"?</string>
+    <string name="trivia_q_genre">Which genre best describes \"%1$s\"?</string>
+    <string name="trivia_q_director">Who directed \"%1$s\"?</string>
+    <string name="trivia_q_cast">Which of these actors starred in \"%1$s\"?</string>
 </resources>

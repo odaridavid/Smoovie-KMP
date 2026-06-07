@@ -1,5 +1,10 @@
 package dev.odaridavid.smoovie.movies
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +18,10 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -49,6 +58,7 @@ import smoovie.composeapp.generated.resources.error_not_found
 import smoovie.composeapp.generated.resources.error_server
 import smoovie.composeapp.generated.resources.error_unauthorized
 import smoovie.composeapp.generated.resources.error_unknown
+import smoovie.composeapp.generated.resources.trivia_button
 
 @Composable
 fun MovieDetailScreen(
@@ -57,6 +67,7 @@ fun MovieDetailScreen(
     onBack: () -> Unit,
     onMovieClick: (MovieUiModel) -> Unit,
     onPersonClick: (PersonSummaryUiModel) -> Unit,
+    onPlayTrivia: () -> Unit = {},
 ) {
     val detailState by viewModel.uiState.collectAsState()
     val isInWatchlist by viewModel.isInWatchlist.collectAsState()
@@ -69,6 +80,7 @@ fun MovieDetailScreen(
         onToggleWatchlist = { viewModel.toggleWatchlist(movie) },
         onMovieClick = onMovieClick,
         onPersonClick = onPersonClick,
+        onPlayTrivia = onPlayTrivia,
     )
 }
 
@@ -82,6 +94,7 @@ internal fun MovieDetailContent(
     onToggleWatchlist: () -> Unit = {},
     onMovieClick: (MovieUiModel) -> Unit = {},
     onPersonClick: (PersonSummaryUiModel) -> Unit = {},
+    onPlayTrivia: () -> Unit = {},
 ) {
     SetStatusBarIcons(useDarkIcons = false)
 
@@ -89,98 +102,116 @@ internal fun MovieDetailContent(
     val sheetShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
     val sheetOverlap = 28.dp
 
-    Column(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .background(background)
-                .verticalScroll(rememberScrollState())
-                .windowInsetsPadding(WindowInsets.navigationBars),
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .layout { measurable, constraints ->
-                        val placeable = measurable.measure(constraints)
-                        val overlapPx = sheetOverlap.roundToPx()
-                        val reportedHeight = (placeable.height - overlapPx).coerceAtLeast(0)
-                        layout(placeable.width, reportedHeight) {
-                            placeable.place(0, 0)
-                        }
-                    },
-        ) {
-            HeroSection(
-                backdropUrl = movie.backdropUrl,
-                posterUrl = movie.posterUrl,
-                onBack = onBack,
-                isInWatchlist = isInWatchlist,
-                onToggleWatchlist = onToggleWatchlist,
-            )
-        }
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier =
                 Modifier
-                    .fillMaxWidth()
-                    .background(background, sheetShape)
-                    .padding(top = 20.dp),
+                    .fillMaxSize()
+                    .background(background)
+                    .verticalScroll(rememberScrollState())
+                    .windowInsetsPadding(WindowInsets.navigationBars),
         ) {
-            TitleHeader(
-                title = movie.title,
-                tagline = (detailState as? MovieDetailUiState.Success)?.movieDetail?.tagline,
-                modifier = Modifier.padding(horizontal = 16.dp),
-            )
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .layout { measurable, constraints ->
+                            val placeable = measurable.measure(constraints)
+                            val overlapPx = sheetOverlap.roundToPx()
+                            val reportedHeight = (placeable.height - overlapPx).coerceAtLeast(0)
+                            layout(placeable.width, reportedHeight) {
+                                placeable.place(0, 0)
+                            }
+                        },
+            ) {
+                HeroSection(
+                    backdropUrl = movie.backdropUrl,
+                    posterUrl = movie.posterUrl,
+                    onBack = onBack,
+                    isInWatchlist = isInWatchlist,
+                    onToggleWatchlist = onToggleWatchlist,
+                )
+            }
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .background(background, sheetShape)
+                        .padding(top = 20.dp),
+            ) {
+                TitleHeader(
+                    title = movie.title,
+                    tagline = (detailState as? MovieDetailUiState.Success)?.movieDetail?.tagline,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
 
-            when (detailState) {
-                is MovieDetailUiState.Loading -> {
-                    ShimmerDetail(modifier = Modifier.fillMaxWidth())
-                }
+                when (detailState) {
+                    is MovieDetailUiState.Loading -> {
+                        ShimmerDetail(modifier = Modifier.fillMaxWidth())
+                    }
 
-                is MovieDetailUiState.Success -> {
-                    val detail = detailState.movieDetail
-                    DetailBody(movie = movie, detail = detail)
-                    if (detail.cast.isNotEmpty()) {
-                        CastSection(
-                            cast = detail.cast,
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            onPersonClick = onPersonClick,
-                        )
+                    is MovieDetailUiState.Success -> {
+                        val detail = detailState.movieDetail
+                        DetailBody(movie = movie, detail = detail)
+                        if (detail.cast.isNotEmpty()) {
+                            CastSection(
+                                cast = detail.cast,
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                onPersonClick = onPersonClick,
+                            )
+                        }
+                        if (detail.streamingProviders.isNotEmpty() || detail.rentBuyProviders.isNotEmpty()) {
+                            WhereToWatchSection(
+                                streamingProviders = detail.streamingProviders,
+                                rentBuyProviders = detail.rentBuyProviders,
+                                link = detail.watchProvidersLink,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                            )
+                        }
+                        if (detail.trailers.isNotEmpty()) {
+                            TrailersSection(
+                                trailers = detail.trailers,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                            )
+                        }
+                        if (detail.reviews.isNotEmpty()) {
+                            ReviewsSection(
+                                reviews = detail.reviews,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                            )
+                        }
+                        if (detail.similar.isNotEmpty()) {
+                            SimilarMoviesSection(
+                                movies = detail.similar,
+                                onMovieClick = onMovieClick,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                            )
+                        }
                     }
-                    if (detail.streamingProviders.isNotEmpty() || detail.rentBuyProviders.isNotEmpty()) {
-                        WhereToWatchSection(
-                            streamingProviders = detail.streamingProviders,
-                            rentBuyProviders = detail.rentBuyProviders,
-                            link = detail.watchProvidersLink,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-                        )
-                    }
-                    if (detail.trailers.isNotEmpty()) {
-                        TrailersSection(
-                            trailers = detail.trailers,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-                        )
-                    }
-                    if (detail.reviews.isNotEmpty()) {
-                        ReviewsSection(
-                            reviews = detail.reviews,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-                        )
-                    }
-                    if (detail.similar.isNotEmpty()) {
-                        SimilarMoviesSection(
-                            movies = detail.similar,
-                            onMovieClick = onMovieClick,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-                        )
-                    }
-                }
 
-                is MovieDetailUiState.Error -> {
-                    DetailBody(movie = movie) {
-                        ErrorBanner(error = detailState.error, onRetry = onRetry)
+                    is MovieDetailUiState.Error -> {
+                        DetailBody(movie = movie) {
+                            ErrorBanner(error = detailState.error, onRetry = onRetry)
+                        }
                     }
                 }
             }
+        }
+        AnimatedVisibility(
+            visible = detailState is MovieDetailUiState.Success,
+            enter = scaleIn() + fadeIn(),
+            exit = scaleOut() + fadeOut(),
+            modifier =
+                Modifier
+                    .align(Alignment.BottomEnd)
+                    .windowInsetsPadding(WindowInsets.navigationBars)
+                    .padding(16.dp),
+        ) {
+            ExtendedFloatingActionButton(
+                onClick = onPlayTrivia,
+                icon = { Icon(Icons.Default.PlayArrow, contentDescription = null) },
+                text = { Text(stringResource(Res.string.trivia_button)) },
+            )
         }
     }
 }

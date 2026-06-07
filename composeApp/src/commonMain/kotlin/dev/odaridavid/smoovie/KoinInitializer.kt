@@ -47,6 +47,8 @@ import dev.odaridavid.smoovie.shows.domain.TvShowsRepository
 import dev.odaridavid.smoovie.storage.DatabaseBuilderFactory
 import dev.odaridavid.smoovie.storage.MIGRATION_1_2
 import dev.odaridavid.smoovie.storage.SmoovieDatabase
+import dev.odaridavid.smoovie.trivia.MovieTriviaViewModel
+import dev.odaridavid.smoovie.trivia.domain.GenerateMovieTriviaUseCase
 import dev.odaridavid.smoovie.watchlist.WatchlistViewModel
 import dev.odaridavid.smoovie.watchlist.data.WatchlistRepositoryImpl
 import dev.odaridavid.smoovie.watchlist.domain.ObserveIsInWatchlistUseCase
@@ -132,6 +134,7 @@ private val appModule =
         single { GetTvShowDetailUseCase(get(), get(), get()) }
         single { GetSeasonDetailUseCase(get(), get()) }
         single { GetPersonDetailUseCase(get(), get()) }
+        single { GenerateMovieTriviaUseCase(get()) }
         single { ObserveIsInWatchlistUseCase(get()) }
         single { ObserveWatchlistUseCase(get()) }
         single { ToggleWatchlistUseCase(get()) }
@@ -184,6 +187,12 @@ private val appModule =
                 movieId = movieId,
                 getMovieDetail = get(),
                 toggleWatchlistUseCase = get(),
+            )
+        }
+        viewModel { (movieId: Int) ->
+            MovieTriviaViewModel(
+                movieId = movieId,
+                generateTrivia = get(),
             )
         }
         viewModel { (personId: Int) -> PersonDetailViewModel(personId, get()) }

@@ -1,0 +1,52 @@
+name: Firebase App Distribution
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: firebase-distribution
+  cancel-in-progress: false
+
+jobs:
+  distribute:
+    name: Build & distribute debug APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Cache Kotlin/Native distribution
+        uses: actions/cache@v4
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml') }}
+          restore-keys: konan-${{ runner.os }}-
+
+      - name: Compute versionCode
+        id: version
+        # Starts from 103 because this workflow started after the app was already released
+        # and that was the current version code
+        run: echo "code=$((103 + GITHUB_RUN_NUMBER))" >> "$GITHUB_OUTPUT"
+
+      - name: Build debug APK
+        run: ./gradlew :composeApp:assembleDebug -PversionCodeOverride=${{ steps.version.outputs.code }}
+
+      - name: Upload to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          groups: ${{ vars.FIREBASE_TESTER_GROUPS }}
+          file: composeApp/build/outputs/apk/debug/composeApp-debug.apk
+          releaseNotes: ${{ github.event.head_commit.message || format('Manual dispatch of {0}', github.sha) }}

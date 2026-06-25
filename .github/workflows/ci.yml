@@ -47,7 +47,7 @@ jobs:
         run: ./gradlew :composeApp:koverXmlReportDebug
 
       - name: Upload to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7.0.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: composeApp/build/reports/kover/reportDebug.xml

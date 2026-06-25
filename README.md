@@ -96,6 +96,7 @@ project from step 1), give it a name, save. The token persists in the app's loca
 | [Play In-App Review](https://developer.android.com/guide/playcore/in-app-review)          | Android in-app review prompt (paired with `SKStoreReviewController` on iOS) |
 | [ktlint-gradle](https://github.com/JLLeitschuh/ktlint-gradle)                            | Code style enforcement                       |
 | [Kover](https://github.com/Kotlin/kotlinx-kover)                                          | Code coverage reports (HTML + XML, used by CI) |
+| [Develocity](https://docs.gradle.com/develocity/gradle-plugin/)                           | Build scans — build/test insights published to `scans.gradle.com` |
 
 ## Build and Run
 
@@ -127,6 +128,20 @@ Open `/iosApp` in Xcode and run, or use the run configuration in Android Studio 
 ./gradlew :composeApp:ktlintCheck    # check (what CI runs)
 ./gradlew :composeApp:ktlintFormat   # auto-fix
 ```
+
+### Build Scans
+
+The [Develocity](https://docs.gradle.com/develocity/gradle-plugin/) Gradle plugin publishes
+[build scans](https://scans.gradle.com/) — shareable reports of what a build did (task timings,
+cache hits, test results, environment). Add `--scan` to any build to publish one:
+
+```shell
+./gradlew :composeApp:assembleDebug --scan
+```
+
+The scan URL is printed at the end of the build. Scans publish automatically in CI; locally they
+only publish when you pass `--scan`. The [terms of use](https://gradle.com/help/legal-terms-of-use)
+are pre-accepted in `settings.gradle.kts`, so publishing is unattended.
 
 ### Pre-commit hook
 

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Smoovie</string>
+    <string name="app_functions_description">Search TMDB movies and TV shows and manage your watchlist by voice or text.</string>
 </resources>

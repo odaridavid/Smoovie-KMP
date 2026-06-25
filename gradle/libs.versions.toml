@@ -2,7 +2,7 @@
 agp = "8.13.2"
 ktlint-gradle = "14.2.0"
 kover = "0.9.8"
-android-compileSdk = "36"
+android-compileSdk = "37"
 android-minSdk = "24"
 android-targetSdk = "36"
 androidx-activity = "1.13.0"
@@ -34,6 +34,7 @@ googleServices = "4.4.4"
 playReview = "2.0.2"
 firebaseCrashlyticsPlugin = "3.0.7"
 firebaseBom = "34.13.0"
+appfunctions = "1.0.0-alpha02"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -85,6 +86,9 @@ firebase-appcheck-playintegrity = { module = "com.google.firebase:firebase-appch
 firebase-appcheck-debug = { module = "com.google.firebase:firebase-appcheck-debug" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 play-review = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }
+androidx-appfunctions = { module = "androidx.appfunctions:appfunctions", version.ref = "appfunctions" }
+androidx-appfunctions-service = { module = "androidx.appfunctions:appfunctions-service", version.ref = "appfunctions" }
+androidx-appfunctions-compiler = { module = "androidx.appfunctions:appfunctions-compiler", version.ref = "appfunctions" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
